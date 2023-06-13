@@ -1,3 +1,4 @@
+using System.Net;
 using App.DAL.EF;
 using App.Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ public class DevelopController : ControllerBase
     }
     
     [HttpPost("dev/langstr")]
-    public async Task AddLangStr([FromBody] LangStrDTO data)
+    public async Task<int> AddLangStr([FromBody] LangStrDTO data)
     {
         var langStr = new LanguageString()
         {
@@ -43,17 +44,22 @@ public class DevelopController : ControllerBase
         };
 
         _context.Add(langStr);
-        await _context.SaveChangesAsync();
-        Console.WriteLine("Added!");
+        return await _context.SaveChangesAsync();
     }
     [HttpPost("dev/translate")]
     public async Task<string> GetTranslation([FromBody] GetTranslationDTO data)
     {
+        // Kui kontrollid translationeid siis kontrolli small characterina
         
         var currentWordInTranslationTable = await _context.LanguageStringTranslations
             .Include(x => x.LanguageString)
             .Where(x => x.TranslationValue == data.Value)
-            .FirstAsync();
+            .FirstOrDefaultAsync();
+
+        if (currentWordInTranslationTable == null)
+        {
+            return $"Can't find translation for '{data.Value}' to culture '{data.Culture}'";
+        }
         
         var translationStringId = currentWordInTranslationTable.LanguageString!.Id;
 

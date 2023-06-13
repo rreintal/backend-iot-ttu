@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
         <PrivateAssets>all</PrivateAssets>
@@ -21,7 +22,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\App.DAL.Contracts\App.DAL.Contracts.csproj" />
       <ProjectReference Include="..\App.Domain\App.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Repositories" />
     </ItemGroup>
 
 </Project>
