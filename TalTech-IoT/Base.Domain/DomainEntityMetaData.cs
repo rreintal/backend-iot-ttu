@@ -1,6 +1,8 @@
-﻿namespace Base.Domain;
+﻿using Contracts;
 
-public abstract class DomainEntityMetaData
+namespace Base.Domain;
+
+public abstract class DomainEntityMetaData : IDomainEntityMetaData
 {
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
