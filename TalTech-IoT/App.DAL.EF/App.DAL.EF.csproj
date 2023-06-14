@@ -22,7 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\App.DAL.Contracts\App.DAL.Contracts.csproj" />
       <ProjectReference Include="..\App.Domain\App.Domain.csproj" />
     </ItemGroup>
 
