@@ -1,6 +1,6 @@
+using System.Net.Mime;
 using App.DAL.EF;
 using App.Domain;
-using App.Domain.Constants;
 using App.Domain.Translations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,120 +20,137 @@ public class NewsController : ControllerBase
     {
         _context = context;
     }
-    
-    [HttpGet]
-    public async Task<DTO.V1.News?> GetNewsById(Guid id, string languageCulture)
-    {
-        /*var query = await _context.News.Where(x => x.Id == id)
-            .Include(x => x.Content)
-            .ThenInclude(x => x.LanguageStringTranslations)
-            .Include(x => x.Content)
-            .ThenInclude(x => x.LanguageStringType)
-            .FirstAsync();
-        */
-        var news = await _context.News.Where(x => x.Id == id)
-            .Include(x => x.Content)
-            .ThenInclude(x => x.LanguageStringTranslations)
-            .Include(x => x.Content)
-            .ThenInclude(x => x.LanguageStringType)
-            .FirstAsync();
-        
-        var titleStr = news.Content.Where(x => x.LanguageStringType!.Name == "TITLE")
-            .First().LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture).First().TranslationValue;
-        var bodyStr = news.Content.Where(x => x.LanguageStringType!.Name == "BODY")
-            .First().LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture).First().TranslationValue;
-
-        var res = new DTO.V1.News()
-        {
-            Body = bodyStr,
-            Id = news.Id,
-            Title = titleStr,
-            CreatedAt = news.CreatedAt
-        };
-        return res;
-    }
 
     [HttpPost]
-    public async Task<string> CreateNews([FromBody] DTO.V1.NewsDTO newsDTO)
+    public async Task<string> Create([FromBody] DTO.V1.NewsDTO payload)
     {
-        Console.WriteLine(newsDTO.Body);
-        // TODO - see juhtub BLL-is
         
+        // TODO mapper
         var newsId = Guid.NewGuid();
-        // CREATE LANGUAGE STRING TYPE SERVICE, WHICH LOADS THEM TO MEMORY ON STARTUP!!!
-        var titleType = _context.LanguageStringTypes.First(x => x.Name == LanguageStringTypeConstants.TITLE);
-        var bodyType = _context.LanguageStringTypes.First(x => x.Name == LanguageStringTypeConstants.BODY);
+        var bodyContentType = _context.ContentTypes.Where(x => x.Name == "BODY").First();
+        var titleContentType = _context.ContentTypes.Where(x => x.Name == "TITLE").First();
         
-        // create languageStrings (body)
-        var body = newsDTO.Body.First(x => x.Culture == LanguageCulture.EST);
+        var estTitle = payload.Title.First(x => x.Culture == LanguageCulture.EST);
+        var estBody = payload.Body.First(x => x.Culture == LanguageCulture.EST);
+
+
+        var bodyLangStrID = Guid.NewGuid();
         var bodyLangStr = new LanguageString()
         {
-            Value = body.Value,
-            LanguageStringTypeId = bodyType.Id,
-            NewsId = newsId
+            Id = bodyLangStrID,
+            Value = estBody.Value
         };
-        
-        var title = newsDTO.Title.First(x => x.Culture == LanguageCulture.EST);
+        var bodyContent = new Content()
+        {
+            NewsId = newsId,
+            ContentTypeId = bodyContentType.Id,
+            LanguageStringId = bodyLangStrID,
+            LanguageString = bodyLangStr
+        };
+
+        bodyLangStr.Content = bodyContent;
+
+        var titleLangStrId = Guid.NewGuid();
         var titleLangStr = new LanguageString()
         {
-            Value = title.Value,
-            LanguageStringTypeId = titleType.Id,
-            NewsId = newsId
+            Id = titleLangStrId,
+            Value = estTitle.Value
         };
-        
-        
 
-        var Bodytranslations = new List<LanguageStringTranslation>();
-        foreach (var bodyDTO in newsDTO.Body)
+        var titleContent = new Content()
         {
-            var languageStrTranslation = new LanguageStringTranslation()
+            NewsId = newsId,
+            ContentTypeId = titleContentType.Id,
+            LanguageStringId = titleLangStrId,
+            LanguageString = titleLangStr
+        };
+        titleLangStr.Content = titleContent;
+
+        var bodyTranslations = new List<LanguageStringTranslation>();
+        foreach (var bodyDto in payload.Body)
+        {
+            var langStr = new LanguageStringTranslation()
             {
-                LanguageCulture = bodyDTO.Culture,
-                LanguageStringId = bodyLangStr.Id,
-                TranslationValue = bodyDTO.Value
+                LanguageCulture = bodyDto.Culture,
+                TranslationValue = bodyDto.Value,
+                LanguageStringId = bodyLangStr.Id
             };
-            Bodytranslations.Add(languageStrTranslation);
+            bodyTranslations.Add(langStr);
         }
-
         var titleTranslations = new List<LanguageStringTranslation>();
-        foreach (var bodyDTO in newsDTO.Title)
+        foreach (var titleDto in payload.Title)
         {
-            var languageStrTranslation = new LanguageStringTranslation()
+            var langStr = new LanguageStringTranslation()
             {
-                LanguageCulture = bodyDTO.Culture,
-                LanguageStringId = titleLangStr.Id,
-                TranslationValue = bodyDTO.Value
+                LanguageCulture = titleDto.Culture,
+                TranslationValue = titleDto.Value,
+                LanguageStringId = titleLangStr.Id
             };
-            titleTranslations.Add(languageStrTranslation);
+            titleTranslations.Add(langStr);
         }
 
         titleLangStr.LanguageStringTranslations = titleTranslations;
-        bodyLangStr.LanguageStringTranslations = Bodytranslations;
+        bodyLangStr.LanguageStringTranslations = bodyTranslations;
 
         var news = new News()
         {
-            Content = new List<LanguageString>()
-            {
-                titleLangStr, bodyLangStr
-            }
+            Content = new List<Content>()
+            { 
+                titleContent, bodyContent
+            },
         };
-        news = _context.News.Add(news).Entity;
-        _context.SaveChanges();
-        Console.WriteLine("Saved news!");
-        return news.Id.ToString();
+
+        var res = (await _context.News.AddAsync(news)).Entity;
+        await _context.SaveChangesAsync();
+        return res.Id.ToString();
     }
 
-    [HttpPost]
-    public async Task<ActionResult> AddType([FromBody] string TypeName)
+    [HttpGet]
+    public async Task<DTO.V1.News> GetById(Guid id, string languageCulture)
     {
-        Console.WriteLine($"Adding type named: {TypeName}");
-        var type = new LanguageStringType()
+        var query = await _context.News.Where(x => x.Id == id)
+            .Include(x => x.Content)
+            .ThenInclude(x => x.ContentType)
+            .Include(x => x.Content)
+            .ThenInclude(x => x.LanguageString)
+            .ThenInclude(x => x.LanguageStringTranslations)
+            .FirstAsync();
+
+        var title = query.Content.First(x => x.ContentType!.Name == "TITLE")
+            .LanguageString
+            .LanguageStringTranslations.First(x => x.LanguageCulture == languageCulture).TranslationValue;
+        
+        var body = query.Content.First(x => x.ContentType!.Name == "TITLE")
+            .LanguageString
+            .LanguageStringTranslations.First(x => x.LanguageCulture == languageCulture).TranslationValue;
+
+        var res = new DTO.V1.News()
         {
-            Name = TypeName
+            Id = query.Id,
+            Title = title,
+            Body = body,
+            CreatedAt = query.CreatedAt
         };
-        await  _context.LanguageStringTypes.AddAsync(type);
-        Console.WriteLine($"Added type: {TypeName}");
-        await _context.SaveChangesAsync();
-        return Ok();
+
+        return res;
+    }
+    
+    
+    [HttpPost]
+    public async Task<int> AddContentType([FromBody] CreateContentDTO data)
+    {
+        Console.WriteLine($"Typename: {data.TypeName}");
+        
+        var res = new App.Domain.ContentType()
+        {
+            Name = data.TypeName
+        };
+        await _context.ContentTypes.AddAsync(res);
+        return await _context.SaveChangesAsync();
+    }
+
+    public class CreateContentDTO
+    {
+        public string TypeName { get; set; } = default!;
     }
 }
