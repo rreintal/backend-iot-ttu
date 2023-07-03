@@ -1,11 +1,13 @@
 using System.Net;
 using App.DAL.EF;
 using App.Domain;
+using App.Domain.Translations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebApp.ApiControllers;
 
+[Route("api/v{version:apiVersion}/{languageCulture}/[controller]/[action]")]
 public class DevelopController : ControllerBase
 {
     protected AppDbContext _context;
