@@ -3,6 +3,7 @@ using System;
 using App.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230614010523_TestingModel")]
+    partial class TestingModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,51 +24,6 @@ namespace App.DAL.EF.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("App.Domain.Content", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ContentTypeId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("LanguageStringId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("NewsId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContentTypeId");
-
-                    b.HasIndex("LanguageStringId")
-                        .IsUnique();
-
-                    b.HasIndex("NewsId");
-
-                    b.ToTable("Contents");
-                });
-
-            modelBuilder.Entity("App.Domain.ContentType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("ContentTypes");
-                });
 
             modelBuilder.Entity("App.Domain.Identity.AppRole", b =>
                 {
@@ -76,6 +34,9 @@ namespace App.DAL.EF.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
@@ -106,6 +67,9 @@ namespace App.DAL.EF.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -159,6 +123,24 @@ namespace App.DAL.EF.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("App.Domain.LanguageString", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LanguageStrings");
+                });
+
             modelBuilder.Entity("App.Domain.LanguageStringTranslation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -183,36 +165,27 @@ namespace App.DAL.EF.Migrations
                     b.ToTable("LanguageStringTranslations");
                 });
 
-            modelBuilder.Entity("App.Domain.News", b =>
+            modelBuilder.Entity("App.Domain.PostContent", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("News");
-                });
-
-            modelBuilder.Entity("App.Domain.Translations.LanguageString", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("LanguageStringId")
                         .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ContentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("LanguageStrings");
+                    b.HasIndex("LanguageStringId");
+
+                    b.ToTable("PostContents");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -318,35 +291,21 @@ namespace App.DAL.EF.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("App.Domain.Content", b =>
+            modelBuilder.Entity("App.Domain.LanguageStringTranslation", b =>
                 {
-                    b.HasOne("App.Domain.ContentType", "ContentType")
-                        .WithMany()
-                        .HasForeignKey("ContentTypeId")
+                    b.HasOne("App.Domain.LanguageString", "LanguageString")
+                        .WithMany("LanguageStringTranslations")
+                        .HasForeignKey("LanguageStringId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("App.Domain.Translations.LanguageString", "LanguageString")
-                        .WithOne("Content")
-                        .HasForeignKey("App.Domain.Content", "LanguageStringId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("App.Domain.News", "News")
-                        .WithMany("Content")
-                        .HasForeignKey("NewsId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("ContentType");
-
                     b.Navigation("LanguageString");
-
-                    b.Navigation("News");
                 });
 
-            modelBuilder.Entity("App.Domain.LanguageStringTranslation", b =>
+            modelBuilder.Entity("App.Domain.PostContent", b =>
                 {
-                    b.HasOne("App.Domain.Translations.LanguageString", "LanguageString")
-                        .WithMany("LanguageStringTranslations")
+                    b.HasOne("App.Domain.LanguageString", "LanguageString")
+                        .WithMany()
                         .HasForeignKey("LanguageStringId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -405,15 +364,8 @@ namespace App.DAL.EF.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("App.Domain.News", b =>
+            modelBuilder.Entity("App.Domain.LanguageString", b =>
                 {
-                    b.Navigation("Content");
-                });
-
-            modelBuilder.Entity("App.Domain.Translations.LanguageString", b =>
-                {
-                    b.Navigation("Content");
-
                     b.Navigation("LanguageStringTranslations");
                 });
 #pragma warning restore 612, 618

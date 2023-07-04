@@ -3,6 +3,7 @@ using System;
 using App.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230703215325_oaoaoa")]
+    partial class oaoaoa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,7 +49,7 @@ namespace App.DAL.EF.Migrations
 
                     b.HasIndex("NewsId");
 
-                    b.ToTable("Contents");
+                    b.ToTable("Content");
                 });
 
             modelBuilder.Entity("App.Domain.ContentType", b =>
@@ -61,10 +64,7 @@ namespace App.DAL.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("ContentTypes");
+                    b.ToTable("ContentType");
                 });
 
             modelBuilder.Entity("App.Domain.Identity.AppRole", b =>
@@ -206,11 +206,16 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid?>("ContentId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("NewsId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("NewsId");
 
                     b.ToTable("LanguageStrings");
                 });
@@ -332,7 +337,7 @@ namespace App.DAL.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("App.Domain.News", "News")
-                        .WithMany("Content")
+                        .WithMany()
                         .HasForeignKey("NewsId")
                         .OnDelete(DeleteBehavior.Restrict);
 
@@ -352,6 +357,14 @@ namespace App.DAL.EF.Migrations
                         .IsRequired();
 
                     b.Navigation("LanguageString");
+                });
+
+            modelBuilder.Entity("App.Domain.Translations.LanguageString", b =>
+                {
+                    b.HasOne("App.Domain.News", null)
+                        .WithMany("Content")
+                        .HasForeignKey("NewsId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

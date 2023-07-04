@@ -3,6 +3,7 @@ using System;
 using App.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230703215553_content")]
+    partial class content
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,7 +49,7 @@ namespace App.DAL.EF.Migrations
 
                     b.HasIndex("NewsId");
 
-                    b.ToTable("Contents");
+                    b.ToTable("Content");
                 });
 
             modelBuilder.Entity("App.Domain.ContentType", b =>
@@ -61,10 +64,7 @@ namespace App.DAL.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("ContentTypes");
+                    b.ToTable("ContentType");
                 });
 
             modelBuilder.Entity("App.Domain.Identity.AppRole", b =>

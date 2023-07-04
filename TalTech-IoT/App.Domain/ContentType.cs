@@ -1,6 +1,9 @@
+using Base.Domain;
+using Microsoft.EntityFrameworkCore;
+
 namespace App.Domain;
 
-public class ContentType
+public class ContentType : DomainEntityId
 {
-    
+    public string Name { get; set; } = default!;
 }

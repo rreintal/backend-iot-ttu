@@ -10,4 +10,10 @@
       <ProjectReference Include="..\Base.DAL.EF.Contracts\Base.DAL.EF.Contracts.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Asp.Versioning.Http" Version="7.0.0" />
+      <PackageReference Include="Asp.Versioning.Mvc" Version="7.0.0" />
+      <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.0.0" />
+    </ItemGroup>
+
 </Project>
