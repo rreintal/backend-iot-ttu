@@ -2,9 +2,9 @@ using App.BLL;
 using App.BLL.Contracts;
 using App.DAL.Contracts;
 using App.DAL.EF;
+using App.Domain;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -80,6 +80,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Setup start data
+SetupAppData(app, app.Environment, app.Configuration);
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -117,3 +120,39 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment environment, IConfiguration configuration)
+{
+    using var serviceScope = app.ApplicationServices
+        .GetRequiredService<IServiceScopeFactory>()
+        .CreateScope();
+    using var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
+    if (configuration.GetValue<bool>("DataInit:Migrate"))
+    {
+        context!.Database.Migrate();
+    }
+    if (configuration.GetValue<bool>("DataInit:Seed"))
+    {
+        var count = context!.ContentTypes.ToList().Count;
+        if (count != 0)
+        {
+            return;
+        }
+        var t1 = new ContentType()
+        {
+            Id = Guid.NewGuid(),
+            Name = "BODY"
+        };
+        var t2 = new ContentType()
+        {
+            Id = Guid.NewGuid(),
+            Name = "TITLE"
+        };
+        context!.ContentTypes.Add(t1);
+        context!.ContentTypes.Add(t2);
+        context.SaveChanges();
+    }
+    
+    
+    
+}

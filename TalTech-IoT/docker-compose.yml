@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  app:
+    container_name: iot-ttu-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    #platform: linux/amd64
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+    #environment:
+      #- ConnectionStrings:DefaultConnection=Host=iot-ttu-db;Port=5432;Database=iot-ttu;Username=postgres;Password=postgres
+  db:
+    container_name: iot-ttu-db
+    image: "postgres:15.2-bullseye"
+    restart: unless-stopped
+    #environment:
+      #- POSTGRES_USER=postgres
+      #- POSTGRES_PASSWORD=postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-volume:/var/lib/postgresql/data
+volumes:
+  db-volume:

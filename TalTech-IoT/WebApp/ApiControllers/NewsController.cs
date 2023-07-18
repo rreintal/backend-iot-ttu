@@ -18,14 +18,17 @@ namespace WebApp.ApiControllers;
 [Route("api/{languageCulture}/[controller]/[action]")]
 public class NewsController : ControllerBase
 {
-    protected AppDbContext _context;
     protected IMapper _mapper;
     private readonly IAppBLL _bll;
-    
 
-    public NewsController(AppDbContext context, IMapper mapper, IAppBLL bll)
+    [HttpPost]
+    public string Test()
     {
-        _context = context;
+        return "TÖÖTAB!";
+    }
+
+    public NewsController(IMapper mapper, IAppBLL bll)
+    {
         _mapper = mapper;
         _bll = bll;
     }
@@ -63,22 +66,4 @@ public class NewsController : ControllerBase
         return res;
     }
     
-    
-    [HttpPost]
-    public async Task<int> AddContentType([FromBody] CreateContentDTO data)
-    {
-        Console.WriteLine($"Typename: {data.TypeName}");
-        
-        var res = new App.Domain.ContentType()
-        {
-            Name = data.TypeName
-        };
-        await _context.ContentTypes.AddAsync(res);
-        return await _context.SaveChangesAsync();
-    }
-
-    public class CreateContentDTO
-    {
-        public string TypeName { get; set; } = default!;
-    }
 }

@@ -17,6 +17,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     {
         foreach (var content in entity.Content)
         {
+            // Doing this database does not try to add again types to db.
             DbContext.Attach(content.ContentType);
         }
 

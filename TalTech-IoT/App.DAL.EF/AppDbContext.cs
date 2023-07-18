@@ -21,7 +21,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     {
         
     }
-    
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
