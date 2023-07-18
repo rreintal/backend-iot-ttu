@@ -10,15 +10,15 @@ services:
       - "8000:80"
     depends_on:
       - db
-    #environment:
-      #- ConnectionStrings:DefaultConnection=Host=iot-ttu-db;Port=5432;Database=iot-ttu;Username=postgres;Password=postgres
+    environment:
+      - ConnectionStrings:DefaultConnection=Host=iot-ttu-db;Port=5432;Database=iot-ttu;Username=postgres;Password=postgres
   db:
     container_name: iot-ttu-db
     image: "postgres:15.2-bullseye"
     restart: unless-stopped
-    #environment:
-      #- POSTGRES_USER=postgres
-      #- POSTGRES_PASSWORD=postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     logging:
       options:
         max-size: 10m
