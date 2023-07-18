@@ -16,4 +16,9 @@ public class AppUOW : EFBaseUOW<AppDbContext>, IAppUOW
     private INewsRepository? _newsRepository;
     public INewsRepository NewsRepository =>
         _newsRepository ??= new NewsRepository(UowDbContext, _mapper);
+
+    private IContentTypesRepository? _contentTypesRepository;
+
+    public IContentTypesRepository ContentTypesRepository =>
+        _contentTypesRepository ??= new ContentTypesRepository(UowDbContext, _mapper);
 }

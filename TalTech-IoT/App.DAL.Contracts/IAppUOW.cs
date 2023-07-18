@@ -8,4 +8,6 @@ public interface IAppUOW : IBaseUOW
     // for example repositories
     
     INewsRepository NewsRepository { get; }
+    
+    IContentTypesRepository ContentTypesRepository { get; }
 }

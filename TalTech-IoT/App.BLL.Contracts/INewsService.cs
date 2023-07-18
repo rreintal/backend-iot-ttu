@@ -8,8 +8,5 @@ public interface INewsService : IBaseRepository<News>
     // add your custom service methods here!
     public News FindById(Guid id);
 
-    News IBaseRepository<News, Guid>.Add(News entity)
-    {
-        throw new NotImplementedException();
-    }
+    public News Create(Public.DTO.V1.NewsDTO data);
 }

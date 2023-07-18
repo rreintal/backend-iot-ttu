@@ -33,33 +33,9 @@ public class NewsController : ControllerBase
     [HttpPost]
     public async Task<string> Create([FromBody] NewsDTO payload)
     {
-        // TODO mapper
-        var newsId = Guid.NewGuid();
-        var bodyContentType = _context.ContentTypes.Where(x => x.Name == "BODY").AsNoTracking().First();
-        var titleContentType = _context.ContentTypes.Where(x => x.Name == "TITLE").AsNoTracking().First();
-        
-        // TEST - mapper
-        var body = new BLL.DTO.V1.ContentType()
-        {
-            Id = bodyContentType.Id,
-            Name = bodyContentType.Name
-        };
-
-        var title = new BLL.DTO.V1.ContentType()
-        {
-            Id = titleContentType.Id,
-            Name = titleContentType.Name
-        };
-        var types = new List<BLL.DTO.V1.ContentType>()
-        {
-            body, title
-        };
-        // BLL DTO
-        BLL.DTO.V1.News mappedResult = CreateNewsMapper.Map(payload, types);
-        _bll.NewsService.Add(mappedResult);
-        
+        var entity = _bll.NewsService.Create(payload);
         await _bll.SaveChangesAsync();
-        return mappedResult.Id.ToString();
+        return entity.Id.ToString();
     }
     
     [HttpGet]

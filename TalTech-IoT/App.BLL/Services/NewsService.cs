@@ -4,6 +4,7 @@ using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
 using BLL.DTO.V1;
+using Public.DTO.V1.Mappers;
 
 namespace App.BLL.Services;
 
@@ -26,5 +27,30 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         var item = Uow.NewsRepository.FindById(id).Result;
         return _mapper.Map<News>(item); 
     }
-    
+
+    public News Create(Public.DTO.V1.NewsDTO data)
+    {
+        var titleContentType = Uow.ContentTypesRepository.FindByName("TITLE");
+        var bodyContentType = Uow.ContentTypesRepository.FindByName("BODY");
+        
+        var body = new ContentType()
+        {
+            Id = bodyContentType.Id,
+            Name = bodyContentType.Name
+        };
+
+        var title = new ContentType()
+        {
+            Id = titleContentType.Id,
+            Name = titleContentType.Name
+        };
+        var types = new List<ContentType>()
+        {
+            body, title
+        };
+
+        var mappedResult = CreateNewsMapper.Map(data, types);
+        var result = Add(mappedResult);
+        return result;
+    }
 }
