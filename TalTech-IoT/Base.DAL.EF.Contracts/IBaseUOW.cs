@@ -1,3 +1,5 @@
+using AutoMapper;
+
 namespace Base.DAL.EF.Contracts;
 
 public interface IBaseUOW

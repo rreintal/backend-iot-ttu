@@ -7,9 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="12.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\App.Domain\App.Domain.csproj" />
-      <ProjectReference Include="..\Base.DAL.EF.Contracts\Base.DAL.EF.Contracts.csproj" />
-      <ProjectReference Include="..\DAL.DTO\DAL.DTO.csproj" />
+      <ProjectReference Include="..\Base.Domain.Contracts\Base.Domain.Contracts.csproj" />
+      <ProjectReference Include="..\Base.Domain\Base.Domain.csproj" />
     </ItemGroup>
 
 </Project>

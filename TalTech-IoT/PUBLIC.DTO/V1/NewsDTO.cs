@@ -1,4 +1,4 @@
-namespace DTO.V1;
+namespace Public.DTO.V1;
 
 // TODO parem nimi create/update on sama
 public class NewsDTO

@@ -1,4 +1,5 @@
-﻿using Contracts;
+﻿using AutoMapper;
+using Contracts;
 
 namespace Base.DAL.EF.Contracts;
 
@@ -12,6 +13,7 @@ public interface IBaseRepository<TEntity, in TKey>
     where TEntity : class, IDomainEntityId<TKey>
     where TKey : struct, IEquatable<TKey>
 {
+    public string? languageCulture { get; set; }
     Task<IEnumerable<TEntity>> AllAsync();
 
     Task<TEntity?> FindAsync(TKey id);

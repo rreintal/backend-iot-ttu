@@ -17,6 +17,7 @@
       <PackageReference Include="Asp.Versioning.Http" Version="7.0.0" />
       <PackageReference Include="Asp.Versioning.Mvc" Version="7.0.0" />
       <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.0.0" />
+      <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.5" />
@@ -34,8 +35,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\App.BLL.Contracts\App.BLL.Contracts.csproj" />
+      <ProjectReference Include="..\App.BLL\App.BLL.csproj" />
       <ProjectReference Include="..\App.DAL.EF\App.DAL.EF.csproj" />
-      <ProjectReference Include="..\DTO\DTO.csproj" />
+      <ProjectReference Include="..\DAL.DTO\DAL.DTO.csproj" />
+      <ProjectReference Include="..\PUBLIC.DTO\PUBLIC.DTO.csproj" />
     </ItemGroup>
 
 </Project>

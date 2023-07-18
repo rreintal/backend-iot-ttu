@@ -1,3 +1,6 @@
+using App.BLL;
+using App.BLL.Contracts;
+using App.DAL.Contracts;
 using App.DAL.EF;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
@@ -14,6 +17,10 @@ builder.Services.AddControllersWithViews();
 
 // Dependency injection
 builder.Services.AddScoped<AppDbContext>();
+
+// Add UOW
+builder.Services.AddScoped<IAppUOW, AppUOW>();
+builder.Services.AddScoped<IAppBLL, AppBLL>();
 
 // Add CORS
 
@@ -35,6 +42,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(connectionString);
 });
+
+// ----------------------------
+// Automapper
+builder.Services.AddAutoMapper(
+    typeof(DAL.DTO.AutoMapperConfig),
+    typeof(BLL.DTO.AutoMapperConfig),
+    typeof(Public.DTO.AutoMapperConfig)
+);
+// ----------------------------
 
 // Swagger //
 var apiVersioningBuilder = builder.Services.AddApiVersioning(options =>

@@ -1,14 +1,15 @@
-﻿using Base.DAL.EF.Contracts;
+﻿using AutoMapper;
+using Base.DAL.EF.Contracts;
 using Contracts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Base.DAL.EF;
 
-public class EFBaseRepository<TEntity, TDbContext> : EFBaseRepository<TEntity, Guid, TDbContext> ,IBaseRepository<TEntity>
+public class EFBaseRepository<TEntity, TDbContext> : EFBaseRepository<TEntity, Guid, TDbContext>, IBaseRepository<TEntity>
     where TDbContext : DbContext
     where TEntity : class, IDomainEntityId
 {
-    public EFBaseRepository(TDbContext dataContext) : base(dataContext)
+    public EFBaseRepository(TDbContext dataContext, IMapper mapper) : base(dataContext, mapper)
     {
         
     }
@@ -17,20 +18,26 @@ public class EFBaseRepository<TEntity, TDbContext> : EFBaseRepository<TEntity, G
 public class EFBaseRepository<TEntity, TKey, TDbContext> : IBaseRepository<TEntity, TKey> 
     where TKey : struct, IEquatable<TKey> 
     where TEntity : class, IDomainEntityId<TKey>
-    where TDbContext : DbContext 
+    where TDbContext : DbContext
 {
     protected TDbContext DbContext;
     protected DbSet<TEntity> DbSet;
-
-    public EFBaseRepository(TDbContext dbContext)
+    protected IMapper _mapper;
+    
+    // in order to select the correct languageString value.
+    // default is EST.
+    public string? languageCulture { get; set; } = "est";
+    
+    public EFBaseRepository(TDbContext dbContext, IMapper mapper)
     {
         DbContext = dbContext;
+        _mapper = mapper;
         DbSet = dbContext.Set<TEntity>();
     }
-    
+
     public virtual async Task<IEnumerable<TEntity>> AllAsync()
     {
-        return await DbSet.ToListAsync();
+         return await DbSet.ToListAsync();
     }
 
     public virtual async Task<TEntity?> FindAsync(TKey id)
