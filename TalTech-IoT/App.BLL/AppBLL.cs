@@ -6,6 +6,7 @@ using AutoMapper;
 using Base.BLL;
 using Base.DAL;
 using BLL.DTO.V1;
+using Public.DTO.V1;
 
 namespace App.BLL;
 
@@ -24,4 +25,5 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
 
     public INewsService NewsService =>
         _newsService ??= new NewsService(Uow, new NewsMapper(_mapper), _mapper);
+
 }

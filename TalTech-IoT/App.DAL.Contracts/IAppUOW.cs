@@ -10,4 +10,6 @@ public interface IAppUOW : IBaseUOW
     INewsRepository NewsRepository { get; }
     
     IContentTypesRepository ContentTypesRepository { get; }
+
+    ITopicAreaRepository TopicAreaRepository { get; }
 }

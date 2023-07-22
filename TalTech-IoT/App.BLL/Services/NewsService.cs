@@ -17,8 +17,6 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     // kui vaja tagastada DTO siis seda tehakse custom meetoditega!!
     public NewsService(IAppUOW uow, IMapper<News, Domain.News> mapper, IMapper autoMapper) : base(uow.NewsRepository, mapper)
     {
-        // TODO kui mul on vaja mappida muid objekte kui see mis IMapper<T1, T2> antud, siis kuidas ma enda AutoMapperConfigi kasutada saan?!
-        
         Uow = uow;
         _mapper = autoMapper;
     }
@@ -29,7 +27,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         return _mapper.Map<News>(item); 
     }
 
-    public News Create(Public.DTO.V1.NewsDTO data)
+    public News Create(Public.DTO.V1.CreateNewsDto data)
     {
         var titleContentType = Uow.ContentTypesRepository.FindByName("TITLE");
         var bodyContentType = Uow.ContentTypesRepository.FindByName("BODY");
@@ -53,5 +51,10 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         var mappedResult = CreateNewsMapper.Map(data, types);
         var result = Add(mappedResult);
         return result;
+    }
+
+    public async Task<IEnumerable<News>> GetNews()
+    {
+        return (await Uow.NewsRepository.AllAsync()).Select(e => _mapper.Map<News>(e));
     }
 }

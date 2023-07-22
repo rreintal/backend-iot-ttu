@@ -21,12 +21,6 @@ public class NewsController : ControllerBase
     protected IMapper _mapper;
     private readonly IAppBLL _bll;
 
-    [HttpPost]
-    public string Test()
-    {
-        return "TÖÖTAB!";
-    }
-
     public NewsController(IMapper mapper, IAppBLL bll)
     {
         _mapper = mapper;
@@ -34,13 +28,22 @@ public class NewsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<string> Create([FromBody] NewsDTO payload)
+    public async Task<string> Create([FromBody] CreateNewsDto payload)
     {
         var entity = _bll.NewsService.Create(payload);
         await _bll.SaveChangesAsync();
         return entity.Id.ToString();
     }
-    
+
+    [HttpGet]
+    public async Task<IEnumerable<Public.DTO.V1.News>> GetNews(string languageCulture)
+    {
+        var news = await _bll.NewsService.AllAsync();
+        // map
+        return news.Select(e => ReturnNewsMapper.Map(e, languageCulture));
+        // return
+    }
+
     [HttpGet]
     public async Task<Public.DTO.V1.News> GetById(Guid id, string languageCulture)
     {

@@ -17,6 +17,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<News> News { get; set; } = default!;
     public DbSet<Content> Contents { get; set; } = default!;
     public DbSet<ContentType> ContentTypes { get; set; } = default!;
+    public DbSet<TopicArea> TopicAreas { get; set; } = default!;
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
         
@@ -37,6 +38,20 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
             .HasOne(ls => ls.Content)
             .WithOne(c => c.LanguageString)
             .HasForeignKey<Content>(c => c.LanguageStringId)
+            .IsRequired(false);
+        //
+
+        // TopicArea <-> LanguageString 
+        builder.Entity<TopicArea>()
+            .HasOne(a => a.LanguageString)
+            .WithOne()
+            .HasForeignKey<TopicArea>(c => c.LanguageStringId)
+            .IsRequired();
+
+        builder.Entity<LanguageString>()
+            .HasOne(ls => ls.TopicArea)
+            .WithOne(a => a.LanguageString)
+            .HasForeignKey<TopicArea>(a => a.LanguageStringId)
             .IsRequired(false);
         //
 

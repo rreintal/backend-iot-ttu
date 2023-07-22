@@ -3,6 +3,7 @@ using System;
 using App.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230720141806_topicarea2")]
+    partial class topicarea2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -206,7 +209,7 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid>("LanguageStringId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ParentTopicAreaId")
+                    b.Property<Guid?>("TopicAreaId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -214,9 +217,7 @@ namespace App.DAL.EF.Migrations
                     b.HasIndex("LanguageStringId")
                         .IsUnique();
 
-                    b.HasIndex("ParentTopicAreaId");
-
-                    b.ToTable("TopicAreas");
+                    b.ToTable("TopicArea");
                 });
 
             modelBuilder.Entity("App.Domain.Translations.LanguageString", b =>
@@ -386,14 +387,7 @@ namespace App.DAL.EF.Migrations
                         .HasForeignKey("App.Domain.TopicArea", "LanguageStringId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("App.Domain.TopicArea", "ParentTopicArea")
-                        .WithMany()
-                        .HasForeignKey("ParentTopicAreaId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("LanguageString");
-
-                    b.Navigation("ParentTopicArea");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

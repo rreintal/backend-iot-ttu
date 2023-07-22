@@ -3,6 +3,7 @@ using System;
 using App.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230720141021_topicarea")]
+    partial class topicarea
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -197,28 +200,6 @@ namespace App.DAL.EF.Migrations
                     b.ToTable("News");
                 });
 
-            modelBuilder.Entity("App.Domain.TopicArea", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("LanguageStringId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ParentTopicAreaId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LanguageStringId")
-                        .IsUnique();
-
-                    b.HasIndex("ParentTopicAreaId");
-
-                    b.ToTable("TopicAreas");
-                });
-
             modelBuilder.Entity("App.Domain.Translations.LanguageString", b =>
                 {
                     b.Property<Guid>("Id")
@@ -226,9 +207,6 @@ namespace App.DAL.EF.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("ContentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("TopicAreaId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Value")
@@ -379,23 +357,6 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("LanguageString");
                 });
 
-            modelBuilder.Entity("App.Domain.TopicArea", b =>
-                {
-                    b.HasOne("App.Domain.Translations.LanguageString", "LanguageString")
-                        .WithOne("TopicArea")
-                        .HasForeignKey("App.Domain.TopicArea", "LanguageStringId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("App.Domain.TopicArea", "ParentTopicArea")
-                        .WithMany()
-                        .HasForeignKey("ParentTopicAreaId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("LanguageString");
-
-                    b.Navigation("ParentTopicArea");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("App.Domain.Identity.AppRole", null)
@@ -457,8 +418,6 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("Content");
 
                     b.Navigation("LanguageStringTranslations");
-
-                    b.Navigation("TopicArea");
                 });
 #pragma warning restore 612, 618
         }

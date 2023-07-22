@@ -12,4 +12,7 @@ public class LanguageString : DomainEntityId
     
     public Guid? ContentId { get; set; }
     public Content? Content { get; set; }
+
+    public Guid? TopicAreaId { get; set; }
+    public TopicArea? TopicArea { get; set; }
 }

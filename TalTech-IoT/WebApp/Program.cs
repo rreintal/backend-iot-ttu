@@ -152,7 +152,4 @@ static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment environmen
         context!.ContentTypes.Add(t2);
         context.SaveChanges();
     }
-    
-    
-    
 }

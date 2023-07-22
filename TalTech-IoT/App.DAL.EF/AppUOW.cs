@@ -21,4 +21,10 @@ public class AppUOW : EFBaseUOW<AppDbContext>, IAppUOW
 
     public IContentTypesRepository ContentTypesRepository =>
         _contentTypesRepository ??= new ContentTypesRepository(UowDbContext, _mapper);
+
+    private ITopicAreaRepository? _topicAreaRepository;
+
+    public ITopicAreaRepository TopicAreaRepository =>
+        _topicAreaRepository ??= new TopicAreaRepository(UowDbContext, _mapper);
+
 }
