@@ -36,11 +36,16 @@ builder.Services.AddCors(options =>
 
 // Add db 
 // TODO Identity
+//DockerDbConnection
+//DevDbConnection
 var connectionString = builder.Configuration.GetConnectionString("DockerDbConnection") ??
                        throw new InvalidOperationException("Connection string not found");
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseNpgsql(connectionString);
+    options.UseNpgsql(connectionString, options =>
+    {
+        options.CommandTimeout(60);
+    });
 });
 
 // ----------------------------
@@ -127,6 +132,10 @@ static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment environmen
         .GetRequiredService<IServiceScopeFactory>()
         .CreateScope();
     using var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
+    if (configuration.GetValue<bool>("DataInit:DropDatabase"))
+    {
+        context!.Database.EnsureDeleted();
+    }
     if (configuration.GetValue<bool>("DataInit:Migrate"))
     {
         context!.Database.Migrate();

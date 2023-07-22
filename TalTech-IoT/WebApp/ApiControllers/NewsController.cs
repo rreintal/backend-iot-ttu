@@ -39,11 +39,10 @@ public class NewsController : ControllerBase
     [HttpGet]
     public async Task<IEnumerable<Public.DTO.V1.News>> GetNews(string languageCulture)
     {
-        var news = await _bll.NewsService.AllAsync();
-        return news.Select(e => ReturnNewsMapper.Map(e, languageCulture));
-        // return
+        var news = (await _bll.NewsService.AllAsync()).ToList();
+        return news.Select(x => ReturnNewsMapper.Map(x, languageCulture));
     }
-
+    
     [HttpGet]
     public async Task<Public.DTO.V1.News> GetById(Guid id, string languageCulture)
     {
