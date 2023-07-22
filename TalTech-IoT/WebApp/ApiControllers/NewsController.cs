@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Net.Mime;
 using App.BLL.Contracts;
 using App.DAL.Contracts;
@@ -39,7 +40,6 @@ public class NewsController : ControllerBase
     public async Task<IEnumerable<Public.DTO.V1.News>> GetNews(string languageCulture)
     {
         var news = await _bll.NewsService.AllAsync();
-        // map
         return news.Select(e => ReturnNewsMapper.Map(e, languageCulture));
         // return
     }
