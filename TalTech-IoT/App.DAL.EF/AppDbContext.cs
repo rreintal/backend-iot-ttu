@@ -18,6 +18,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<Content> Contents { get; set; } = default!;
     public DbSet<ContentType> ContentTypes { get; set; } = default!;
     public DbSet<TopicArea> TopicAreas { get; set; } = default!;
+    public DbSet<HasTopicArea> HasTopicAreas { get; set; } = default!;
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
         

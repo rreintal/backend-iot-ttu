@@ -39,6 +39,7 @@ public class NewsController : ControllerBase
     [HttpGet]
     public async Task<IEnumerable<Public.DTO.V1.News>> GetNews(string languageCulture)
     {
+        _bll.NewsService.languageCulture = languageCulture;
         var news = (await _bll.NewsService.AllAsync()).ToList();
         return news.Select(x => ReturnNewsMapper.Map(x, languageCulture));
     }
@@ -47,6 +48,7 @@ public class NewsController : ControllerBase
     public async Task<Public.DTO.V1.News> GetById(Guid id, string languageCulture)
     {
         var query = _bll.NewsService.FindById(id);
+        
         
         // this should be public mapper!
         var title = query!.Content.First(x => x.ContentType!.Name == "TITLE")

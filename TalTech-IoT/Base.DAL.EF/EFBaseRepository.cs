@@ -26,7 +26,7 @@ public class EFBaseRepository<TEntity, TKey, TDbContext> : IBaseRepository<TEnti
     
     // in order to select the correct languageString value.
     // default is EST.
-    public string? languageCulture { get; set; } = "est";
+    public string? languageCulture { get; set; } = "et";
     
     public EFBaseRepository(TDbContext dbContext, IMapper mapper)
     {

@@ -1,6 +1,5 @@
 using App.Domain.Translations;
 using Base.Domain;
-using Contracts;
 
 namespace App.Domain;
 

@@ -55,10 +55,10 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         
         return await DbSet
             .Include(x => x.Content)
-            .ThenInclude(x => x.ContentType)
+                .ThenInclude(x => x.ContentType)
             .Include(x => x.Content)
-            .ThenInclude(x => x.LanguageString)
-            .ThenInclude(x => x.LanguageStringTranslations)
+                .ThenInclude(x => x.LanguageString)
+                    .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
             .ToListAsync();
     }
 

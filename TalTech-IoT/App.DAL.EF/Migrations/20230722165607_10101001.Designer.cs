@@ -3,6 +3,7 @@ using System;
 using App.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230722165607_10101001")]
+    partial class _10101001
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,27 +68,6 @@ namespace App.DAL.EF.Migrations
                         .IsUnique();
 
                     b.ToTable("ContentTypes");
-                });
-
-            modelBuilder.Entity("App.Domain.HasTopicArea", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("NewsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TopicAreaId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NewsId");
-
-                    b.HasIndex("TopicAreaId");
-
-                    b.ToTable("HasTopicAreas");
                 });
 
             modelBuilder.Entity("App.Domain.Identity.AppRole", b =>
@@ -387,24 +369,6 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("LanguageString");
 
                     b.Navigation("News");
-                });
-
-            modelBuilder.Entity("App.Domain.HasTopicArea", b =>
-                {
-                    b.HasOne("App.Domain.News", "News")
-                        .WithMany()
-                        .HasForeignKey("NewsId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("App.Domain.TopicArea", "TopicArea")
-                        .WithMany()
-                        .HasForeignKey("TopicAreaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("News");
-
-                    b.Navigation("TopicArea");
                 });
 
             modelBuilder.Entity("App.Domain.LanguageStringTranslation", b =>
