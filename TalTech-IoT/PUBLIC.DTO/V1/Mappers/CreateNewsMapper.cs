@@ -82,6 +82,7 @@ public class CreateNewsMapper
             { 
                 titleContent, bodyContent
             },
+            Author = createNews.Author
         };
 
         return res;

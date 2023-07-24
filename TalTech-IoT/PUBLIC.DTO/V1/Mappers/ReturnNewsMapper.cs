@@ -9,7 +9,8 @@ public class ReturnNewsMapper
             Body = data.GetContentValue(langCult, "BODY"),
             CreatedAt = data.CreatedAt,
             Title = data.GetContentValue(langCult, "TITLE"),
-            Id = data.Id
+            Id = data.Id,
+            Author = data.Author
         };
         
     }
