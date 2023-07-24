@@ -1,6 +1,7 @@
 using App.DAL.Contracts;
 using AutoMapper;
 using Base.DAL.EF;
+using Base.DAL.EF.Contracts;
 using DAL.DTO.V1;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,12 +35,12 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         
         var query = await DbSet.Where(x => x.Id == id)
             .Include(x => x.Content)
-            .ThenInclude(x => x.ContentType)
+                .ThenInclude(x => x.ContentType)
             .Include(x => x.Content)
-            .ThenInclude(x => x.LanguageString)
-            .ThenInclude(x => x.LanguageStringTranslations)
+                .ThenInclude(x => x.LanguageString)
+            .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
             .FirstOrDefaultAsync();
-
+        
         if (query == null)
         {
             return null;
@@ -61,5 +62,4 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
                     .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
             .ToListAsync();
     }
-
 }

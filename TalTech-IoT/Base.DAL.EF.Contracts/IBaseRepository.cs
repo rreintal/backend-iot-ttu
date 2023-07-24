@@ -14,6 +14,7 @@ public interface IBaseRepository<TEntity, in TKey>
     where TKey : struct, IEquatable<TKey>
 {
     public string? languageCulture { get; set; }
+    public void SetLanguageStrategy(string languageCulture);
     Task<IEnumerable<TEntity>> AllAsync();
 
     Task<TEntity?> FindAsync(TKey id);

@@ -9,7 +9,7 @@ public class BaseEntityService<TBllEntity, TDalEntity, TRepository> :
     BaseEntityService<TBllEntity, TDalEntity, TRepository, Guid>, IEntityService<TBllEntity> 
     where TBllEntity : class, IDomainEntityId 
     where TDalEntity : class, IDomainEntityId
-    where TRepository : IBaseRepository<TDalEntity>
+    where TRepository : class, IBaseRepository<TDalEntity>
 {
     public BaseEntityService(TRepository repository, IMapper<TBllEntity, TDalEntity> mapper) : base(repository, mapper)
     {
@@ -19,7 +19,7 @@ public class BaseEntityService<TBllEntity, TDalEntity, TRepository> :
 public class BaseEntityService<TBllEntity, TDalEntity, TRepository, TKey> : IEntityService<TBllEntity, TKey>
     where TBllEntity : class, IDomainEntityId<TKey> 
     where TDalEntity : class, IDomainEntityId<TKey>
-    where TRepository : IBaseRepository<TDalEntity, TKey>
+    where TRepository : class, IBaseRepository<TDalEntity, TKey>
     where TKey : struct, IEquatable<TKey>
 {
     public string? languageCulture { get; set; }
@@ -30,6 +30,11 @@ public class BaseEntityService<TBllEntity, TDalEntity, TRepository, TKey> : IEnt
     {
         Repository = repository;
         Mapper = mapper;
+    }
+
+    public void SetLanguageStrategy(string languageCulture)
+    {
+        Repository.languageCulture = languageCulture;
     }
 
     public async Task<IEnumerable<TBllEntity>> AllAsync()

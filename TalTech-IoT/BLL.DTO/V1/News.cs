@@ -8,12 +8,10 @@ public class News : DomainEntityId
     public string Author { get; set; } = default!;
     public DateTime CreatedAt { get; set; }
 
-    public string GetContentValue(string languageCulture, string contentType)
+    public string GetContentValue(string contentType)
     {
-        var content = Content
-            .First(item => item.ContentType!.Name == contentType)
-            .LanguageString.LanguageStringTranslations!
-            .First(item => item.LanguageCulture == languageCulture);
-        return content.TranslationValue;
+        var result = Content.First(c => c.ContentType!.Name == contentType)
+            .LanguageString.LanguageStringTranslations!.First();
+        return result.TranslationValue;
     }
 }

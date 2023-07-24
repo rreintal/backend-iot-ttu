@@ -42,16 +42,18 @@ public class NewsController : ControllerBase
     [HttpGet]
     public async Task<IEnumerable<Public.DTO.V1.News>> GetNews(string languageCulture)
     {
-        _bll.NewsService.languageCulture = languageCulture;
+        _bll.NewsService.SetLanguageStrategy(languageCulture);
         var news = (await _bll.NewsService.AllAsync()).ToList();
-        return news.Select(x => ReturnNewsMapper.Map(x, languageCulture));
+        return news.Select(x => ReturnNewsMapper.Map(x));
     }
     
     [HttpGet]
     public async Task<Public.DTO.V1.News> GetById(Guid id, string languageCulture)
     {
+        _bll.NewsService.SetLanguageStrategy(languageCulture);
+        Console.WriteLine(languageCulture);
         var bllEntity = _bll.NewsService.FindById(id);
-        var res = ReturnNewsMapper.Map(bllEntity, languageCulture);
+        var res = ReturnNewsMapper.Map(bllEntity);
         return res;
     }
     

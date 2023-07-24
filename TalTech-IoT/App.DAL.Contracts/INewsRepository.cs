@@ -13,4 +13,5 @@ public interface INewsRepository : IBaseRepository<App.Domain.News>, INewsReposi
 public interface INewsRepositoryCustom<TEntity>
 {
     // here methods which are shared between repo and service!
+    public void SetLanguageStrategy(string languageString);
 }

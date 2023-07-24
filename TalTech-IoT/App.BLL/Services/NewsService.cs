@@ -3,6 +3,7 @@ using App.DAL.Contracts;
 using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
+using Base.DAL.EF.Contracts;
 using BLL.DTO.V1;
 using Public.DTO.V1.Mappers;
 
@@ -52,6 +53,8 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
     public async Task<IEnumerable<News>> GetNews()
     {
+        
         return (await Uow.NewsRepository.AllAsync()).Select(e => _mapper.Map<News>(e));
     }
+    
 }

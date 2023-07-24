@@ -1,14 +1,16 @@
+using App.Domain;
+
 namespace Public.DTO.V1.Mappers;
 
 public class ReturnNewsMapper
 {
-    public static Public.DTO.V1.News Map(BLL.DTO.V1.News data, string langCult)
+    public static Public.DTO.V1.News Map(BLL.DTO.V1.News data)
     {
         return new Public.DTO.V1.News()
         {
-            Body = data.GetContentValue(langCult, "BODY"),
+            Body = data.GetContentValue(ContentTypes.BODY),
             CreatedAt = data.CreatedAt,
-            Title = data.GetContentValue(langCult, "TITLE"),
+            Title = data.GetContentValue(ContentTypes.TITLE),
             Id = data.Id,
             Author = data.Author
         };

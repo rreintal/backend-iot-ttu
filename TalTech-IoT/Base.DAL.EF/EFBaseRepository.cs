@@ -35,6 +35,11 @@ public class EFBaseRepository<TEntity, TKey, TDbContext> : IBaseRepository<TEnti
         DbSet = dbContext.Set<TEntity>();
     }
 
+    public void SetLanguageStrategy(string languageCulture)
+    {
+        this.languageCulture = languageCulture;
+    }
+
     public virtual async Task<IEnumerable<TEntity>> AllAsync()
     {
          return await DbSet.ToListAsync();
