@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230722174552_aoaoa")]
-    partial class aoaoa
+    [Migration("20230724122549_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -260,6 +260,10 @@ namespace App.DAL.EF.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Value")
+                        .IsUnique()
+                        .HasFilter("\"TopicAreaId\" IS NOT NULL");
 
                     b.ToTable("LanguageStrings");
                 });

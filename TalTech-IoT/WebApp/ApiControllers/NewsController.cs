@@ -31,7 +31,10 @@ public class NewsController : ControllerBase
     [HttpPost]
     public async Task<string> Create([FromBody] CreateNewsDto payload)
     {
-        var entity = _bll.NewsService.Create(payload);
+        var types = await _bll.NewsService.GetContentTypes();
+        var bllEntity = CreateNewsMapper.Map(payload, types);
+        
+        var entity = _bll.NewsService.Add(bllEntity);
         await _bll.SaveChangesAsync();
         return entity.Id.ToString();
     }
@@ -47,26 +50,8 @@ public class NewsController : ControllerBase
     [HttpGet]
     public async Task<Public.DTO.V1.News> GetById(Guid id, string languageCulture)
     {
-        var query = _bll.NewsService.FindById(id);
-        
-        
-        // this should be public mapper!
-        var title = query!.Content.First(x => x.ContentType!.Name == "TITLE")
-            .LanguageString
-            .LanguageStringTranslations.First(x => x.LanguageCulture == languageCulture).TranslationValue;
-        
-        var body = query.Content.First(x => x.ContentType!.Name == "TITLE")
-            .LanguageString
-            .LanguageStringTranslations.First(x => x.LanguageCulture == languageCulture).TranslationValue;
-        
-        var res = new Public.DTO.V1.News()
-        {
-            Id = query.Id,
-            Title = title,
-            Body = body,
-            CreatedAt = query.CreatedAt
-        };
-
+        var bllEntity = _bll.NewsService.FindById(id);
+        var res = ReturnNewsMapper.Map(bllEntity, languageCulture);
         return res;
     }
     

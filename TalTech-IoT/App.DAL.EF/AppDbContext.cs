@@ -19,6 +19,8 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<ContentType> ContentTypes { get; set; } = default!;
     public DbSet<TopicArea> TopicAreas { get; set; } = default!;
     public DbSet<HasTopicArea> HasTopicAreas { get; set; } = default!;
+    
+    private const string TopicAreaUniqueNameExpression = "\"TopicAreaId\" IS NOT NULL";
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
         
@@ -55,11 +57,24 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
             .HasForeignKey<TopicArea>(a => a.LanguageStringId)
             .IsRequired(false);
         //
-
+        
+        // Unique Indexes
         builder.Entity<ContentType>()
             .HasIndex(x => x.Name).IsUnique();
         
+        // Set index that when TopicAreaId is present, then the value must be unique
+        // Explanation: 
+        // Migrations generates code for SQL Server, in SQL server where clause is with [], but in Postgres its with " ".
+        // Thats why we use "TopicAreaId" instead of [TopicAreaId] as shown in the officaly documentation.
         
+        // TODO - kas filter peaks kehtima ainult neile topicutele, millel pole ParentTopicId?
+        builder.Entity<LanguageString>()
+            .HasIndex(x => x.Value)
+            .IsUnique()
+            .HasFilter(TopicAreaUniqueNameExpression);
+        
+
+
         // TODO - lisa cascade delete, kui news kustutatakse siis kõik sellega seotud translationid ka!
         // disable cascade delete
         foreach (var relationship in builder.Model
@@ -68,4 +83,6 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
     }
+    
+    
 }

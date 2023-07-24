@@ -1,5 +1,4 @@
 using Base.Domain;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace BLL.DTO.V1;
 

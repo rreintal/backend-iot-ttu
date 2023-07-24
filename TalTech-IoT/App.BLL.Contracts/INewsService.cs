@@ -8,5 +8,5 @@ public interface INewsService : IBaseRepository<News>
     // add your custom service methods here!
     public News FindById(Guid id);
 
-    public News Create(Public.DTO.V1.CreateNewsDto data);
+    public Task<List<ContentType>> GetContentTypes();
 }

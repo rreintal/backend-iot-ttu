@@ -26,5 +26,9 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
     public INewsService NewsService =>
         _newsService ??= new NewsService(Uow, new NewsMapper(_mapper), _mapper);
 
+    
+    private ITopicAreaService? _TopicAreaService;
 
+    public ITopicAreaService TopicAreaService =>
+        _TopicAreaService ??= new TopicAreaService(Uow, new TopicAreaMapper(_mapper));
 }

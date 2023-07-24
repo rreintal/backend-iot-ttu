@@ -1,6 +1,7 @@
 using App.BLL.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO.V1;
+using Public.DTO.V1.Mappers;
 
 namespace WebApp.ApiControllers;
 
@@ -18,11 +19,18 @@ public class TopicAreasController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<TopicArea> Create([FromBody] CreateTopicAreaDto data)
+    public async Task<string> Create([FromBody] CreateTopicAreaDto data)
     {
-        
-        throw new NotImplementedException();
+        var bllEntity = CreateTopicAreaMapper.Map(data);
+        var entity = _bll.TopicAreaService.Add(bllEntity);
+        await _bll.SaveChangesAsync();
+        return entity.Id.ToString();
+
     }
     
+    // TODO - get all topics
+    // with the amount of projects/news it has
     
+
+
 }

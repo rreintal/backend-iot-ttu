@@ -1,6 +1,7 @@
 using App.Domain;
 using App.Domain.Translations;
 using AutoMapper;
+using TopicArea = BLL.DTO.V1.TopicArea;
 
 namespace BLL.DTO;
 
@@ -20,6 +21,8 @@ public class AutoMapperConfig : Profile
         CreateMap<LanguageStringTranslation, BLL.DTO.V1.LanguageStringTranslation>().ReverseMap();
         CreateMap<ContentType, BLL.DTO.V1.ContentType>().ReverseMap();
 
-        
+        CreateMap<App.Domain.TopicArea, BLL.DTO.V1.TopicArea>().ReverseMap();
+
+
     }
 }

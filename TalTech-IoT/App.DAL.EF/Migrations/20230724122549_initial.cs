@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedUsers : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -49,6 +49,44 @@ namespace App.DAL.EF.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContentTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContentTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LanguageStrings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: false),
+                    ContentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    TopicAreaId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LanguageStrings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "News",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_News", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -157,6 +195,108 @@ namespace App.DAL.EF.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "LanguageStringTranslations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    LanguageStringId = table.Column<Guid>(type: "uuid", nullable: false),
+                    LanguageCulture = table.Column<string>(type: "text", nullable: false),
+                    TranslationValue = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LanguageStringTranslations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LanguageStringTranslations_LanguageStrings_LanguageStringId",
+                        column: x => x.LanguageStringId,
+                        principalTable: "LanguageStrings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TopicAreas",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ParentTopicAreaId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LanguageStringId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TopicAreas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TopicAreas_LanguageStrings_LanguageStringId",
+                        column: x => x.LanguageStringId,
+                        principalTable: "LanguageStrings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TopicAreas_TopicAreas_ParentTopicAreaId",
+                        column: x => x.ParentTopicAreaId,
+                        principalTable: "TopicAreas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Contents",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ContentTypeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    NewsId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LanguageStringId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Contents", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Contents_ContentTypes_ContentTypeId",
+                        column: x => x.ContentTypeId,
+                        principalTable: "ContentTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Contents_LanguageStrings_LanguageStringId",
+                        column: x => x.LanguageStringId,
+                        principalTable: "LanguageStrings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Contents_News_NewsId",
+                        column: x => x.NewsId,
+                        principalTable: "News",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HasTopicAreas",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TopicAreaId = table.Column<Guid>(type: "uuid", nullable: false),
+                    NewsId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HasTopicAreas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HasTopicAreas_News_NewsId",
+                        column: x => x.NewsId,
+                        principalTable: "News",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_HasTopicAreas_TopicAreas_TopicAreaId",
+                        column: x => x.TopicAreaId,
+                        principalTable: "TopicAreas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -193,6 +333,61 @@ namespace App.DAL.EF.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Contents_ContentTypeId",
+                table: "Contents",
+                column: "ContentTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Contents_LanguageStringId",
+                table: "Contents",
+                column: "LanguageStringId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Contents_NewsId",
+                table: "Contents",
+                column: "NewsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContentTypes_Name",
+                table: "ContentTypes",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HasTopicAreas_NewsId",
+                table: "HasTopicAreas",
+                column: "NewsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HasTopicAreas_TopicAreaId",
+                table: "HasTopicAreas",
+                column: "TopicAreaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LanguageStrings_Value",
+                table: "LanguageStrings",
+                column: "Value",
+                unique: true,
+                filter: "\"TopicAreaId\" IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LanguageStringTranslations_LanguageStringId",
+                table: "LanguageStringTranslations",
+                column: "LanguageStringId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TopicAreas_LanguageStringId",
+                table: "TopicAreas",
+                column: "LanguageStringId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TopicAreas_ParentTopicAreaId",
+                table: "TopicAreas",
+                column: "ParentTopicAreaId");
         }
 
         /// <inheritdoc />
@@ -214,10 +409,31 @@ namespace App.DAL.EF.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Contents");
+
+            migrationBuilder.DropTable(
+                name: "HasTopicAreas");
+
+            migrationBuilder.DropTable(
+                name: "LanguageStringTranslations");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "ContentTypes");
+
+            migrationBuilder.DropTable(
+                name: "News");
+
+            migrationBuilder.DropTable(
+                name: "TopicAreas");
+
+            migrationBuilder.DropTable(
+                name: "LanguageStrings");
         }
     }
 }

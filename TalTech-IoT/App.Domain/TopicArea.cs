@@ -9,5 +9,5 @@ public class TopicArea : DomainEntityId
     public TopicArea? ParentTopicArea { get; set; }
     
     public Guid LanguageStringId { get; set; }
-    public LanguageString LanguageString { get; set; } = default!;
+    public LanguageString? LanguageString { get; set; }
 }

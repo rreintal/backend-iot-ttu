@@ -11,4 +11,7 @@ public class LanguageString : DomainEntityId
     // LanguageString can be a PageContent thing also!
     public Guid? ContentId { get; set; }
     public BLL.DTO.V1.Content? Content { get; set; }
+    
+    public Guid? TopicAreaId { get; set; }
+    public TopicArea? TopicArea { get; set; }
 }

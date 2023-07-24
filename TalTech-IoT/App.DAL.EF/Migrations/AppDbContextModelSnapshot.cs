@@ -258,6 +258,10 @@ namespace App.DAL.EF.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Value")
+                        .IsUnique()
+                        .HasFilter("\"TopicAreaId\" IS NOT NULL");
+
                     b.ToTable("LanguageStrings");
                 });
 

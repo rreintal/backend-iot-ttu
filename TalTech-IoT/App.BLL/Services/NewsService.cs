@@ -21,13 +21,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         _mapper = autoMapper;
     }
 
-    public News FindById(Guid id)
-    {
-        var item = Uow.NewsRepository.FindById(id).Result;
-        return _mapper.Map<News>(item); 
-    }
-
-    public News Create(Public.DTO.V1.CreateNewsDto data)
+    public async Task<List<ContentType>> GetContentTypes()
     {
         var titleContentType = Uow.ContentTypesRepository.FindByName("TITLE");
         var bodyContentType = Uow.ContentTypesRepository.FindByName("BODY");
@@ -47,10 +41,13 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             body, title
         };
+        return types;
+    }
 
-        var mappedResult = CreateNewsMapper.Map(data, types);
-        var result = Add(mappedResult);
-        return result;
+    public News FindById(Guid id)
+    {
+        var item = Uow.NewsRepository.FindById(id).Result;
+        return _mapper.Map<News>(item); 
     }
 
     public async Task<IEnumerable<News>> GetNews()
