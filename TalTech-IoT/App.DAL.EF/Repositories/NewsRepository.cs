@@ -51,9 +51,6 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
 
     public override async Task<IEnumerable<App.Domain.News>> AllAsync()
     {
-        // TODO
-        // filter based on language, to not fetch all the results!!
-        
         return await DbSet
             .Include(x => x.Content)
                 .ThenInclude(x => x.ContentType)

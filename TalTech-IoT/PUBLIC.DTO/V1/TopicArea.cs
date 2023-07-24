@@ -4,6 +4,8 @@ namespace Public.DTO.V1;
 public class TopicArea : DomainEntityId
 {
     public Guid? ParentTopicId { get; set; }
+    public List<TopicArea>? ParentTopicAreas { get; set; }
+    
     public string Name { get; set; } = default!;
     
 }

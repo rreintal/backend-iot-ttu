@@ -9,7 +9,8 @@ public class News
     public string Author { get; set; } = default!;
     
     // This is thumbnail image, not image inside content!
-    //public Byte[]? Image { get; set; }
+    // TODO - kas image on optional või ei?
+    public string? Image { get; set; }
     public DateTime? CreatedAt { get; set; }
 
 }

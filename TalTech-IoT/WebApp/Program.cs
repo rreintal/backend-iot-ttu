@@ -3,6 +3,7 @@ using App.BLL.Contracts;
 using App.DAL.Contracts;
 using App.DAL.EF;
 using App.Domain;
+using App.Domain.Translations;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
@@ -143,22 +144,24 @@ static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment environmen
     if (configuration.GetValue<bool>("DataInit:Seed"))
     {
         var count = context!.ContentTypes.ToList().Count;
-        if (count != 0)
+        if (count == 0)
         {
-            return;
+            var t1 = new ContentType()
+            {
+                Id = Guid.NewGuid(),
+                Name = "BODY"
+            };
+            var t2 = new ContentType()
+            {
+                Id = Guid.NewGuid(),
+                Name = "TITLE"
+            };
+            context!.ContentTypes.Add(t1);
+            context!.ContentTypes.Add(t2);
         }
-        var t1 = new ContentType()
-        {
-            Id = Guid.NewGuid(),
-            Name = "BODY"
-        };
-        var t2 = new ContentType()
-        {
-            Id = Guid.NewGuid(),
-            Name = "TITLE"
-        };
-        context!.ContentTypes.Add(t1);
-        context!.ContentTypes.Add(t2);
+
+        var areasCount = context.TopicAreas.ToList().Count;
+
         context.SaveChanges();
     }
 }

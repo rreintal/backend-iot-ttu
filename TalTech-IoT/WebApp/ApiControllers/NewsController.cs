@@ -27,14 +27,17 @@ public class NewsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<string> Create([FromBody] CreateNewsDto payload)
+    public async Task<IActionResult> Create([FromBody] CreateNewsDto payload)
     {
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
         
         var entity = _bll.NewsService.Add(bllEntity);
         await _bll.SaveChangesAsync();
-        return entity.Id.ToString();
+        return Ok(new
+        {
+            NewsId = entity.Id.ToString()
+        });
     }
 
     [HttpGet]

@@ -19,22 +19,25 @@ public class TopicAreasController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<string> Create([FromBody] CreateTopicAreaDto data)
+    public async Task<IActionResult> Create([FromBody] CreateTopicAreaDto data)
     {
         var bllEntity = CreateTopicAreaMapper.Map(data);
         var entity = _bll.TopicAreaService.Add(bllEntity);
         await _bll.SaveChangesAsync();
-        return entity.Id.ToString();
-
+        return Ok(new
+        {
+            TopicAreaId = entity.Id.ToString()
+        });
     }
 
     [HttpGet]
-    public async Task<IEnumerable<Public.DTO.V1.TopicArea>> Get()
+    public async Task<IEnumerable<Public.DTO.V1.TopicArea>> Get(string languageCulture)
     {
-        // TODO - get all topics
-        // TODO - filtering
-        // with the amount of projects/news it has
-        throw new NotImplementedException();
+        // TODO - filtering with the amount of projects/news it has
+        
+        _bll.TopicAreaService.SetLanguageStrategy(languageCulture);
+        var items = (await _bll.TopicAreaService.AllAsync()).Select(e => ReturnTopicAreaMapper.Map(e));
+        return items;
     }
 
     
