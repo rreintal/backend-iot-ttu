@@ -19,12 +19,10 @@ namespace WebApp.ApiControllers;
 [Route("api/{languageCulture}/[controller]/[action]")]
 public class NewsController : ControllerBase
 {
-    protected IMapper _mapper;
     private readonly IAppBLL _bll;
 
-    public NewsController(IMapper mapper, IAppBLL bll)
+    public NewsController(IAppBLL bll)
     {
-        _mapper = mapper;
         _bll = bll;
     }
 
@@ -51,7 +49,6 @@ public class NewsController : ControllerBase
     public async Task<Public.DTO.V1.News> GetById(Guid id, string languageCulture)
     {
         _bll.NewsService.SetLanguageStrategy(languageCulture);
-        Console.WriteLine(languageCulture);
         var bllEntity = _bll.NewsService.FindById(id);
         var res = ReturnNewsMapper.Map(bllEntity);
         return res;

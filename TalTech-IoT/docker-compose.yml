@@ -15,7 +15,8 @@ services:
   db:
     container_name: iot-ttu-db
     image: "postgres:15.2-bullseye"
-    restart: unless-stopped
+    #restart: unless-stopped
+    restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -25,7 +26,7 @@ services:
         max-file: "3"
     ports:
       - "5432:5432"
-    volumes:
-      - db-volume:/var/lib/postgresql/data
-volumes:
-  db-volume:
+ #   volumes:
+  #    - db-volume:/var/lib/postgresql/data
+#volumes:
+#  db-volume:
