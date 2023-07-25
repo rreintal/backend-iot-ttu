@@ -13,7 +13,7 @@ public class ReturnNewsMapper
             Title = data.GetContentValue(ContentTypes.TITLE),
             Id = data.Id,
             Author = data.Author,
-            //TopicAreas = TopicAreaMapper.Map(data.TopicAreas),
+            TopicAreas = TopicAreaMapper.Map(data.TopicAreas),
             Image = data.Image
         };
         

@@ -13,6 +13,8 @@ public class News
     public string? Image { get; set; }
     public DateTime? CreatedAt { get; set; }
 
+    // TODO- SIIN VÕIKSID OLLA AINULT ID + NAME, ET USERILE NÄIDATA
+
     public List<Public.DTO.V1.TopicArea> TopicAreas { get; set; } = default!;
 
 }

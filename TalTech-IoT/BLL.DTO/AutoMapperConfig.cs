@@ -1,6 +1,7 @@
 using App.Domain;
 using App.Domain.Translations;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace BLL.DTO;
 
@@ -20,17 +21,25 @@ public class AutoMapperConfig : Profile
         CreateMap<ContentType, BLL.DTO.V1.ContentType>().ReverseMap();
 
         CreateMap<App.Domain.Translations.LanguageString, BLL.DTO.V1.LanguageString>().ReverseMap();
+        CreateMap<App.Domain.News, BLL.DTO.V1.News>()
+            .ForMember(dest => dest.TopicAreas,
+                src => src.MapFrom(x => x.HasTopicAreas));
+
         CreateMap<App.Domain.Content, BLL.DTO.V1.Content>().ReverseMap();
-        CreateMap<App.Domain.LanguageStringTranslation, BLL.DTO.V1.LanguageStringTranslation>().ReverseMap();
+        CreateMap<App.Domain.TopicArea, BLL.DTO.V1.TopicArea>().ReverseMap();
+
+        
         CreateMap<App.Domain.HasTopicArea, BLL.DTO.V1.TopicArea>()
             .ForMember(dest => dest.Id,
                 src => src.MapFrom(x => x.TopicAreaId))
+            .ForMember(dest => dest.ParentTopicAreaId, 
+                src => src.MapFrom(x => x.TopicArea!.ParentTopicAreaId))
             .ForMember(d => d.ParentTopicArea,
                 s => s.MapFrom(x => x.TopicArea!.ParentTopicArea))
             .ForMember(d => d.LanguageString,
                 s => s.MapFrom(x => x.TopicArea!.LanguageString))
             .ForMember(d => d.LanguageStringId,
                 s => s.MapFrom(x => x.TopicArea!.LanguageStringId));
-
+        
     }
 }
