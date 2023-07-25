@@ -85,6 +85,9 @@ public class CreateNewsMapper
             Author = createNews.Author
         };
 
+        res.TopicAreas = TopicAreaMapper.Map(createNews.TopicAreas);
+        res.Image = createNews.Image;
+
         return res;
     }
 }

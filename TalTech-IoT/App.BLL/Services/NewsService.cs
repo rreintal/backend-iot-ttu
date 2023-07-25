@@ -1,9 +1,11 @@
 using App.BLL.Contracts;
 using App.DAL.Contracts;
+using App.Domain;
 using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
-using BLL.DTO.V1;
+using ContentType = BLL.DTO.V1.ContentType;
+using News = BLL.DTO.V1.News;
 
 
 namespace App.BLL.Services;
@@ -21,18 +23,20 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         _mapper = autoMapper;
     }
 
+    public async Task<IEnumerable<News>> AllAsync()
+    {
+        // siin on HasTopicArea kui tuleb repost!
+        var items = (await Uow.NewsRepository.AllAsync());
+        return (await Uow.NewsRepository.AllAsync()).Select(x => _mapper.Map<News>(x));
+    }
+
     public News FindById(Guid id)
     {
+        // repo annab Domain
         var item = Uow.NewsRepository.FindById(id).Result;
         return _mapper.Map<News>(item); 
     }
 
-    public async Task<IEnumerable<News>> GetNews()
-    {
-        
-        return (await Uow.NewsRepository.AllAsync()).Select(e => _mapper.Map<News>(e));
-    }
-    
     public async Task<List<ContentType>> GetContentTypes()
     {
         var titleContentType = Uow.ContentTypesRepository.FindByName("TITLE");
@@ -55,5 +59,36 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         };
         return types;
     }
-    
+
+    public News Add(News entity)
+    {
+        var domainObject = _mapper.Map<App.Domain.News>(entity);
+        foreach (var bllTopicArea in entity.TopicAreas)
+        {
+            var hasTopicAreaId = Guid.NewGuid();
+            var hasTopicArea = new App.Domain.HasTopicArea()
+            {
+                Id = hasTopicAreaId,
+                NewsId = domainObject.Id,
+                TopicAreaId = bllTopicArea.Id,
+            };
+
+            if (domainObject.HasTopicAreas == null)
+            {
+                domainObject.HasTopicAreas = new List<HasTopicArea>()
+                {
+                    hasTopicArea
+                };
+            }
+            else
+            {
+                domainObject.HasTopicAreas.Add(hasTopicArea);
+            }
+        }
+
+        Uow.NewsRepository.Add(domainObject);
+        
+        
+        return entity;
+    }
 }

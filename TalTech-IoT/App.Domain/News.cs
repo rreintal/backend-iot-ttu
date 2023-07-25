@@ -1,6 +1,4 @@
-using App.Domain.Translations;
 using Base.Domain;
-using Contracts;
 
 namespace App.Domain;
 
@@ -8,7 +6,8 @@ public class News : DomainEntityIdMetaData
 {
     public ICollection<Content> Content { get; set; } = default!;
     public string Author { get; set; } = default!;
+    public ICollection<HasTopicArea> HasTopicAreas { get; set; } = default!;
 
-    // TODO : image
+    public string Image { get; set; } = default!;
     // byte[] ?
 }

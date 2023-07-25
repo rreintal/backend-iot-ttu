@@ -30,11 +30,9 @@ public class NewsController : ControllerBase
     public async Task<IActionResult> Create([FromBody] CreateNewsDto payload)
     {
         var types = await _bll.NewsService.GetContentTypes();
-        var topicAreas = TopicAreaMapper.Map(payload.TopicAreas);
         var bllEntity = CreateNewsMapper.Map(payload, types);
-        bllEntity.TopicAreas = topicAreas;
-        Console.WriteLine(bllEntity);
         var entity = _bll.NewsService.Add(bllEntity);
+        
         await _bll.SaveChangesAsync();
         return Ok(new
         {
@@ -46,6 +44,8 @@ public class NewsController : ControllerBase
     public async Task<IEnumerable<Public.DTO.V1.News>> GetNews(string languageCulture)
     {
         _bll.NewsService.SetLanguageStrategy(languageCulture);
+        // BLL object!
+        // SIIN EI OLE NEID TOPICAREAID
         var news = (await _bll.NewsService.AllAsync()).ToList();
         return news.Select(x => ReturnNewsMapper.Map(x));
     }

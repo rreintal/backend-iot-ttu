@@ -11,5 +11,6 @@ public class AutoMapperConfig : Profile
         CreateMap<App.Domain.Translations.LanguageString, DAL.DTO.V1.LanguageString>().ReverseMap();
         CreateMap<App.Domain.LanguageStringTranslation, DAL.DTO.V1.LanguageStringTranslation>().ReverseMap();
         CreateMap<App.Domain.ContentType, DAL.DTO.V1.ContentType>().ReverseMap();
+        
     }
 }

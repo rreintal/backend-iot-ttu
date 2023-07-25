@@ -13,4 +13,6 @@ public class News
     public string? Image { get; set; }
     public DateTime? CreatedAt { get; set; }
 
+    public List<Public.DTO.V1.TopicArea> TopicAreas { get; set; } = default!;
+
 }

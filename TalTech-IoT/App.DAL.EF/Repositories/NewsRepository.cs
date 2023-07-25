@@ -1,7 +1,6 @@
 using App.DAL.Contracts;
 using AutoMapper;
 using Base.DAL.EF;
-using Base.DAL.EF.Contracts;
 using DAL.DTO.V1;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,10 +29,11 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
 
     public async Task<News?> FindById(Guid id)
     {
-        // TODO
-        // filter based on language, to not fetch all the results!!
-        
         var query = await DbSet.Where(x => x.Id == id)
+            .Include(x => x.HasTopicAreas)
+                .ThenInclude(x => x.TopicArea)
+                    .ThenInclude(x => x!.LanguageString)
+                        .ThenInclude(x => x!.LanguageStringTranslations)
             .Include(x => x.Content)
                 .ThenInclude(x => x.ContentType)
             .Include(x => x.Content)
@@ -49,9 +49,15 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         return _mapper.Map<News>(query);
     }
 
+    // see peaks vist DAL objekt olema tegelt?!
+    // need HasTopicArea-d oleks mpaitud juba TopicArea
     public override async Task<IEnumerable<App.Domain.News>> AllAsync()
     {
         return await DbSet
+            .Include(x => x.HasTopicAreas)
+                .ThenInclude(x => x.TopicArea)
+                    .ThenInclude(x => x!.LanguageString)
+                        .ThenInclude(x => x!.LanguageStringTranslations)
             .Include(x => x.Content)
                 .ThenInclude(x => x.ContentType)
             .Include(x => x.Content)
@@ -59,4 +65,5 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
                     .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
             .ToListAsync();
     }
+    
 }

@@ -53,8 +53,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Automapper
 builder.Services.AddAutoMapper(
     typeof(DAL.DTO.AutoMapperConfig),
-    typeof(BLL.DTO.AutoMapperConfig),
-    typeof(Public.DTO.AutoMapperConfig)
+    typeof(BLL.DTO.AutoMapperConfig)
 );
 // ----------------------------
 

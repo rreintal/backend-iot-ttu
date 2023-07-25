@@ -12,4 +12,5 @@ public class HasTopicArea : DomainEntityId
 
     //public Guid? ProjectId { get; set; }
     //public Project Type { get; set; }
+    
 }

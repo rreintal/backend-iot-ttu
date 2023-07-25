@@ -10,6 +10,8 @@ public class News : DomainEntityId
 
     public List<BLL.DTO.V1.TopicArea> TopicAreas { get; set; } = default!;
 
+    public string Image { get; set; } = default!;
+
     public string GetContentValue(string contentType)
     {
         var result = Content.First(c => c.ContentType!.Name == contentType)

@@ -38,6 +38,7 @@ public class TopicAreaMapper
     public static List<Public.DTO.V1.TopicArea> Map(List<BLL.DTO.V1.TopicArea> bllTopicAreas)
     {
         var dict = new Dictionary<Guid, Public.DTO.V1.TopicArea>();
+        var res = new List<Public.DTO.V1.TopicArea>();
         foreach (var children in bllTopicAreas)
         {
             if (children.ParentTopicArea != null)
@@ -61,9 +62,17 @@ public class TopicAreaMapper
                     parentDto.ChildrenTopicAreas!.Add(childrenDto);
                 }
             }
+            else
+            {
+                var childrenDto = new Public.DTO.V1.TopicArea()
+                {
+                    Id = children.Id,
+                    Name = children.GetName()
+                };
+                res.Add(childrenDto);
+            }
         }
-
-        var res = new List<Public.DTO.V1.TopicArea>();
+        
         foreach (var topicAreaDto in dict.Values)
         {
             res.Add(topicAreaDto);
