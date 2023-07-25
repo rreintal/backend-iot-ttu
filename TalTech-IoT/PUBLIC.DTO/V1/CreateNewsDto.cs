@@ -9,6 +9,5 @@ public class CreateNewsDto
     public string Author { get; set; } = default!;
     public string Image { get; set; } = default!;
 
-    // TODO - uuri kuidas salvestada
-    //public Byte[] Image { get; set; } = default!;
+    public List<TopicArea> TopicAreas { get; set; } = default!;
 }

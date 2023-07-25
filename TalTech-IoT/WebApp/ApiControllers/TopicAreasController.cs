@@ -36,8 +36,8 @@ public class TopicAreasController : ControllerBase
         // TODO - filtering with the amount of projects/news it has
         
         _bll.TopicAreaService.SetLanguageStrategy(languageCulture);
-        var items = (await _bll.TopicAreaService.AllAsync()).Select(e => ReturnTopicAreaMapper.Map(e));
-        return items;
+        var items = (await _bll.TopicAreaService.AllAsync()).ToList();
+        return TopicAreaMapper.Map(items);
     }
 
     
