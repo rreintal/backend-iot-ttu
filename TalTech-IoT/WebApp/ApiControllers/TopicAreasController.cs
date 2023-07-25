@@ -18,6 +18,11 @@ public class TopicAreasController : ControllerBase
         _bll = bll;
     }
 
+    /// <summary>
+    /// Create TopicArea
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateTopicAreaDto data)
     {
@@ -29,7 +34,11 @@ public class TopicAreasController : ControllerBase
             TopicAreaId = entity.Id.ToString()
         });
     }
-
+    /// <summary>
+    /// Get all TopicAreas
+    /// </summary>
+    /// <param name="languageCulture"></param>
+    /// <returns></returns>
     [HttpGet]
     public async Task<IEnumerable<Public.DTO.V1.TopicArea>> Get(string languageCulture)
     {

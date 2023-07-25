@@ -1,22 +1,13 @@
-using System.Collections.Immutable;
-using System.Net.Mime;
 using App.BLL.Contracts;
-using App.DAL.Contracts;
-using App.DAL.EF;
-using App.Domain;
-using App.Domain.Translations;
-using AutoMapper;
-using DAL.DTO;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
-using News = App.Domain.News;
 
 namespace WebApp.ApiControllers;
 
 //[Route("api/v{version:apiVersion}/[controller]/[action]")]
 [Route("api/{languageCulture}/[controller]/[action]")]
+
 public class NewsController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -26,6 +17,11 @@ public class NewsController : ControllerBase
         _bll = bll;
     }
 
+    /// <summary>
+    /// Create new News
+    /// </summary>
+    /// <param name="payload"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateNewsDto payload)
     {
@@ -40,6 +36,11 @@ public class NewsController : ControllerBase
         });
     }
 
+    /// <summary>
+    /// Get all News
+    /// </summary>
+    /// <param name="languageCulture"></param>
+    /// <returns></returns>
     [HttpGet]
     public async Task<IEnumerable<Public.DTO.V1.News>> GetNews(string languageCulture)
     {
@@ -48,6 +49,12 @@ public class NewsController : ControllerBase
         return news.Select(x => ReturnNewsMapper.Map(x));
     }
 
+    /// <summary>
+    /// Get specific News
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="languageCulture"></param>
+    /// <returns></returns>
     [HttpGet]
     public async Task<Public.DTO.V1.News> GetById(Guid id, string languageCulture)
     {
