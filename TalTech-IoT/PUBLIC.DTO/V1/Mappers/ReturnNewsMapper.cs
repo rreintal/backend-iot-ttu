@@ -13,7 +13,8 @@ public class ReturnNewsMapper
             Title = data.GetContentValue(ContentTypes.TITLE),
             Id = data.Id,
             Author = data.Author,
-            TopicAreas = TopicAreaMapper.Map(data.TopicAreas),
+            // TODO - ei tagasta parentit, ainult selle spetsiifilise topicu kus on!
+            TopicAreas = GetTopicAreaMapper.Map(data.TopicAreas),
             Image = data.Image
         };
         

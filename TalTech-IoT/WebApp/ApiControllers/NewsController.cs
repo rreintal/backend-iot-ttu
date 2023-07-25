@@ -44,8 +44,6 @@ public class NewsController : ControllerBase
     public async Task<IEnumerable<Public.DTO.V1.News>> GetNews(string languageCulture)
     {
         _bll.NewsService.SetLanguageStrategy(languageCulture);
-        // BLL object!
-        // SIIN EI OLE NEID TOPICAREAID
         var news = (await _bll.NewsService.AllAsync()).ToList();
         return news.Select(x => ReturnNewsMapper.Map(x));
     }

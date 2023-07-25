@@ -15,6 +15,6 @@ public class News
 
     // TODO- SIIN VÕIKSID OLLA AINULT ID + NAME, ET USERILE NÄIDATA
 
-    public List<Public.DTO.V1.TopicArea> TopicAreas { get; set; } = default!;
+    public List<Public.DTO.V1.GetTopicArea> TopicAreas { get; set; } = default!;
 
 }

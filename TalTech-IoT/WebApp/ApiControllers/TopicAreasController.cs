@@ -34,7 +34,6 @@ public class TopicAreasController : ControllerBase
     public async Task<IEnumerable<Public.DTO.V1.TopicArea>> Get(string languageCulture)
     {
         // TODO - filtering with the amount of projects/news it has
-        
         _bll.TopicAreaService.SetLanguageStrategy(languageCulture);
         var items = (await _bll.TopicAreaService.AllAsync()).ToList();
         return TopicAreaMapper.Map(items);

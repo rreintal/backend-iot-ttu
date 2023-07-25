@@ -21,10 +21,11 @@ public class AutoMapperConfig : Profile
         CreateMap<ContentType, BLL.DTO.V1.ContentType>().ReverseMap();
 
         CreateMap<App.Domain.Translations.LanguageString, BLL.DTO.V1.LanguageString>().ReverseMap();
+
         CreateMap<App.Domain.News, BLL.DTO.V1.News>()
             .ForMember(dest => dest.TopicAreas,
                 src => src.MapFrom(x => x.HasTopicAreas));
-
+        
         CreateMap<App.Domain.Content, BLL.DTO.V1.Content>().ReverseMap();
         CreateMap<App.Domain.TopicArea, BLL.DTO.V1.TopicArea>().ReverseMap();
 
