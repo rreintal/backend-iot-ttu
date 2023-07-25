@@ -4,6 +4,37 @@ namespace Public.DTO.V1.Mappers;
 
 public class TopicAreaMapper
 {
+
+    public static List<BLL.DTO.V1.TopicArea> Map(List<Public.DTO.V1.TopicArea> pubTopicAreas)
+    {
+        var res = new List<BLL.DTO.V1.TopicArea>();
+        foreach (var parent in pubTopicAreas)
+        {
+            var parentDto = new BLL.DTO.V1.TopicArea()
+            {
+                Id = parent.Id,
+            };
+            
+            if (parent.ChildrenTopicAreas != null)
+            {
+                foreach (var child in parent.ChildrenTopicAreas)
+                {
+                    var childDto = new BLL.DTO.V1.TopicArea()
+                    {
+                        Id = child.Id,
+                        ParentTopicAreaId = parent.Id,
+                        ParentTopicArea = parentDto
+                    };
+                    res.Add(childDto);
+                }   
+            }
+            res.Add(parentDto);
+        }
+
+        return res;
+    }
+    
+    
     public static List<Public.DTO.V1.TopicArea> Map(List<BLL.DTO.V1.TopicArea> bllTopicAreas)
     {
         var dict = new Dictionary<Guid, Public.DTO.V1.TopicArea>();
@@ -59,4 +90,5 @@ public class TopicAreaMapper
         };
         return parentDto;
     }
+    
 }

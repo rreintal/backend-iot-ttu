@@ -3,9 +3,8 @@ using App.DAL.Contracts;
 using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
-using Base.DAL.EF.Contracts;
 using BLL.DTO.V1;
-using Public.DTO.V1.Mappers;
+
 
 namespace App.BLL.Services;
 
@@ -22,6 +21,18 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         _mapper = autoMapper;
     }
 
+    public News FindById(Guid id)
+    {
+        var item = Uow.NewsRepository.FindById(id).Result;
+        return _mapper.Map<News>(item); 
+    }
+
+    public async Task<IEnumerable<News>> GetNews()
+    {
+        
+        return (await Uow.NewsRepository.AllAsync()).Select(e => _mapper.Map<News>(e));
+    }
+    
     public async Task<List<ContentType>> GetContentTypes()
     {
         var titleContentType = Uow.ContentTypesRepository.FindByName("TITLE");
@@ -43,18 +54,6 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             body, title
         };
         return types;
-    }
-
-    public News FindById(Guid id)
-    {
-        var item = Uow.NewsRepository.FindById(id).Result;
-        return _mapper.Map<News>(item); 
-    }
-
-    public async Task<IEnumerable<News>> GetNews()
-    {
-        
-        return (await Uow.NewsRepository.AllAsync()).Select(e => _mapper.Map<News>(e));
     }
     
 }

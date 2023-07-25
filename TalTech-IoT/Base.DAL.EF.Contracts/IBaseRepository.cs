@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Contracts;
+﻿using Contracts;
 
 namespace Base.DAL.EF.Contracts;
 
