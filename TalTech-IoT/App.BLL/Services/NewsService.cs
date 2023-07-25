@@ -25,16 +25,14 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
     public async Task<IEnumerable<News>> AllAsync()
     {
-        // siin on HasTopicArea kui tuleb repost!
-        var items = (await Uow.NewsRepository.AllAsync());
         return (await Uow.NewsRepository.AllAsync()).Select(x => _mapper.Map<News>(x));
     }
 
-    public News FindById(Guid id)
+    public async Task<News?> FindAsync(Guid id)
     {
-        // repo annab Domain
-        var item = Uow.NewsRepository.FindById(id).Result;
-        return _mapper.Map<News>(item); 
+        // domain object
+        var item = await Uow.NewsRepository.FindAsync(id);
+        return _mapper.Map<News>(item);
     }
 
     public async Task<List<ContentType>> GetContentTypes()

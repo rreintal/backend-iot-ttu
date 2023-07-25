@@ -27,27 +27,27 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         return res;
     }
 
-    public async Task<News?> FindById(Guid id)
+    public async override Task<Domain.News?> FindAsync(Guid id)
     {
         var query = await DbSet.Where(x => x.Id == id)
             .Include(x => x.HasTopicAreas)
-                .ThenInclude(x => x.TopicArea)
-                    .ThenInclude(x => x!.LanguageString)
-                        .ThenInclude(x => x!.LanguageStringTranslations)
+            .ThenInclude(x => x.TopicArea)
+            .ThenInclude(x => x!.LanguageString)
+            .ThenInclude(x => x!.LanguageStringTranslations)
             .Include(x => x.Content)
-                .ThenInclude(x => x.ContentType)
+            .ThenInclude(x => x.ContentType)
             .Include(x => x.Content)
-                .ThenInclude(x => x.LanguageString)
+            .ThenInclude(x => x.LanguageString)
             .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
             .FirstOrDefaultAsync();
-        
         if (query == null)
         {
             return null;
         }
 
-        return _mapper.Map<News>(query);
+        return query;
     }
+    
 
     // see peaks vist DAL objekt olema tegelt?!
     // need HasTopicArea-d oleks mpaitud juba TopicArea

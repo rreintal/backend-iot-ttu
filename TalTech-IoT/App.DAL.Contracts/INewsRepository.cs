@@ -7,7 +7,6 @@ public interface INewsRepository : IBaseRepository<App.Domain.News>, INewsReposi
 {
     // here methods for only repo!
     //TEntity Add(TEntity entity);
-    public Task<News?> FindById(Guid id);
 }
 
 public interface INewsRepositoryCustom<TEntity>

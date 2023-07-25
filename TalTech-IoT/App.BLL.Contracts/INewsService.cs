@@ -6,7 +6,5 @@ namespace App.BLL.Contracts;
 public interface INewsService : IBaseRepository<News>
 {
     // add your custom service methods here!
-    public News FindById(Guid id);
-
     public Task<List<ContentType>> GetContentTypes();
 }
