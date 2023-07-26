@@ -53,35 +53,25 @@ public class TopicAreasController : ControllerBase
         return TopicAreaMapper.Map(items);
     }
 
-    
+    /// <summary>
+    /// Get TopicAreas based on filter.
+    /// </summary>
+    /// <param name="languageCulture"></param>
+    /// <param name="News"></param>
+    /// <param name="Projects"></param>
+    /// <returns></returns>
     [HttpGet]
-    public async Task<IEnumerable<TopicAreaWithCount>> GetWithCount(string languageCulture, bool News, bool? Projects)
+    public async Task<IEnumerable<TopicAreaWithCount>> GetWithCount(string languageCulture, bool? News, bool? Projects)
     {
         _bll.TopicAreaService.SetLanguageStrategy(languageCulture);
         
         var filter = new TopicAreaCountFilter()
         {
             News = News,
-            Projects = News
+            Projects = Projects
         };
         
-        
-        // TODO -
-        // kui on
-        // * Programming
-        //   * Java
-        
-        // Siis result tuleb ainult Java (1)
-        // 
-        // Aga peaks tulema Programming (1), Java(1)
-
         var result = await _bll.TopicAreaService.GetTopicAreaWithCount(filter);
         return result.Select(e => TopicAreaWithCountMapper.Map(e));
     }
-    
-
-    
-    
-
-
 }

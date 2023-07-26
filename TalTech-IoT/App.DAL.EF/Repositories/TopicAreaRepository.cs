@@ -29,6 +29,8 @@ public class TopicAreaRepository : EFBaseRepository<App.Domain.TopicArea, AppDbC
 
     public async Task<IEnumerable<HasTopicArea>> GetHasTopicArea(TopicAreaCountFilter filter)
     {
+        // Võiks olla eraldi repo, aga ühe meetodi jaoks, ei näe vajadust.
+        
         var query = DbContext.HasTopicAreas
             .Include(x => x.TopicArea)
                 .ThenInclude(x => x!.LanguageString)
