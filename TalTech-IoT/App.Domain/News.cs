@@ -9,5 +9,4 @@ public class News : DomainEntityIdMetaData
 
     public string Image { get; set; } = default!;
     public string Author { get; set; } = default!;
-    // byte[] ?
 }

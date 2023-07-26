@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230724213113_imageToNews")]
-    partial class imageToNews
+    [Migration("20230726175456_appdbctxupdate")]
+    partial class appdbctxupdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,9 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid?>("NewsId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ContentTypeId");
@@ -48,6 +51,8 @@ namespace App.DAL.EF.Migrations
                         .IsUnique();
 
                     b.HasIndex("NewsId");
+
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Contents");
                 });
@@ -79,12 +84,17 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid?>("NewsId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ProjectId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TopicAreaId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NewsId");
+
+                    b.HasIndex("ProjectId");
 
                     b.HasIndex("TopicAreaId");
 
@@ -227,6 +237,34 @@ namespace App.DAL.EF.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("News");
+                });
+
+            modelBuilder.Entity("App.Domain.Project", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("PriceVolume")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("ProjectManager")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("App.Domain.TopicArea", b =>
@@ -397,18 +435,31 @@ namespace App.DAL.EF.Migrations
                         .HasForeignKey("NewsId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("App.Domain.Project", "Project")
+                        .WithMany("Content")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("ContentType");
 
                     b.Navigation("LanguageString");
 
                     b.Navigation("News");
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("App.Domain.HasTopicArea", b =>
                 {
                     b.HasOne("App.Domain.News", "News")
-                        .WithMany()
+                        .WithMany("HasTopicAreas")
                         .HasForeignKey("NewsId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("App.Domain.Project", "Project")
+                        .WithMany("HasTopicAreas")
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("App.Domain.TopicArea", "TopicArea")
@@ -418,6 +469,8 @@ namespace App.DAL.EF.Migrations
                         .IsRequired();
 
                     b.Navigation("News");
+
+                    b.Navigation("Project");
 
                     b.Navigation("TopicArea");
                 });
@@ -504,6 +557,15 @@ namespace App.DAL.EF.Migrations
             modelBuilder.Entity("App.Domain.News", b =>
                 {
                     b.Navigation("Content");
+
+                    b.Navigation("HasTopicAreas");
+                });
+
+            modelBuilder.Entity("App.Domain.Project", b =>
+                {
+                    b.Navigation("Content");
+
+                    b.Navigation("HasTopicAreas");
                 });
 
             modelBuilder.Entity("App.Domain.Translations.LanguageString", b =>

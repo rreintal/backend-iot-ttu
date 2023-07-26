@@ -10,7 +10,7 @@ public class HasTopicArea : DomainEntityId
     public Guid? NewsId { get; set; }
     public News? News { get; set; }
 
-    //public Guid? ProjectId { get; set; }
-    //public Project Type { get; set; }
+    public Guid? ProjectId { get; set; }
+    public Project? Project { get; set; }
 
 }

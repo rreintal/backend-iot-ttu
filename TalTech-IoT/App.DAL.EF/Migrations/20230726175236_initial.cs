@@ -82,11 +82,28 @@ namespace App.DAL.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Image = table.Column<string>(type: "text", nullable: false),
+                    Author = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_News", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Project",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Year = table.Column<int>(type: "integer", nullable: false),
+                    PriceVolume = table.Column<double>(type: "double precision", nullable: false),
+                    ProjectManager = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Project", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -247,6 +264,7 @@ namespace App.DAL.EF.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ContentTypeId = table.Column<Guid>(type: "uuid", nullable: false),
                     NewsId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     LanguageStringId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -270,6 +288,12 @@ namespace App.DAL.EF.Migrations
                         principalTable: "News",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Contents_Project_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Project",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -278,7 +302,8 @@ namespace App.DAL.EF.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TopicAreaId = table.Column<Guid>(type: "uuid", nullable: false),
-                    NewsId = table.Column<Guid>(type: "uuid", nullable: true)
+                    NewsId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ProjectId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -287,6 +312,12 @@ namespace App.DAL.EF.Migrations
                         name: "FK_HasTopicAreas_News_NewsId",
                         column: x => x.NewsId,
                         principalTable: "News",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_HasTopicAreas_Project_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Project",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -351,6 +382,11 @@ namespace App.DAL.EF.Migrations
                 column: "NewsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Contents_ProjectId",
+                table: "Contents",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ContentTypes_Name",
                 table: "ContentTypes",
                 column: "Name",
@@ -360,6 +396,11 @@ namespace App.DAL.EF.Migrations
                 name: "IX_HasTopicAreas_NewsId",
                 table: "HasTopicAreas",
                 column: "NewsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HasTopicAreas_ProjectId",
+                table: "HasTopicAreas",
+                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_HasTopicAreas_TopicAreaId",
@@ -428,6 +469,9 @@ namespace App.DAL.EF.Migrations
 
             migrationBuilder.DropTable(
                 name: "News");
+
+            migrationBuilder.DropTable(
+                name: "Project");
 
             migrationBuilder.DropTable(
                 name: "TopicAreas");

@@ -5,14 +5,14 @@
 namespace App.DAL.EF.Migrations
 {
     /// <inheritdoc />
-    public partial class addedAuthorToNews : Migration
+    public partial class projectImage : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "Author",
-                table: "News",
+                name: "Image",
+                table: "Project",
                 type: "text",
                 nullable: false,
                 defaultValue: "");
@@ -22,8 +22,8 @@ namespace App.DAL.EF.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Author",
-                table: "News");
+                name: "Image",
+                table: "Project");
         }
     }
 }
