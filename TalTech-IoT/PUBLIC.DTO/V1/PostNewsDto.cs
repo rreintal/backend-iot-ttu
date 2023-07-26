@@ -1,7 +1,7 @@
 namespace Public.DTO.V1;
 
 // TODO parem nimi create/update on sama
-public class CreateNewsDto
+public class PostNewsDto
 {
     public List<ContentDto> Title { get; set; } = default!;
     public List<ContentDto> Body { get; set; } = default!;

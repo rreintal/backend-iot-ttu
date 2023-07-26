@@ -6,13 +6,13 @@ using LanguageStringTranslation = BLL.DTO.V1.LanguageStringTranslation;
 
 namespace Public.DTO.V1.Mappers;
 
-public class CreateTopicAreaMapper : BaseMapper<Public.DTO.V1.CreateTopicAreaDto, BLL.DTO.V1.TopicArea>
+public class CreateTopicAreaMapper : BaseMapper<Public.DTO.V1.PostTopicAreaDto, BLL.DTO.V1.TopicArea>
 {
     public CreateTopicAreaMapper(IMapper mapper) : base(mapper)
     {
     }
 
-    public static BLL.DTO.V1.TopicArea Map(CreateTopicAreaDto data)
+    public static BLL.DTO.V1.TopicArea Map(PostTopicAreaDto data)
     {
         var et = data.Name.First(x => x.Culture == LanguageCulture.EST);
         var en = data.Name.First(x => x.Culture == LanguageCulture.ENG);

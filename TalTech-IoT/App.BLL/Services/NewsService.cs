@@ -61,6 +61,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     public News Add(News entity)
     {
         var domainObject = _mapper.Map<App.Domain.News>(entity);
+        
         foreach (var bllTopicArea in entity.TopicAreas)
         {
             var hasTopicAreaId = Guid.NewGuid();

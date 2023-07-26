@@ -17,6 +17,13 @@ public class ReturnNewsMapper
             TopicAreas = GetTopicAreaMapper.Map(data.TopicAreas),
             Image = data.Image
         };
-        
     }
+
+    public BLL.DTO.V1.News Map(Public.DTO.V1.News data)
+    {
+        // TODO!
+        throw new NotImplementedException();
+    }
+    
+    
 }

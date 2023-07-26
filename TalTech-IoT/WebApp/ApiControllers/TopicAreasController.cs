@@ -1,4 +1,6 @@
 using App.BLL.Contracts;
+using AutoMapper;
+using DAL.DTO.V1.FilterObjects;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
@@ -12,10 +14,12 @@ namespace WebApp.ApiControllers;
 public class TopicAreasController : ControllerBase
 {
     private readonly IAppBLL _bll;
+    private readonly IMapper _mapper;
 
-    public TopicAreasController(IAppBLL bll)
+    public TopicAreasController(IAppBLL bll, IMapper mapper)
     {
         _bll = bll;
+        this._mapper = mapper;
     }
 
     /// <summary>
@@ -24,8 +28,9 @@ public class TopicAreasController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateTopicAreaDto data)
+    public async Task<IActionResult> Create([FromBody] PostTopicAreaDto data)
     {
+        // TODO - if db throws error, then show it to the user!
         var bllEntity = CreateTopicAreaMapper.Map(data);
         var entity = _bll.TopicAreaService.Add(bllEntity);
         await _bll.SaveChangesAsync();
@@ -47,6 +52,34 @@ public class TopicAreasController : ControllerBase
         var items = (await _bll.TopicAreaService.AllAsync()).ToList();
         return TopicAreaMapper.Map(items);
     }
+
+    
+    [Obsolete("Not working rn")]
+    [HttpGet]
+    public async Task<IEnumerable<TopicAreaWithCount>> GetWithCount(string languageCulture, bool News, bool? Projects)
+    {
+        _bll.TopicAreaService.SetLanguageStrategy(languageCulture);
+        
+        var filter = new TopicAreaCountFilter()
+        {
+            News = News,
+            Projects = News
+        };
+        
+        
+        // TODO -
+        // kui on
+        // * Programming
+        //   * Java
+        
+        // Siis result tuleb ainult Java (1)
+        // 
+        // Aga peaks tulema Programming (1), Java(1)
+
+        var result = await _bll.TopicAreaService.GetTopicAreaWithCount(filter);
+        return result.Select(e => TopicAreaWithCountMapper.Map(e));
+    }
+    
 
     
     

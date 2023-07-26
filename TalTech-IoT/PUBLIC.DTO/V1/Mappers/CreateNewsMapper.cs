@@ -6,11 +6,11 @@ namespace Public.DTO.V1.Mappers;
 
 public class CreateNewsMapper
 {
-    public static BLL.DTO.V1.News Map(Public.DTO.V1.CreateNewsDto createNews, List<BLL.DTO.V1.ContentType> contentTypes)
+    public static BLL.DTO.V1.News Map(Public.DTO.V1.PostNewsDto postNews, List<BLL.DTO.V1.ContentType> contentTypes)
     {
         var newsId = Guid.NewGuid();
-        var estTitle = createNews.Title.First(x => x.Culture == LanguageCulture.EST);
-        var estBody = createNews.Body.First(x => x.Culture == LanguageCulture.EST);
+        var estTitle = postNews.Title.First(x => x.Culture == LanguageCulture.EST);
+        var estBody = postNews.Body.First(x => x.Culture == LanguageCulture.EST);
         
         var bodyContentType = contentTypes.Where(x => x.Name == "BODY").First();
         var titleContentType = contentTypes.Where(x => x.Name == "TITLE").First();
@@ -50,7 +50,7 @@ public class CreateNewsMapper
         titleLangStr.Content = titleContent;
 
         var bodyTranslations = new List<BLL.DTO.V1.LanguageStringTranslation>();
-        foreach (var bodyDto in createNews.Body)
+        foreach (var bodyDto in postNews.Body)
         {
             var langStr = new BLL.DTO.V1.LanguageStringTranslation()
             {
@@ -62,7 +62,7 @@ public class CreateNewsMapper
         }
         var titleTranslations = new List<BLL.DTO.V1.LanguageStringTranslation>();
         
-        foreach (var titleDto in createNews.Title)
+        foreach (var titleDto in postNews.Title)
         {
             var langStr = new BLL.DTO.V1.LanguageStringTranslation()
             {
@@ -82,11 +82,11 @@ public class CreateNewsMapper
             { 
                 titleContent, bodyContent
             },
-            Author = createNews.Author
+            Author = postNews.Author
         };
 
-        res.TopicAreas = TopicAreaMapper.Map(createNews.TopicAreas);
-        res.Image = createNews.Image;
+        res.TopicAreas = TopicAreaMapper.Map(postNews.TopicAreas);
+        res.Image = postNews.Image;
 
         return res;
     }

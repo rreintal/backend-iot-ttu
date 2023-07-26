@@ -2,6 +2,7 @@ using App.DAL.Contracts;
 using AutoMapper;
 using Base.DAL.EF;
 using DAL.DTO.V1;
+using DAL.DTO.V1.FilterObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.DAL.EF.Repositories;
@@ -13,6 +14,9 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         
     }
 
+    // TODO - TEE DAL OBJECT; et HasTopicArea -> TopicArea?
+    // TODO - mapi juba query ajal ära!!!
+    // TODO - kas on üldse DAL objecte vaja!?
     public override Domain.News Add(Domain.News entity)
     {
         foreach (var content in entity.Content)
@@ -26,6 +30,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         var res = DbSet.Add(entity).Entity;
         return res;
     }
+
 
     public async override Task<Domain.News?> FindAsync(Guid id)
     {

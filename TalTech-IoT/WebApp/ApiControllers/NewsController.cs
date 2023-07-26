@@ -23,7 +23,7 @@ public class NewsController : ControllerBase
     /// <param name="payload"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateNewsDto payload)
+    public async Task<IActionResult> Create([FromBody] PostNewsDto payload)
     {
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
@@ -44,6 +44,7 @@ public class NewsController : ControllerBase
     [HttpGet]
     public async Task<IEnumerable<Public.DTO.V1.News>> GetNews(string languageCulture)
     {
+        // TODO - filter news by author/topic
         _bll.NewsService.SetLanguageStrategy(languageCulture);
         var news = (await _bll.NewsService.AllAsync()).ToList();
         return news.Select(x => ReturnNewsMapper.Map(x));
@@ -63,7 +64,21 @@ public class NewsController : ControllerBase
         var res = ReturnNewsMapper.Map(bllEntity);
         return res;
     }
+
     
-    // TODO - filter news by author/topic
-    
+    /// <summary>
+    /// Update News
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    [Obsolete("Not implemented")]
+    [HttpPut]
+    public async Task<Public.DTO.V1.News> Update([FromBody] Public.DTO.V1.News data)
+    {
+        throw new NotImplementedException();
+        
+    }
+
+
 }
