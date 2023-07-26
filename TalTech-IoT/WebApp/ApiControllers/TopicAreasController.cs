@@ -54,7 +54,6 @@ public class TopicAreasController : ControllerBase
     }
 
     
-    [Obsolete("Not working rn")]
     [HttpGet]
     public async Task<IEnumerable<TopicAreaWithCount>> GetWithCount(string languageCulture, bool News, bool? Projects)
     {
