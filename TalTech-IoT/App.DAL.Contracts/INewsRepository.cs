@@ -9,11 +9,10 @@ public interface INewsRepository : IBaseRepository<App.Domain.News>, INewsReposi
     // here methods for only repo!
     // DAL objects!!!
     //TEntity Add(TEntity entity);
-    
+    public Task<IEnumerable<App.Domain.News>> AllAsyncFiltered(int? page, int? size);
 }
 
 public interface INewsRepositoryCustom<TEntity>
 {
     // here methods which are shared between repo and service!
-    public void SetLanguageStrategy(string languageString);
 }

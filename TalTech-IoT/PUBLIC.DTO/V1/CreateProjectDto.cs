@@ -1,20 +1,28 @@
+using System.ComponentModel.DataAnnotations;
 using App.Domain;
 
 namespace Public.DTO.V1;
 
 public class CreateProjectDto
 {
+    [Required(ErrorMessage = "News year is required")]
     public int Year { get; set; } = default!;
 
+    [Required(ErrorMessage = "ProjectManager field is required!")]
     public string ProjectManager { get; set; } = default!;
+    
     // In Euros
+    [Required(ErrorMessage = nameof(ProjectVolume) + " is required")]
     public double ProjectVolume { get; set; } = default!;
     
+    [Required]
     public List<ContentDto> Title { get; set; } = default!;
-
+    
+    [Required]
     public List<ContentDto> Body { get; set; } = default!;
 
-    public DateTime CreatedAt { get; set; } = default!;
+    // TODO - seda pole ju siin vaja, sest date pannakse alles siis kui db salvestan
+    //public DateTime CreatedAt { get; set; } = default!;
     
     // one project can be inside many topic areas
     // for example - programming, Java, microservices ...

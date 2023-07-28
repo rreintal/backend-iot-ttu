@@ -1,4 +1,5 @@
 using App.DAL.Contracts;
+using App.Domain;
 using AutoMapper;
 using Base.DAL.EF;
 using DAL.DTO.V1;
@@ -9,10 +10,13 @@ namespace App.DAL.EF.Repositories;
 
 public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, INewsRepository
 {
+    private const int DEFAULT_PAGE_SIZE = 5;
+    
     public NewsRepository(AppDbContext dataContext, IMapper mapper) : base(dataContext, mapper)
     {
         
     }
+    
 
     // TODO - TEE DAL OBJECT; et HasTopicArea -> TopicArea?
     // TODO - mapi juba query ajal ära!!!
@@ -69,6 +73,27 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
                 .ThenInclude(x => x.LanguageString)
                     .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
             .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<App.Domain.News>> AllAsyncFiltered(int? page, int? size)
+    {
+        page = page ?? 0;
+        size = size ?? DEFAULT_PAGE_SIZE;
+        
+        return await DbSet
+            .Include(x => x.HasTopicAreas)
+                .ThenInclude(x => x.TopicArea)
+                    .ThenInclude(x => x!.LanguageString)
+                        .ThenInclude(x => x!.LanguageStringTranslations)
+            .Include(x => x.Content)
+                .ThenInclude(x => x.ContentType)
+            .Include(x => x.Content)
+                .ThenInclude(x => x.LanguageString)
+                    .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
+            .OrderByDescending(x => x.CreatedAt)
+                .Skip(page.Value * size.Value)
+                .Take(size.Value)
             .ToListAsync();
     }
     

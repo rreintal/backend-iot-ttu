@@ -2,6 +2,7 @@ using App.BLL.Contracts;
 using AutoMapper;
 using DAL.DTO.V1.FilterObjects;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
 
@@ -33,7 +34,18 @@ public class TopicAreasController : ControllerBase
         // TODO - if db throws error, then show it to the user!
         var bllEntity = CreateTopicAreaMapper.Map(data);
         var entity = _bll.TopicAreaService.Add(bllEntity);
-        await _bll.SaveChangesAsync();
+        try
+        {
+            await _bll.SaveChangesAsync();
+        }
+        catch (DbUpdateException e)
+        {
+            return BadRequest(new
+            {
+                Error = $"TopicArea with name '{data.Name[0].Value}' for culture '{data.Name[0].Culture}' already exists.",
+                Code = "TOPICAREA_EXISTS"
+            });
+        }
         return Ok(new
         {
             TopicAreaId = entity.Id.ToString()
@@ -50,7 +62,10 @@ public class TopicAreasController : ControllerBase
         // TODO - filtering with the amount of projects/news it has
         _bll.TopicAreaService.SetLanguageStrategy(languageCulture);
         var items = (await _bll.TopicAreaService.AllAsync()).ToList();
-        return TopicAreaMapper.Map(items);
+        
+        var result = TopicAreaMapper.Map(items);
+        Console.WriteLine($"SIZE IS {result.Count}");
+        return result;
     }
 
     /// <summary>

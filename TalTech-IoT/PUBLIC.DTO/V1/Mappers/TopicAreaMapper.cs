@@ -60,6 +60,19 @@ public class TopicAreaMapper
                     dict.Add(mappedParent.Id, mappedParent);
                 }
             }
+            else
+            {
+                if (!dict.ContainsKey(children.Id))
+                {
+                    var parent = new TopicArea()
+                    {
+                        Id = children.Id,
+                        Name = children.GetName()
+                    };
+                    dict.Add(parent.Id, parent);
+                }
+
+            }
         }
         
         foreach (var topicAreaDto in dict.Values)

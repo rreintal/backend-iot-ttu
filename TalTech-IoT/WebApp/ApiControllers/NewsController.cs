@@ -25,6 +25,11 @@ public class NewsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] PostNewsDto payload)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
         var entity = _bll.NewsService.Add(bllEntity);
@@ -42,11 +47,11 @@ public class NewsController : ControllerBase
     /// <param name="languageCulture"></param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<IEnumerable<Public.DTO.V1.News>> GetNews(string languageCulture)
+    public async Task<IEnumerable<Public.DTO.V1.News>> GetNews(string languageCulture, int? page, int? size)
     {
         // TODO - filter news by author/topic
         _bll.NewsService.SetLanguageStrategy(languageCulture);
-        var news = (await _bll.NewsService.AllAsync()).ToList();
+        var news = (await _bll.NewsService.AllAsyncFiltered(page, size)).ToList();
         return news.Select(x => ReturnNewsMapper.Map(x));
     }
 

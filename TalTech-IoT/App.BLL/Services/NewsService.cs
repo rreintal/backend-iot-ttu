@@ -90,4 +90,9 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         
         return entity;
     }
+
+    public async Task<IEnumerable<News>> AllAsyncFiltered(int? page, int? size)
+    {
+        return (await Uow.NewsRepository.AllAsyncFiltered(page, size)).Select(e => _mapper.Map<News>(e));
+    }
 }

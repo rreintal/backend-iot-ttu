@@ -7,4 +7,6 @@ public interface INewsService : IBaseRepository<News>
 {
     // add your custom service methods here!
     public Task<List<ContentType>> GetContentTypes();
+    
+    public Task<IEnumerable<News>> AllAsyncFiltered(int? page, int? size);
 }
