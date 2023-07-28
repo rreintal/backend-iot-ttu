@@ -29,7 +29,7 @@ public class TopicAreasController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] PostTopicAreaDto data)
+    public async Task<IActionResult> Create([FromBody] PostTopicAreaDto data, string languageCulture)
     {
         // TODO - if db throws error, then show it to the user!
         var bllEntity = CreateTopicAreaMapper.Map(data);
@@ -38,14 +38,17 @@ public class TopicAreasController : ControllerBase
         {
             await _bll.SaveChangesAsync();
         }
+        
+        // TODO - if Topic Area with that name already exists, throws that error!
         catch (DbUpdateException e)
         {
             return BadRequest(new
             {
-                Error = $"TopicArea with name '{data.Name[0].Value}' for culture '{data.Name[0].Culture}' already exists.",
+                Error = $"TopicArea with name '{data.Name[0].Value}' for culture '{languageCulture}' already exists.",
                 Code = "TOPICAREA_EXISTS"
             });
         }
+        
         return Ok(new
         {
             TopicAreaId = entity.Id.ToString()
@@ -64,7 +67,6 @@ public class TopicAreasController : ControllerBase
         var items = (await _bll.TopicAreaService.AllAsync()).ToList();
         
         var result = TopicAreaMapper.Map(items);
-        Console.WriteLine($"SIZE IS {result.Count}");
         return result;
     }
 

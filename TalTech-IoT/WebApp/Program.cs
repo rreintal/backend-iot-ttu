@@ -160,6 +160,18 @@ static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment environmen
 
         var areasCount = context.TopicAreas.ToList().Count;
 
+        if (areasCount == 0)
+        {
+            var t1 = TopicArea.TopicAreaFactory("Tehnoloogia", "Technology");
+            var t2 = TopicArea.TopicAreaFactory("Robootika", "Robotics");
+            var t3 = TopicArea.TopicAreaFactory("Arvutivõrgud", "Networking");
+            var t3Child = TopicArea.TopicAreaFactory("4G", "4G");
+            var t3Child2 = TopicArea.TopicAreaFactory("5G", "5G");
+            t3Child.ParentTopicAreaId = t3.Id;
+            t3Child2.ParentTopicAreaId = t3.Id;
+            context.TopicAreas.AddRangeAsync(new List<TopicArea>() { t1, t2, t3, t3Child2, t3Child });
+        }
+
         context.SaveChanges();
     }
 }

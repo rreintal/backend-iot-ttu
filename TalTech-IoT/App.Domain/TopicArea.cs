@@ -20,4 +20,42 @@ public class TopicArea : DomainEntityId
     {
         return ParentTopicArea != null;
     }
+
+
+    public static TopicArea TopicAreaFactory(string etValue, string enValue)
+    {
+        var t1Id = Guid.NewGuid();
+        var t1StrId = Guid.NewGuid();
+        var t1 = new TopicArea()
+        {
+            Id = t1Id,
+            LanguageStringId = t1StrId,
+
+        };
+        var t1Str = new LanguageString()
+        {
+            Id = t1StrId,
+            TopicAreaId = t1Id,
+            Value = etValue
+        };
+        var t1Est = new LanguageStringTranslation()
+        {
+            LanguageStringId = t1StrId,
+            LanguageCulture = LanguageCulture.EST,
+            TranslationValue = etValue
+        };
+        var t1Eng = new LanguageStringTranslation()
+        {
+            LanguageStringId = t1StrId,
+            LanguageCulture = LanguageCulture.ENG,
+            TranslationValue = enValue
+        };
+        t1Str.LanguageStringTranslations = new List<LanguageStringTranslation>()
+        {
+            t1Est, t1Eng
+        };
+
+        t1.LanguageString = t1Str;
+        return t1;
+    }
 }
