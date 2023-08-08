@@ -87,6 +87,11 @@ public class NewsController : ControllerBase
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Delete news by id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete]
     public async Task<ActionResult> Delete(Guid id)
     {
