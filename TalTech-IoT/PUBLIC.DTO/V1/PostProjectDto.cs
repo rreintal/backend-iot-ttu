@@ -14,19 +14,22 @@ public class PostProjectDto
     // In Euros
     [Required(ErrorMessage = nameof(ProjectVolume) + " is required")]
     public double ProjectVolume { get; set; } = default!;
+
+    public string Image { get; set; } = default!;
     
     [Required]
     public List<ContentDto> Title { get; set; } = default!;
     
     [Required]
     public List<ContentDto> Body { get; set; } = default!;
+    
 
     // TODO - seda pole ju siin vaja, sest date pannakse alles siis kui db salvestan
     //public DateTime CreatedAt { get; set; } = default!;
     
     // one project can be inside many topic areas
     // for example - programming, Java, microservices ...
-    public List<TopicArea>? TopicAreas { get; set; }
+    public List<TopicArea> TopicAreas { get; set; } = default!;
 }
 
 /*

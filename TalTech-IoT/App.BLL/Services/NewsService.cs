@@ -86,8 +86,6 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         }
 
         Uow.NewsRepository.Add(domainObject);
-        
-        
         return entity;
     }
 

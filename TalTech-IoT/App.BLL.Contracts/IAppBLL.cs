@@ -8,4 +8,6 @@ public interface IAppBLL : IBaseUOW
     ITopicAreaService TopicAreaService { get; }
     
     IMailService MailService { get; }
+    
+    IProjectService ProjectService { get; }
 }

@@ -12,4 +12,6 @@ public interface IAppUOW : IBaseUOW
     IContentTypesRepository ContentTypesRepository { get; }
 
     ITopicAreaRepository TopicAreaRepository { get; }
+    
+    IProjectsRepository ProjectsRepository { get; }
 }

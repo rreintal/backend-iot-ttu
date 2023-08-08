@@ -4,9 +4,7 @@ using App.BLL.Services;
 using App.DAL.Contracts;
 using AutoMapper;
 using Base.BLL;
-using Base.DAL;
-using BLL.DTO.V1;
-using Public.DTO.V1;
+
 
 namespace App.BLL;
 
@@ -36,5 +34,10 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
 
     public IMailService MailService 
         => _mailService ??= new MailSender();
+
+    private IProjectService? _projectService;
+
+    public IProjectService ProjectService =>
+        _projectService ??= new ProjectService(Uow, new ProjectsMapper(_mapper));
 
 }

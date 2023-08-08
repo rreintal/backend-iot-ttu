@@ -157,8 +157,8 @@ static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment environmen
                 Id = Guid.NewGuid(),
                 Name = "TITLE"
             };
-            context!.ContentTypes.Add(t1);
-            context!.ContentTypes.Add(t2);
+            context.ContentTypes.Add(t1);
+            context.ContentTypes.Add(t2);
         }
 
         var areasCount = context.TopicAreas.ToList().Count;

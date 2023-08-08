@@ -27,4 +27,8 @@ public class AppUOW : EFBaseUOW<AppDbContext>, IAppUOW
     public ITopicAreaRepository TopicAreaRepository =>
         _topicAreaRepository ??= new TopicAreaRepository(UowDbContext, _mapper);
 
+    public IProjectsRepository ProjectsRepository =>
+        _projectsRepository ??= new ProjectsRepository(UowDbContext, _mapper);
+
+    private IProjectsRepository? _projectsRepository;
 }

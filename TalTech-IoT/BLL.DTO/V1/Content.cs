@@ -14,6 +14,8 @@ public class Content : DomainEntityId
     // TODO
     // projectId
     // project
+    public Guid? ProjectId { get; set; }
+    public BLL.DTO.V1.Project? Project { get; set; }
 
     public Guid LanguageStringId { get; set; }
     public BLL.DTO.V1.LanguageString LanguageString { get; set; } = default!;
