@@ -68,15 +68,13 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         // Thats why we use "TopicAreaId" instead of [TopicAreaId] as shown in the officaly documentation.
         
         // TODO - kas filter peaks kehtima ainult neile topicutele, millel pole ParentTopicId?
-        // TODO - HANDLE ERROR IF HAPPENS!
         builder.Entity<LanguageString>()
             .HasIndex(x => x.Value)
             .IsUnique()
             .HasFilter(TopicAreaUniqueNameExpression);
         
 
-
-        // TODO - lisa cascade delete, kui news kustutatakse siis kõik sellega seotud translationid ka!
+        
         // disable cascade delete
         foreach (var relationship in builder.Model
                      .GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
@@ -84,7 +82,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
         
-        // adding cascade Delete for news
+        // adding cascade delete for News
         builder.Entity<News>()
             .HasMany(x => x.Content)
             .WithOne(x => x.News)
@@ -107,6 +105,17 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 
         builder.Entity<HasTopicArea>()
             .HasOne<News>(x => x.News)
+            .WithMany(x => x.HasTopicAreas)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        // adding cascade delete for Project
+        builder.Entity<Project>()
+            .HasMany(x => x.Content)
+            .WithOne(x => x.Project)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<HasTopicArea>()
+            .HasOne<Project>(x => x.Project)
             .WithMany(x => x.HasTopicAreas)
             .OnDelete(DeleteBehavior.Cascade);
     }
