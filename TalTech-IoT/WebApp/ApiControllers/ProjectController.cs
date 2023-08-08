@@ -1,5 +1,6 @@
 using App.BLL.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
 
 namespace WebApp.ApiControllers;
@@ -37,4 +38,17 @@ public class ProjectController : ControllerBase
             ProjectId = result.Id
         });
     }
+
+    /// <summary>
+    /// Get Projects
+    /// </summary>
+    /// <param name="languageCulture"></param>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<IEnumerable<GetProject>> Get(string languageCulture)
+    {
+        _bll.ProjectService.SetLanguageStrategy(languageCulture);
+        return (await _bll.ProjectService.AllAsync()).Select(x => GetProjectMapper.Map(x));
+    }
+    
 }

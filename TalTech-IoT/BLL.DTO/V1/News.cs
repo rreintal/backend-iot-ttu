@@ -1,8 +1,9 @@
 using Base.Domain;
+using Contracts;
 
 namespace BLL.DTO.V1;
 
-public class News : DomainEntityId
+public class News : DomainEntityId, IContainsContent
 {
     public List<BLL.DTO.V1.Content> Content { get; set; } = default!;
     public List<BLL.DTO.V1.TopicArea> TopicAreas { get; set; } = default!;

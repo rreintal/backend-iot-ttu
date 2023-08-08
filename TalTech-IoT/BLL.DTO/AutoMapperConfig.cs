@@ -27,8 +27,10 @@ public class AutoMapperConfig : Profile
         CreateMap<App.Domain.TopicArea, BLL.DTO.V1.TopicArea>().ReverseMap();
 
         CreateMap<App.Domain.Project, BLL.DTO.V1.Project>().ReverseMap();
+        CreateMap<App.Domain.Project, BLL.DTO.V1.Project>()
+            .ForMember(dest => dest.TopicAreas, 
+                src => src.MapFrom(x => x.HasTopicAreas));
 
-        
         CreateMap<App.Domain.HasTopicArea, BLL.DTO.V1.TopicArea>()
             .ForMember(dest => dest.Id,
                 src => src.MapFrom(x => x.TopicAreaId))

@@ -13,7 +13,6 @@ public class ReturnNewsMapper
             Title = data.GetContentValue(ContentTypes.TITLE),
             Id = data.Id,
             Author = data.Author,
-            // TODO - ei tagasta parentit, ainult selle spetsiifilise topicu kus on! kas see ok või vaja muuta? mõtle..
             TopicAreas = GetTopicAreaMapper.Map(data.TopicAreas),
             Image = data.Image
         };

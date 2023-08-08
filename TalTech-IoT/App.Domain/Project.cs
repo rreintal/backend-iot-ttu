@@ -13,5 +13,6 @@ public class Project : DomainEntityIdMetaData
     public ICollection<HasTopicArea> HasTopicAreas { get; set; } = default!;
     // title, content
     public ICollection<Content> Content { get; set; } = default!;
-
+    
+    
 }
