@@ -31,4 +31,10 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
 
     public ITopicAreaService TopicAreaService =>
         _TopicAreaService ??= new TopicAreaService(Uow, new TopicAreaMapper(_mapper));
+
+    private IMailService? _mailService;
+
+    public IMailService MailService 
+        => _mailService ??= new MailSender();
+
 }

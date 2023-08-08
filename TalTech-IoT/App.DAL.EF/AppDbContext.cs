@@ -57,8 +57,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
             .WithOne(a => a.LanguageString)
             .HasForeignKey<TopicArea>(a => a.LanguageStringId)
             .IsRequired(false);
-        //
-        
+
         // Unique Indexes
         builder.Entity<ContentType>()
             .HasIndex(x => x.Name).IsUnique();
@@ -84,6 +83,38 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         {
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
+        
+        // adding cascade Delete for news
+        builder.Entity<News>()
+            .HasMany(x => x.Content)
+            .WithOne(x => x.News)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<Content>()
+            .HasOne<LanguageString>(x => x.LanguageString)
+            .WithOne(x => x.Content)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<LanguageString>()
+            .HasMany(x => x.LanguageStringTranslations)
+            .WithOne(x => x.LanguageString)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<LanguageStringTranslation>()
+            .HasOne(x => x.LanguageString)
+            .WithMany(x => x.LanguageStringTranslations)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<HasTopicArea>()
+            .HasOne<News>(x => x.News)
+            .WithMany(x => x.HasTopicAreas)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+
+
     }
     
     

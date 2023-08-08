@@ -1,9 +1,10 @@
 using System.Net;
 using System.Net.Mail;
+using App.BLL.Contracts;
 
-namespace App.BLL;
+namespace App.BLL.Services;
 
-public class MailSender
+public class MailSender : IMailService
 {
     private SmtpClient SmtpClient = new SmtpClient("smtp.gmail.com", 587);
     

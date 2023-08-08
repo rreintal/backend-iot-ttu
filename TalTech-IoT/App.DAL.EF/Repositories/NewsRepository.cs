@@ -78,10 +78,12 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
 
     public async Task<IEnumerable<App.Domain.News>> AllAsyncFiltered(int? page, int? size)
     {
+        // TODO - optimize!!!!
         page = page ?? 0;
         size = size ?? DEFAULT_PAGE_SIZE;
         
         return await DbSet
+            .AsNoTracking()
             .Include(x => x.HasTopicAreas)
                 .ThenInclude(x => x.TopicArea)
                     .ThenInclude(x => x!.LanguageString)

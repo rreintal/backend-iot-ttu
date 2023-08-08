@@ -52,7 +52,16 @@ public class TopicAreaMapper
                         Name = children.GetName()
                     };
                     var parentDto = dict[parent.Id];
-                    parentDto.ChildrenTopicAreas!.Add(childrenDto);
+                    
+                    // Without this if, it produces a weird bug
+                    if (parentDto.ChildrenTopicAreas == null)
+                    {
+                        parentDto.ChildrenTopicAreas = new List<TopicArea>() { childrenDto };
+                    }
+                    else
+                    {
+                        parentDto.ChildrenTopicAreas.Add(childrenDto);
+                    }
                 }
                 if (!dict.ContainsKey(parent.Id))
                 {
@@ -75,10 +84,7 @@ public class TopicAreaMapper
             }
         }
         
-        foreach (var topicAreaDto in dict.Values)
-        {
-            res.Add(topicAreaDto);
-        }
+        res.AddRange(dict.Values);
 
         return res;
     }

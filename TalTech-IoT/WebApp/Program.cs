@@ -3,18 +3,21 @@ using App.BLL.Contracts;
 using App.DAL.Contracts;
 using App.DAL.EF;
 using App.Domain;
-using App.Domain.Translations;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Public.DTO.ApiExceptions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApp;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(cfg =>
+{
+    cfg.Filters.Add(new MyAPIExceptionFilter());
+});
 
 // Dependency injection
 builder.Services.AddScoped<AppDbContext>();

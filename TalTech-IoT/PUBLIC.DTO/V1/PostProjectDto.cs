@@ -3,7 +3,7 @@ using App.Domain;
 
 namespace Public.DTO.V1;
 
-public class CreateProjectDto
+public class PostProjectDto
 {
     [Required(ErrorMessage = "News year is required")]
     public int Year { get; set; } = default!;

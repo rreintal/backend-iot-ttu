@@ -3,6 +3,7 @@ using System;
 using App.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230808103307_cascade2")]
+    partial class cascade2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -425,12 +428,12 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.Translations.LanguageString", "LanguageString")
                         .WithOne("Content")
                         .HasForeignKey("App.Domain.Content", "LanguageStringId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("App.Domain.News", "News")
                         .WithMany("Content")
                         .HasForeignKey("NewsId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("App.Domain.Project", "Project")
                         .WithMany("Content")
@@ -451,7 +454,7 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.News", "News")
                         .WithMany("HasTopicAreas")
                         .HasForeignKey("NewsId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("App.Domain.Project", "Project")
                         .WithMany("HasTopicAreas")
@@ -476,7 +479,7 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.Translations.LanguageString", "LanguageString")
                         .WithMany("LanguageStringTranslations")
                         .HasForeignKey("LanguageStringId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("LanguageString");

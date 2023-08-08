@@ -6,4 +6,6 @@ public interface IAppBLL : IBaseUOW
 {
     INewsService NewsService { get; }
     ITopicAreaService TopicAreaService { get; }
+    
+    IMailService MailService { get; }
 }

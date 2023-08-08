@@ -3,6 +3,7 @@ using AutoMapper;
 using DAL.DTO.V1.FilterObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Public.DTO.ApiExceptions;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
 
@@ -38,15 +39,11 @@ public class TopicAreasController : ControllerBase
         {
             await _bll.SaveChangesAsync();
         }
-        
-        // TODO - if Topic Area with that name already exists, throws that error!
+        // If Topic Area with that name already exists then it throws that error!
+        // All Topic Areas must be with unique name.
         catch (DbUpdateException e)
         {
-            return BadRequest(new
-            {
-                Error = $"TopicArea with name '{data.Name[0].Value}' for culture '{languageCulture}' already exists.",
-                Code = "TOPICAREA_EXISTS"
-            });
+            throw new ValueAlreadyExistsException(entity.GetName());
         }
         
         return Ok(new

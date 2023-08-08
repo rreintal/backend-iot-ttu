@@ -11,7 +11,7 @@ namespace WebApp.ApiControllers;
 public class NewsController : ControllerBase
 {
     private readonly IAppBLL _bll;
-
+    
     public NewsController(IAppBLL bll)
     {
         _bll = bll;
@@ -81,8 +81,15 @@ public class NewsController : ControllerBase
     [HttpPut]
     public async Task<Public.DTO.V1.News> Update([FromBody] Public.DTO.V1.News data)
     {
+        // TODO - when updating, should we add the language culture which one we want to update?
+        // or should we just request both for updating?
         throw new NotImplementedException();
-        
+    }
+
+    [HttpDelete]
+    public async Task<Public.DTO.V1.DeleteNews> Delete([FromBody] Public.DTO.V1.DeleteNews data)
+    {
+        throw new NotImplementedException();
     }
 
 

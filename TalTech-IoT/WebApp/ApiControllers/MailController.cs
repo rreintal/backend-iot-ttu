@@ -1,19 +1,20 @@
 using App.BLL;
+using App.BLL.Contracts;
 using App.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO.V1;
+using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace WebApp.ApiControllers;
 
 [Route("api/{languageCulture}/[controller]/[action]")]
 public class MailController : ControllerBase
 {
-
-    private MailSender _sender { get; set; }
+    private IAppBLL _Bll { get; set; }
     
-    public MailController()
+    public MailController(IAppBLL bll)
     {
-        _sender = new MailSender();
+        _Bll = bll;
     }
 
     /// <summary>
@@ -31,8 +32,7 @@ public class MailController : ControllerBase
             $"Hi, {data.RecipentEmail}! You have sent a request to download related files to $PROJECT_NAME. $LINK?";
 
         var body = languageCulture == LanguageCulture.ENG ? engBody : estBody;
-        
-        _sender.SendEmail(data.RecipentEmail, "TODO", body);
+        _Bll.MailService.SendEmail(data.RecipentEmail, "TODO", body);
         return $"Sent message to {data.RecipentEmail}";
     }
 
