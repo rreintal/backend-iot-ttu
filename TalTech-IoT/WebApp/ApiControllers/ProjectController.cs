@@ -77,5 +77,29 @@ public class ProjectController : ControllerBase
             StatusCode = (int)HttpStatusCode.OK
         });
     }
+
+    /// <summary>
+    /// Get Project by id
+    /// </summary>
+    /// <param name="languageCulture"></param>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<ActionResult<GetProject>> GetById(string languageCulture, Guid id)
+    {
+        _bll.ProjectService.SetLanguageStrategy(languageCulture);
+        var entity = await _bll.ProjectService.FindAsync(id);
+        if (entity == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = "Project with this id does not exist.",
+                StatusCode = (int)HttpStatusCode.NotFound
+            });
+        }
+
+        var result = GetProjectMapper.Map(entity);
+        return result;
+    }
     
 }

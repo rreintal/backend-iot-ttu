@@ -27,4 +27,26 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
             .ToListAsync();
         return res;
     }
+
+    public async Task<Project?> FindAsync(Guid id)
+    {
+        var query = await DbSet.Where(x => x.Id == id)
+            .Include(x => x.HasTopicAreas)
+                .ThenInclude(x => x.TopicArea)
+                    .ThenInclude(x => x!.LanguageString)
+                        .ThenInclude(x => x!.LanguageStringTranslations)
+            .Include(x => x.Content)
+                .ThenInclude(x => x.ContentType)
+            .Include(x => x.Content)
+                .ThenInclude(x => x.LanguageString)
+                    .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
+            .FirstOrDefaultAsync();
+        if (query == null)
+        {
+            return null;
+        }
+
+        return query;
+
+    }
 }
