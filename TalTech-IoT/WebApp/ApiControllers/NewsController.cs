@@ -1,3 +1,4 @@
+using System.Net;
 using App.BLL.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
@@ -96,6 +97,14 @@ public class NewsController : ControllerBase
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.NewsService.FindAsync(id);
+        if (entity == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = $"News with id {id.ToString()} not found.",
+                StatusCode = (int)HttpStatusCode.NotFound
+            });
+        }
         var result = _bll.NewsService.Remove(entity);
         await _bll.SaveChangesAsync();
         return Ok(new
