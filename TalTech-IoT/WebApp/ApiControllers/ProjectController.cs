@@ -1,5 +1,7 @@
+using System.Net;
 using App.BLL.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Public.DTO;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
 
@@ -49,6 +51,31 @@ public class ProjectController : ControllerBase
     {
         _bll.ProjectService.SetLanguageStrategy(languageCulture);
         return (await _bll.ProjectService.AllAsync()).Select(x => GetProjectMapper.Map(x));
+    }
+
+    /// <summary>
+    /// Delete Project
+    /// </summary>
+    /// <returns></returns>
+    [HttpDelete]
+    public async Task<ActionResult> Delete(Guid id)
+    {
+        var entity = await _bll.ProjectService.FindAsync(id);
+        if (entity == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = "Project with this id does not exist.",
+                StatusCode = (int)HttpStatusCode.NotFound
+            });
+        }
+        _bll.ProjectService.Remove(entity);
+        await _bll.SaveChangesAsync();
+        return Ok(new RestApiResponse()
+        {
+            Message = $"Deleted project with id {id.ToString()}",
+            StatusCode = (int)HttpStatusCode.OK
+        });
     }
     
 }
