@@ -1,7 +1,6 @@
-﻿using App.Domain.Translations;
-using Base.Domain;
+﻿using Base.Domain;
 
-namespace App.Domain;
+namespace App.Domain.Translations;
 
 public class LanguageStringTranslation : DomainEntityId
 {

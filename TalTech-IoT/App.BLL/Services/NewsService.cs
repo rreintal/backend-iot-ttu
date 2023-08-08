@@ -10,7 +10,7 @@ using News = BLL.DTO.V1.News;
 
 namespace App.BLL.Services;
 
-public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>, INewsService
+public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>, INewsService, INewsRepositoryCustom<News>
 {
     private IAppUOW Uow { get; set; }
     private IMapper _mapper { get; }
@@ -95,4 +95,5 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     {
         return (await Uow.NewsRepository.AllAsyncFiltered(page, size)).Select(e => _mapper.Map<News>(e));
     }
+    
 }

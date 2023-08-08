@@ -30,7 +30,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        
+
         // Define that Content has LanguageString and LanguageString might not have Content!
         builder.Entity<Content>()
             .HasOne(c => c.LanguageString)
@@ -109,12 +109,6 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
             .HasOne<News>(x => x.News)
             .WithMany(x => x.HasTopicAreas)
             .OnDelete(DeleteBehavior.Cascade);
-
-
-
-
-
-
     }
     
     

@@ -31,6 +31,10 @@ public class EFBaseRepository<TEntity, TKey, TDbContext> : IBaseRepository<TEnti
     public EFBaseRepository(TDbContext dbContext, IMapper mapper)
     {
         DbContext = dbContext;
+        
+        // Disable tracking globally
+        dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        
         _mapper = mapper;
         DbSet = dbContext.Set<TEntity>();
     }

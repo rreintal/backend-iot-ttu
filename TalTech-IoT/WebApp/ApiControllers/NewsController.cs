@@ -1,5 +1,6 @@
 using App.BLL.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Public.DTO;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
 
@@ -87,9 +88,15 @@ public class NewsController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<Public.DTO.V1.DeleteNews> Delete([FromBody] Public.DTO.V1.DeleteNews data)
+    public async Task<ActionResult> Delete(Guid id)
     {
-        throw new NotImplementedException();
+        var entity = await _bll.NewsService.FindAsync(id);
+        var result = _bll.NewsService.Remove(entity);
+        await _bll.SaveChangesAsync();
+        return Ok(new
+        {
+            NewsId = result.Id
+        });
     }
 
 

@@ -98,5 +98,4 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
                 .Take(size.Value)
             .ToListAsync();
     }
-    
 }

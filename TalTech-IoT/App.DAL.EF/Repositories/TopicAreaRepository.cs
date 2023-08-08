@@ -19,11 +19,13 @@ public class TopicAreaRepository : EFBaseRepository<App.Domain.TopicArea, AppDbC
 
     public async override Task<IEnumerable<TopicArea>> AllAsync()
     {
-        return await DbSet
+        var res =await DbSet
+            .AsTracking()
             .Include(x => x.LanguageString)
             .ThenInclude(x => x!.LanguageStringTranslations
                 .Where(x => x.LanguageCulture == languageCulture))
             .ToListAsync();
+        return res;
 
     }
 
