@@ -9,6 +9,8 @@ public class Project : DomainEntityId, IContainsContent
     public string ProjectManager { get; set; } = default!;
     public double ProjectVolume { get; set; } = default!;
     public string Image { get; set; } = default!;
+
+    public string ThumbnailImage { get; set; } = default!;
     
     public DateTime CreatedAt { get; set; }
     

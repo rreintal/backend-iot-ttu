@@ -10,14 +10,20 @@ namespace App.BLL.Services;
 public class ProjectService : BaseEntityService<Project, Domain.Project, IProjectsRepository>, IProjectService
 {
     private IAppUOW Uow { get; }
-    public ProjectService(IAppUOW uow, IMapper<Project, Domain.Project> mapper) : base(uow.ProjectsRepository, mapper)
+    private IThumbnailService ThumbnailService { get; }
+    public ProjectService(IAppUOW uow, IMapper<Project, Domain.Project> mapper, IThumbnailService thumbnailService) : base(uow.ProjectsRepository, mapper)
     {
         Uow = uow;
+        ThumbnailService = thumbnailService;
     }
 
     public Project Add(Project entity)
     {
         var domainEntity = Mapper.Map(entity);
+        
+        // Add Thumbnail
+        domainEntity!.ThumbnailImage = ThumbnailService.Compress(domainEntity.Image);
+        
         foreach (var bllTopicArea in entity.TopicAreas)
         {
             var hasTopicAreaId = Guid.NewGuid();

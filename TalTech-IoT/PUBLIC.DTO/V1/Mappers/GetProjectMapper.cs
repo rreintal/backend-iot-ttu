@@ -4,11 +4,10 @@ namespace Public.DTO.V1.Mappers;
 
 public class GetProjectMapper
 {
-    public static GetProject Map(BLL.DTO.V1.Project entity)
+    public static GetProject Map(BLL.DTO.V1.Project entity, bool thumbnail = false)
     {
         var a = entity;
-        
-        return new GetProject()
+        var result = new GetProject()
         {
             Id = entity.Id,
             Body = entity.GetContentValue(ContentTypes.BODY),
@@ -20,5 +19,11 @@ public class GetProjectMapper
             TopicAreas = GetTopicAreaMapper.Map(entity.TopicAreas),
             CreatedAt = entity.CreatedAt
         };
+        if (thumbnail)
+        {
+            result.Image = entity.ThumbnailImage;
+        }
+
+        return result;
     }
 }

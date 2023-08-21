@@ -50,7 +50,7 @@ public class ProjectController : ControllerBase
     public async Task<IEnumerable<GetProject>> Get(string languageCulture)
     {
         _bll.ProjectService.SetLanguageStrategy(languageCulture);
-        return (await _bll.ProjectService.AllAsync()).Select(x => GetProjectMapper.Map(x));
+        return (await _bll.ProjectService.AllAsync()).Select(x => GetProjectMapper.Map(x, true));
     }
 
     /// <summary>
