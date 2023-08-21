@@ -7,9 +7,7 @@ using Public.DTO.V1.Mappers;
 
 namespace WebApp.ApiControllers;
 
-//[Route("api/v{version:apiVersion}/[controller]/[action]")]
 [Route("api/{languageCulture}/[controller]/[action]")]
-
 public class NewsController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -49,7 +47,7 @@ public class NewsController : ControllerBase
     /// <param name="languageCulture"></param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<IEnumerable<Public.DTO.V1.News>> GetNews(string languageCulture, int? page, int? size)
+    public async Task<IEnumerable<Public.DTO.V1.News>> Get(string languageCulture, int? page, int? size)
     {
         // TODO - filter news by author/topic
         _bll.NewsService.SetLanguageStrategy(languageCulture);

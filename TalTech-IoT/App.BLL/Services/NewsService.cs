@@ -67,9 +67,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         
         // Add thumbnail
         domainObject.ThumbnailImage = ThumbnailService.Compress(domainObject.Image);
-        
-        
-        
+
         foreach (var bllTopicArea in entity.TopicAreas)
         {
             var hasTopicAreaId = Guid.NewGuid();

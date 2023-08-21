@@ -49,7 +49,12 @@ COPY Base.Domain.Contracts/. ./Base.Domain.Contracts/
 
 
 WORKDIR /src/WebApp
+
+# this is for thumbnail generating, if this is not done then thumbnail generation will not work
+RUN apt-get update && apt-get install -y libfontconfig1
+
 RUN dotnet publish -c Release -o out
+
 
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0-bullseye-slim-amd64 AS runtime

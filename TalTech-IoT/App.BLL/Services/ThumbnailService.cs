@@ -24,7 +24,7 @@ public class ThumbnailService : IThumbnailService
             // Create a new SKBitmap for the thumbnail
             using (var thumbnailBitmap = originalBitmap.Resize(new SKImageInfo(thumbnailWidth, thumbnailHeight), SKBitmapResizeMethod.Lanczos3))
             {
-                // Convert the thumbnail to a byte array
+                // Convert the thumbnail to a byte arrayd
                 using (var thumbnailImage = SKImage.FromBitmap(thumbnailBitmap))
                 using (var thumbnailImageStream = new MemoryStream())
                 {

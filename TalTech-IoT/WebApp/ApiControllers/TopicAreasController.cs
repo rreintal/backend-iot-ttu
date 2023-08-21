@@ -30,15 +30,15 @@ public class TopicAreasController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] PostTopicAreaDto data, string languageCulture)
+    public async Task<IActionResult> Create([FromBody] PostTopicAreaDto data)
     {
-        // TODO - if db throws error, then show it to the user!
         var bllEntity = CreateTopicAreaMapper.Map(data);
         var entity = _bll.TopicAreaService.Add(bllEntity);
         try
         {
             await _bll.SaveChangesAsync();
         }
+        
         // If Topic Area with that name already exists then it throws that error!
         // All Topic Areas must be with unique name.
         catch (DbUpdateException e)
@@ -59,10 +59,8 @@ public class TopicAreasController : ControllerBase
     [HttpGet]
     public async Task<IEnumerable<Public.DTO.V1.TopicArea>> Get(string languageCulture)
     {
-        // TODO - filtering with the amount of projects/news it has
         _bll.TopicAreaService.SetLanguageStrategy(languageCulture);
         var items = (await _bll.TopicAreaService.AllAsync()).ToList();
-        
         var result = TopicAreaMapper.Map(items);
         return result;
     }
