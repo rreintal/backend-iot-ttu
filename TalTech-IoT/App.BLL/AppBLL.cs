@@ -22,7 +22,7 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
     private INewsService? _newsService;
 
     public INewsService NewsService =>
-        _newsService ??= new NewsService(Uow, new NewsMapper(_mapper), _mapper);
+        _newsService ??= new NewsService(Uow, new NewsMapper(_mapper), _mapper, ThumbnailService);
 
     
     private ITopicAreaService? _TopicAreaService;
@@ -33,11 +33,14 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
     private IMailService? _mailService;
 
     public IMailService MailService 
-        => _mailService ??= new MailSender();
+        => _mailService ??= new MailService();
 
     private IProjectService? _projectService;
 
     public IProjectService ProjectService =>
         _projectService ??= new ProjectService(Uow, new ProjectsMapper(_mapper));
 
+    public IThumbnailService ThumbnailService => _thumbnailService ??= new ThumbnailService();
+
+    private IThumbnailService? _thumbnailService;
 }

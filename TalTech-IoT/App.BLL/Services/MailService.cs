@@ -4,7 +4,7 @@ using App.BLL.Contracts;
 
 namespace App.BLL.Services;
 
-public class MailSender : IMailService
+public class MailService : IMailService
 {
     private SmtpClient SmtpClient = new SmtpClient("smtp.gmail.com", 587);
     
@@ -12,7 +12,7 @@ public class MailSender : IMailService
     private readonly string Email = "dotnettestimine@gmail.com";
     private string Password = "kwdzedzwsiuktszw";
     
-    public MailSender()
+    public MailService()
     {
         SmtpClient.UseDefaultCredentials = false;
         SmtpClient.Credentials = new NetworkCredential(Email, Password);

@@ -15,12 +15,15 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     private IAppUOW Uow { get; set; }
     private IMapper _mapper { get; }
     
+    private IThumbnailService ThumbnailService { get; }
+    
     // need Add, Remove jne on basic operationid
     // kui vaja tagastada DTO siis seda tehakse custom meetoditega!!
-    public NewsService(IAppUOW uow, IMapper<News, Domain.News> mapper, IMapper autoMapper) : base(uow.NewsRepository, mapper)
+    public NewsService(IAppUOW uow, IMapper<News, Domain.News> mapper, IMapper autoMapper, IThumbnailService thumbnailService) : base(uow.NewsRepository, mapper)
     {
         Uow = uow;
         _mapper = autoMapper;
+        ThumbnailService = thumbnailService;
     }
 
     public async Task<IEnumerable<News>> AllAsync()
@@ -61,6 +64,11 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     public News Add(News entity)
     {
         var domainObject = _mapper.Map<App.Domain.News>(entity);
+        
+        // Add thumbnail
+        domainObject.ThumbnailImage = ThumbnailService.Compress(domainObject.Image);
+        
+        
         
         foreach (var bllTopicArea in entity.TopicAreas)
         {

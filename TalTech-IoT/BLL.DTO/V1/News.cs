@@ -12,6 +12,8 @@ public class News : DomainEntityId, IContainsContent
     public string Author { get; set; } = default!;
     public string Image { get; set; } = default!;
 
+    public string ThumbnailImage { get; set; } = default!;
+
     public string GetContentValue(string contentType)
     {
         var result = Content.First(c => c.ContentType!.Name == contentType)

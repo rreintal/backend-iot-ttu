@@ -10,4 +10,7 @@ public interface IAppBLL : IBaseUOW
     IMailService MailService { get; }
     
     IProjectService ProjectService { get; }
+    
+    IThumbnailService ThumbnailService { get; }
+    
 }

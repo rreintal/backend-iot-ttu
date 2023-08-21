@@ -4,9 +4,9 @@ namespace Public.DTO.V1.Mappers;
 
 public class ReturnNewsMapper
 {
-    public static Public.DTO.V1.News Map(BLL.DTO.V1.News data)
+    public static Public.DTO.V1.News Map(BLL.DTO.V1.News data, bool thumbnail = false)
     {
-        return new Public.DTO.V1.News()
+        var result =  new Public.DTO.V1.News()
         {
             Body = data.GetContentValue(ContentTypes.BODY),
             CreatedAt = data.CreatedAt,
@@ -16,6 +16,13 @@ public class ReturnNewsMapper
             TopicAreas = GetTopicAreaMapper.Map(data.TopicAreas),
             Image = data.Image
         };
+
+        if (thumbnail)
+        {
+            result.Image = data.ThumbnailImage;
+        }
+
+        return result;
     }
 
     public BLL.DTO.V1.News Map(Public.DTO.V1.News data)

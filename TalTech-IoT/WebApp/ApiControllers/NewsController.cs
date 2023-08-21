@@ -35,7 +35,7 @@ public class NewsController : ControllerBase
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
         var entity = _bll.NewsService.Add(bllEntity);
-        
+
         await _bll.SaveChangesAsync();
         return Ok(new
         {
@@ -54,7 +54,7 @@ public class NewsController : ControllerBase
         // TODO - filter news by author/topic
         _bll.NewsService.SetLanguageStrategy(languageCulture);
         var news = (await _bll.NewsService.AllAsyncFiltered(page, size)).ToList();
-        return news.Select(x => ReturnNewsMapper.Map(x));
+        return news.Select(x => ReturnNewsMapper.Map(x, true));
     }
 
     /// <summary>
@@ -112,6 +112,4 @@ public class NewsController : ControllerBase
             NewsId = result.Id
         });
     }
-
-
 }
