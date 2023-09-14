@@ -8,4 +8,6 @@ namespace App.BLL.Contracts;
 public interface ITopicAreaService : IBaseRepository<TopicArea>, ITopicAreaRepositoryCustom<App.Domain.TopicArea>
 {
     public Task<IEnumerable<TopicAreaWithCount>> GetTopicAreaWithCount(TopicAreaCountFilter filter);
+
+    public Task<IEnumerable<TopicArea>> GetTopicAreasWithTranslations();
 }

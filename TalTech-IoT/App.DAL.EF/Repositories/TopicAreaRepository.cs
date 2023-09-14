@@ -57,4 +57,14 @@ public class TopicAreaRepository : EFBaseRepository<App.Domain.TopicArea, AppDbC
 
         return new List<HasTopicArea>();
     }
+
+    public async Task<IEnumerable<TopicArea>> GetTopicAreasWithAllTranslations()
+    {
+        var res = await DbSet
+            .AsTracking()
+            .Include(x => x.LanguageString)
+            .ThenInclude(x => x!.LanguageStringTranslations)
+            .ToListAsync();
+        return res;
+    }
 }

@@ -25,15 +25,17 @@ public class NewsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] PostNewsDto payload)
     {
+        
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
+        Console.WriteLine("Creating News!");
         
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
         var entity = _bll.NewsService.Add(bllEntity);
-
+        
         await _bll.SaveChangesAsync();
         return Ok(new
         {
@@ -82,6 +84,9 @@ public class NewsController : ControllerBase
     public async Task<Public.DTO.V1.News> Update([FromBody] Public.DTO.V1.News data)
     {
         // TODO - when updating, should we add the language culture which one we want to update?
+        
+        // TODO - updating is with both languages!!!
+        
         // or should we just request both for updating?
         throw new NotImplementedException();
     }

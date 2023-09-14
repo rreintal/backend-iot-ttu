@@ -82,6 +82,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         page = page ?? 0;
         size = size ?? DEFAULT_PAGE_SIZE;
         
+        // TODO - error
         return await DbSet
             .AsNoTracking()
             .Include(x => x.HasTopicAreas)

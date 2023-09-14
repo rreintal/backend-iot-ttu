@@ -84,8 +84,8 @@ public class ProjectController : ControllerBase
     /// <param name="languageCulture"></param>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet]
-    public async Task<ActionResult<GetProject>> GetById(string languageCulture, Guid id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<GetProject>> Get(string languageCulture, Guid id)
     {
         _bll.ProjectService.SetLanguageStrategy(languageCulture);
         var entity = await _bll.ProjectService.FindAsync(id);

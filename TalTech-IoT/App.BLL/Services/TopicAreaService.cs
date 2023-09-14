@@ -4,6 +4,7 @@ using Base.BLL;
 using Base.Contracts;
 using BLL.DTO.V1;
 using DAL.DTO.V1.FilterObjects;
+using Public.DTO.V1.Mappers;
 
 namespace App.BLL.Services;
 
@@ -82,6 +83,11 @@ public class TopicAreaService : BaseEntityService<TopicArea, Domain.TopicArea, I
         }
 
         return result;
+    }
+
+    public async Task<IEnumerable<TopicArea>> GetTopicAreasWithTranslations()
+    {
+        return (await Uow.TopicAreaRepository.GetTopicAreasWithAllTranslations()).Select(e => Mapper.Map(e));
     }
 
 

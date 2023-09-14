@@ -42,7 +42,7 @@ builder.Services.AddCors(options =>
 // TODO Identity
 //DockerDbConnection 
 //DevDbConnection
-var connectionString = builder.Configuration.GetConnectionString("DockerDbConnection") ??
+var connectionString = builder.Configuration.GetConnectionString("DevDbConnection") ??
                        throw new InvalidOperationException("Connection string not found");
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

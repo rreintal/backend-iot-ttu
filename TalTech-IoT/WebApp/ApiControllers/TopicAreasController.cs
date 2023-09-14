@@ -65,6 +65,18 @@ public class TopicAreasController : ControllerBase
         return result;
     }
 
+    [HttpGet]
+    public async Task<IEnumerable<TopicAreaWithTranslation>> GetWithTranslation()
+    {
+        // TODO - create an object where you store list of languageCultures as method parameter {languageStringList}
+        // overkill?
+        
+        //var items = (await _bll.TopicAreaService.AllAsync()).ToList();
+        var items = (await _bll.TopicAreaService.GetTopicAreasWithTranslations()).ToList();
+
+        return TopicAreaWithTranslationMapper.Map(items);
+    }
+
     /// <summary>
     /// Get TopicAreas based on filter.
     /// </summary>

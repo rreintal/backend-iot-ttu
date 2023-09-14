@@ -57,7 +57,8 @@ RUN dotnet publish -c Release -o out
 
 
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0-bullseye-slim-amd64 AS runtime
+#FROM mcr.microsoft.com/dotnet/aspnet:7.0-bullseye-slim-amd64 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-bullseye-slim AS runtime
 WORKDIR /app
 EXPOSE 80
 
