@@ -16,6 +16,7 @@ public class TopicAreaWithTranslationMapper
                 var parent = children.ParentTopicArea;
                 if (dict.ContainsKey(parent.Id))
                 {
+
                     var childrenDto = new Public.DTO.V1.TopicAreaWithTranslation()
                     {
                         Id = children.Id,
@@ -34,9 +35,18 @@ public class TopicAreaWithTranslationMapper
                         }
                     };
                     var parentDto = dict[parent.Id];
+                    if (parentDto.ChildrenTopicAreas == null)
+                    {
+                        parentDto.ChildrenTopicAreas = new List<TopicAreaWithTranslation>() { childrenDto };
+                    }
+                    else
+                    {
+                        parentDto.ChildrenTopicAreas.Add(childrenDto);
+                    }
                     
-                    parentDto.ChildrenTopicAreas = new List<TopicAreaWithTranslation>() { childrenDto };
-                    parentDto.ChildrenTopicAreas.Add(childrenDto);
+                    
+                    //parentDto.ChildrenTopicAreas = new List<TopicAreaWithTranslation>() { childrenDto };
+                    //parentDto.ChildrenTopicAreas.Add(childrenDto);
                     
                 }
                 if (!dict.ContainsKey(parent.Id))
