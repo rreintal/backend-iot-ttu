@@ -54,14 +54,14 @@ public class TopicAreaMapper
                     var parentDto = dict[parent.Id];
                     
                     // Without this if, it produces a weird bug
-                    //if (parentDto.ChildrenTopicAreas == null)
-                    //{
+                    if (parentDto.ChildrenTopicAreas == null)
+                    {
                         parentDto.ChildrenTopicAreas = new List<TopicArea>() { childrenDto };
-                    //}
-                    //else
-                    //{
+                    }
+                    else
+                    {
                         parentDto.ChildrenTopicAreas.Add(childrenDto);
-                    //}
+                    }
                 }
                 if (!dict.ContainsKey(parent.Id))
                 {
