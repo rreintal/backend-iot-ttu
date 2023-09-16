@@ -7,7 +7,7 @@ using Public.DTO.V1.Mappers;
 
 namespace WebApp.ApiControllers;
 
-[Route("api/{languageCulture}/[controller]/[action]")]
+//[Route("api/{languageCulture}/[controller]/[action]")]
 public class NewsController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -22,7 +22,7 @@ public class NewsController : ControllerBase
     /// </summary>
     /// <param name="payload"></param>
     /// <returns></returns>
-    [HttpPost]
+    [HttpPost("api/[controller]/")]
     public async Task<IActionResult> Create([FromBody] PostNewsDto payload)
     {
         
@@ -48,7 +48,7 @@ public class NewsController : ControllerBase
     /// </summary>
     /// <param name="languageCulture"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet("api/{languageCulture}/[controller]/")]
     public async Task<IEnumerable<Public.DTO.V1.News>> Get(string languageCulture, int? page, int? size)
     {
         // TODO - filter news by author/topic
@@ -63,7 +63,7 @@ public class NewsController : ControllerBase
     /// <param name="id"></param>
     /// <param name="languageCulture"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet("api/{languageCulture}/[controller]/{id}")]
     public async Task<Public.DTO.V1.News> GetById(Guid id, string languageCulture)
     {
         _bll.NewsService.SetLanguageStrategy(languageCulture);
@@ -96,7 +96,7 @@ public class NewsController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpDelete]
+    [HttpDelete("api/[controller]/{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.NewsService.FindAsync(id);

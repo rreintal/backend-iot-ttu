@@ -12,7 +12,7 @@ namespace WebApp.ApiControllers;
 /// <summary>
 /// Controller regarding TopicAreas
 /// </summary>
-[Route("api/{languageCulture}/[controller]/[action]")]
+//[Route("api/{languageCulture}/[controller]/[action]")]
 public class TopicAreasController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -29,7 +29,7 @@ public class TopicAreasController : ControllerBase
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    [HttpPost]
+    [HttpPost("api/[controller]/")]
     public async Task<IActionResult> Create([FromBody] PostTopicAreaDto data)
     {
         var bllEntity = CreateTopicAreaMapper.Map(data);
@@ -56,7 +56,7 @@ public class TopicAreasController : ControllerBase
     /// </summary>
     /// <param name="languageCulture"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet("api/{languageCulture}/[controller]/")]
     public async Task<IEnumerable<Public.DTO.V1.TopicArea>> Get(string languageCulture)
     {
         _bll.TopicAreaService.SetLanguageStrategy(languageCulture);
@@ -64,8 +64,13 @@ public class TopicAreasController : ControllerBase
         var result = TopicAreaMapper.Map(items);
         return result;
     }
+    
+    /// <summary>
+    /// Get TopicAreas with both translations (EN/ET)
+    /// </summary>
+    /// <returns></returns>
 
-    [HttpGet]
+    [HttpGet("api/[controller]/[action]")]
     public async Task<IEnumerable<TopicAreaWithTranslation>> GetWithTranslation()
     {
         // TODO - create an object where you store list of languageCultures as method parameter {languageStringList}

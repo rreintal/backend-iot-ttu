@@ -11,7 +11,7 @@ namespace WebApp.ApiControllers;
 /// <summary>
 /// Projects controller
 /// </summary>
-[Route("api/{languageCulture}/[controller]/[action]")]
+//[Route("api/{languageCulture}/[controller]/[action]")]
 public class ProjectController : ControllerBase
 {
     private IAppBLL _bll;
@@ -26,7 +26,7 @@ public class ProjectController : ControllerBase
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    [HttpPost]
+    [HttpPost("api/[controller]/")]
     public async Task<ActionResult> Create([FromBody] Public.DTO.V1.PostProjectDto data)
     {
         // TODO - tee eraldi service ehk?
@@ -46,7 +46,8 @@ public class ProjectController : ControllerBase
     /// </summary>
     /// <param name="languageCulture"></param>
     /// <returns></returns>
-    [HttpGet]
+    /// 
+    [HttpGet("api/{languageCulture}/[controller]/")]
     public async Task<IEnumerable<GetProject>> Get(string languageCulture)
     {
         _bll.ProjectService.SetLanguageStrategy(languageCulture);
@@ -57,7 +58,7 @@ public class ProjectController : ControllerBase
     /// Delete Project
     /// </summary>
     /// <returns></returns>
-    [HttpDelete]
+    [HttpDelete("api/[controller]/{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.ProjectService.FindAsync(id);
@@ -84,7 +85,7 @@ public class ProjectController : ControllerBase
     /// <param name="languageCulture"></param>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("{id}")]
+    [HttpGet("api/{languageCulture}/[controller]/{id}")]
     public async Task<ActionResult<GetProject>> Get(string languageCulture, Guid id)
     {
         _bll.ProjectService.SetLanguageStrategy(languageCulture);
