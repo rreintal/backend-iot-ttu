@@ -66,7 +66,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             .Include(x => x.HasTopicAreas)
                 .ThenInclude(x => x.TopicArea)
                     .ThenInclude(x => x!.LanguageString)
-                        .ThenInclude(x => x!.LanguageStringTranslations)
+                        .ThenInclude(x => x!.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
             .Include(x => x.Content)
                 .ThenInclude(x => x.ContentType)
             .Include(x => x.Content)
