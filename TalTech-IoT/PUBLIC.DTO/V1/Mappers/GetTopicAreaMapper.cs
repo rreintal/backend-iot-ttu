@@ -19,7 +19,7 @@ public class GetTopicAreaMapper
                 res.Add(dtoParent);
             }
             */
-
+            
             var dtoChild = new Public.DTO.V1.GetTopicArea()
             {
                 Id = bllEntity.Id,

@@ -40,14 +40,14 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     {
         var query = await DbSet.Where(x => x.Id == id)
             .Include(x => x.HasTopicAreas)
-            .ThenInclude(x => x.TopicArea)
-            .ThenInclude(x => x!.LanguageString)
-            .ThenInclude(x => x!.LanguageStringTranslations)
-            .Include(x => x.Content)
-            .ThenInclude(x => x.ContentType)
-            .Include(x => x.Content)
-            .ThenInclude(x => x.LanguageString)
-            .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
+                .ThenInclude(x => x.TopicArea)
+                    .ThenInclude(x => x!.LanguageString)
+                        .ThenInclude(x => x!.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
+                .Include(x => x.Content)
+                    .ThenInclude(x => x.ContentType)
+                .Include(x => x.Content)
+                .ThenInclude(x => x.LanguageString)
+                    .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
             .FirstOrDefaultAsync();
         if (query == null)
         {
@@ -81,14 +81,14 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         // TODO - optimize!!!!
         page = page ?? 0;
         size = size ?? DEFAULT_PAGE_SIZE;
-        
+
         // TODO - error
         return await DbSet
             .AsNoTracking()
             .Include(x => x.HasTopicAreas)
                 .ThenInclude(x => x.TopicArea)
                     .ThenInclude(x => x!.LanguageString)
-                        .ThenInclude(x => x!.LanguageStringTranslations)
+                        .ThenInclude(x => x!.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
             .Include(x => x.Content)
                 .ThenInclude(x => x.ContentType)
             .Include(x => x.Content)
