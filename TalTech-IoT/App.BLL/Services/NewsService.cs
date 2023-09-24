@@ -4,6 +4,7 @@ using App.Domain;
 using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
+using BLL.DTO.V1;
 using ContentType = BLL.DTO.V1.ContentType;
 using News = BLL.DTO.V1.News;
 
@@ -66,7 +67,16 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         var domainObject = _mapper.Map<App.Domain.News>(entity);
         
         // Add thumbnail
-        domainObject.ThumbnailImage = ThumbnailService.Compress(domainObject.Image);
+        // TODO - check if its valid!
+        try
+        {
+            domainObject.ThumbnailImage = ThumbnailService.Compress(domainObject.Image);
+        }
+        catch (Exception e)
+        {
+            domainObject.ThumbnailImage = "IMAAGE COMPRESSING THREW AND EXCEPTION!";
+        }
+        
 
         foreach (var bllTopicArea in entity.TopicAreas)
         {
@@ -100,4 +110,118 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         return (await Uow.NewsRepository.AllAsyncFiltered(page, size)).Select(e => _mapper.Map<News>(e));
     }
     
+
+    public async Task<UpdateNews> UpdateNews(UpdateNews entity)
+    {
+        // TODO - error handling
+
+        // TODO - is it neccesary?! optimize?
+        var existingDomainObject = await Uow.NewsRepository.FindByIdWithAllTranslationsAsync(entity.Id);
+
+        // TODO - if there is no existing object with that ID!
+        // throw error
+
+        // TODO - more generic, list of languages for example?!
+        var languages = new List<string> { LanguageCulture.EST, LanguageCulture.ENG };
+        
+        // check if content has changed!
+        // TODO - helper function for detecting changes, can use for Project!
+        foreach (var lang in languages)
+        {
+            var newBodyValue = entity.GetContentValue(ContentTypes.BODY, lang);
+            var newTitleValue = entity.GetContentValue(ContentTypes.TITLE, lang);
+    
+            var oldBodyValue = existingDomainObject!.GetContentValue(ContentTypes.BODY, lang);
+            var oldTitleValue = existingDomainObject.GetContentValue(ContentTypes.TITLE, lang);
+
+            if (oldBodyValue != newBodyValue)
+            {
+                existingDomainObject.SetContentTranslationValue(ContentTypes.BODY, lang, newBodyValue);
+                existingDomainObject.SetBaseLanguage(ContentTypes.BODY, newBodyValue);
+            }
+
+            if (oldTitleValue != newTitleValue)
+            {
+                existingDomainObject.SetContentTranslationValue(ContentTypes.TITLE, lang, newTitleValue);
+                existingDomainObject.SetBaseLanguage(ContentTypes.TITLE, newBodyValue);
+            }
+        }
+        // TODO - if it has topicAreas more than 2 levels!?
+        // is it relevant? all children are linked with id
+        
+        // check if topicAreaHasChanged
+        var updateTopicAreas = false;
+        foreach (var updateDtoTopicArea in entity.TopicAreas)
+        {
+            if (existingDomainObject!.HasTopicAreas.FirstOrDefault(ta => ta.TopicAreaId == updateDtoTopicArea.Id) ==
+                null)
+            {
+                updateTopicAreas = true;
+                break;
+            }
+        }
+        
+        // update topicAreas
+        if (updateTopicAreas)
+        {
+            var newTopicAreas = new List<HasTopicArea>();
+            foreach (var bllTa in entity.TopicAreas)
+            {
+                var hasTopicAreaId = Guid.NewGuid();
+                var hasTopicArea = new App.Domain.HasTopicArea()
+                {
+                    Id = hasTopicAreaId,
+                    NewsId = existingDomainObject!.Id,
+                    TopicAreaId = bllTa.Id
+                };
+                newTopicAreas.Add(hasTopicArea);
+            }
+
+            // TODO - maybe check if the HasTopicAreas is not null?
+            // is it relevant, as its mandatory to have atelast one TopicArea
+            var unionList = existingDomainObject!.HasTopicAreas!.Union(newTopicAreas).ToList();
+            existingDomainObject.HasTopicAreas = unionList;
+        }
+        
+        Uow.NewsRepository.Update(existingDomainObject);
+        return entity;
+    }
 }
+/*
+ *
+{
+  "id": "5ae4fd34-1400-45c2-9bbf-f5b209f38091",
+  "author": "RICHARD REINTAL UUS",
+  "body": [
+    {
+      "value": "UUS BODY EESTI",
+      "culture": "et"
+    },
+{
+      "value": "NEW BODY Eng",
+      "culture": "en"
+    }
+  ],
+  "title": [
+    {
+      "value": "UUS TITLE EST",
+      "culture": "et"
+    },
+{
+      "value": "NEW TITLE ENG",
+      "culture": "en"
+    }
+  ],
+  "image": "abcdef",
+  "topicAreas": [
+    {
+      "id": "4819415b-8886-45c4-8981-8c9592b7757f"
+    },
+    { "id" : "d981490b-9aec-49f1-bc4e-73d7ae5d4862" }
+  ]
+}
+
+
+d981490b-9aec-49f1-bc4e-73d7ae5d4862
+*/
+

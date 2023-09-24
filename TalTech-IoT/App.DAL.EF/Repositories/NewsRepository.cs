@@ -35,6 +35,27 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         return res;
     }
 
+    public async Task<News?> FindByIdWithAllTranslationsAsync(Guid Id)
+    {
+        var query = await DbSet.Where(x => x.Id == Id)
+            .Include(x => x.HasTopicAreas)
+                .ThenInclude(x => x.TopicArea)
+            .ThenInclude(x => x!.LanguageString)
+                        .ThenInclude(x => x!.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
+            .Include(x => x.Content)
+                .ThenInclude(x => x.ContentType)
+            .Include(x => x.Content)
+                .ThenInclude(x => x.LanguageString)
+                    .ThenInclude(x => x.LanguageStringTranslations)
+            .FirstOrDefaultAsync();
+
+        if (query == null)
+        {
+            return null;
+        }
+
+        return query;
+    }
 
     public async override Task<Domain.News?> FindAsync(Guid id)
     {

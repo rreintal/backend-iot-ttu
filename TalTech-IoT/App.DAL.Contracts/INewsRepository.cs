@@ -10,6 +10,8 @@ public interface INewsRepository : IBaseRepository<App.Domain.News>, INewsReposi
     // DAL objects!!!
     //TEntity Add(TEntity entity);
     public Task<IEnumerable<App.Domain.News>> AllAsyncFiltered(int? page, int? size);
+
+    public Task<App.Domain.News?> FindByIdWithAllTranslationsAsync(Guid Id);
 }
 
 public interface INewsRepositoryCustom<TEntity>

@@ -1,5 +1,6 @@
 using System.Net;
 using App.BLL.Contracts;
+using App.DAL.EF;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1;
@@ -79,16 +80,22 @@ public class NewsController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    [Obsolete("Not implemented")]
-    [HttpPut]
-    public async Task<Public.DTO.V1.News> Update([FromBody] Public.DTO.V1.News data)
+    [HttpPut("api/{languageCulture}/[controller]/")]
+    public async Task<ActionResult> Update([FromBody] Public.DTO.V1.UpdateNews data)
     {
         // TODO - when updating, should we add the language culture which one we want to update?
         
         // TODO - updating is with both languages!!!
-        
-        // or should we just request both for updating?
-        throw new NotImplementedException();
+        var bllEntity = UpdateNewsMapper.Map(data);
+        var result = await _bll.NewsService.UpdateNews(bllEntity);
+
+        await _bll.SaveChangesAsync();
+
+        return Ok(new RestApiResponse()
+        {
+            Message = $"Updated news. id={result.Id}",
+            StatusCode = 200
+        });
     }
 
     /// <summary>

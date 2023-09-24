@@ -9,4 +9,5 @@ public interface INewsService : IBaseRepository<News>
     public Task<List<ContentType>> GetContentTypes();
     
     public Task<IEnumerable<News>> AllAsyncFiltered(int? page, int? size);
+    public Task<UpdateNews> UpdateNews(UpdateNews entity);
 }
