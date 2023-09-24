@@ -186,6 +186,12 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         Uow.NewsRepository.Update(existingDomainObject);
         return entity;
     }
+
+    public async Task<News> FindByIdAllTranslationsAsync(Guid id)
+    {
+         var entity = await Uow.NewsRepository.FindByIdWithAllTranslationsAsync(id);
+         return _mapper.Map<News>(entity);
+    }
 }
 /*
  *

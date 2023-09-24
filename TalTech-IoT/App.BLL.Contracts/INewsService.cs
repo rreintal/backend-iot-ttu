@@ -10,4 +10,6 @@ public interface INewsService : IBaseRepository<News>
     
     public Task<IEnumerable<News>> AllAsyncFiltered(int? page, int? size);
     public Task<UpdateNews> UpdateNews(UpdateNews entity);
+
+    public Task<News> FindByIdAllTranslationsAsync(Guid id);
 }

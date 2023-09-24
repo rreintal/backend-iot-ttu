@@ -122,4 +122,11 @@ public class NewsController : ControllerBase
             NewsId = result.Id
         });
     }
+
+    [HttpGet("api/[controller]/Preview/{id}")]
+    public async Task<Public.DTO.V1.NewsAllLangs> GetNewsAllLanguages(Guid id)
+    {
+        var entity = await _bll.NewsService.FindByIdAllTranslationsAsync(id);
+        return NewsAllLangMapper.Map(entity);
+    }
 }

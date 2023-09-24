@@ -7,5 +7,7 @@ public class LanguageCulture
     
     public static string EST = "et";
     public static string ENG = "en";
-    
+
+    public static List<string> ALL_LANGUAGES = new List<string>() { EST, ENG };
+
 }
