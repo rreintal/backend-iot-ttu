@@ -5,3 +5,9 @@ public abstract class DomainEntityId : IDomainEntityId
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 }
+
+/*
+ * DomainEntityId A
+ * BLLContainsContent -> method
+ * News
+*/

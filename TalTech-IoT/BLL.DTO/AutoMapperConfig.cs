@@ -1,8 +1,6 @@
-using System.Security.Cryptography.X509Certificates;
 using App.Domain;
 using App.Domain.Translations;
 using AutoMapper;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace BLL.DTO;
 
@@ -42,6 +40,12 @@ public class AutoMapperConfig : Profile
                 s => s.MapFrom(x => x.TopicArea!.LanguageString))
             .ForMember(d => d.LanguageStringId,
                 s => s.MapFrom(x => x.TopicArea!.LanguageStringId));
-        
+
+        CreateMap<BLL.DTO.V1.TopicArea, DAL.DTO.V1.TopicArea>();
+        CreateMap<BLL.DTO.V1.UpdateNews, DAL.DTO.V1.UpdateNews>()
+            .ReverseMap();
+        CreateMap<BLL.DTO.V1.RawContent, DAL.DTO.V1.RawContent>()
+            .ReverseMap();
+
     }
 }

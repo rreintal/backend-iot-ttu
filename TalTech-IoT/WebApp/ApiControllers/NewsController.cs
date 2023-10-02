@@ -80,7 +80,7 @@ public class NewsController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    [HttpPut("api/{languageCulture}/[controller]/")]
+    [HttpPut("api/[controller]/")]
     public async Task<ActionResult> Update([FromBody] Public.DTO.V1.UpdateNews data)
     {
         // TODO - when updating, should we add the language culture which one we want to update?

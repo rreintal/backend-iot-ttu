@@ -12,6 +12,8 @@ public interface INewsRepository : IBaseRepository<App.Domain.News>, INewsReposi
     public Task<IEnumerable<App.Domain.News>> AllAsyncFiltered(int? page, int? size);
 
     public Task<App.Domain.News?> FindByIdWithAllTranslationsAsync(Guid Id);
+
+    public Task<App.Domain.News> Update(UpdateNews entity);
 }
 
 public interface INewsRepositoryCustom<TEntity>

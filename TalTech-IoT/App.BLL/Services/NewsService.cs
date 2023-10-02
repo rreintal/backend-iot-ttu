@@ -113,77 +113,9 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
     public async Task<UpdateNews> UpdateNews(UpdateNews entity)
     {
-        // TODO - error handling
-
-        // TODO - is it neccesary?! optimize?
-        var existingDomainObject = await Uow.NewsRepository.FindByIdWithAllTranslationsAsync(entity.Id);
-
-        // TODO - if there is no existing object with that ID!
-        // throw error
-
-        // TODO - more generic, list of languages for example?!
-        var languages = new List<string> { LanguageCulture.EST, LanguageCulture.ENG };
-        
-        // check if content has changed!
-        // TODO - helper function for detecting changes, can use for Project!
-        foreach (var lang in languages)
-        {
-            var newBodyValue = entity.GetContentValue(ContentTypes.BODY, lang);
-            var newTitleValue = entity.GetContentValue(ContentTypes.TITLE, lang);
-    
-            var oldBodyValue = existingDomainObject!.GetContentValue(ContentTypes.BODY, lang);
-            var oldTitleValue = existingDomainObject.GetContentValue(ContentTypes.TITLE, lang);
-
-            if (oldBodyValue != newBodyValue)
-            {
-                existingDomainObject.SetContentTranslationValue(ContentTypes.BODY, lang, newBodyValue);
-                existingDomainObject.SetBaseLanguage(ContentTypes.BODY, newBodyValue);
-            }
-
-            if (oldTitleValue != newTitleValue)
-            {
-                existingDomainObject.SetContentTranslationValue(ContentTypes.TITLE, lang, newTitleValue);
-                existingDomainObject.SetBaseLanguage(ContentTypes.TITLE, newBodyValue);
-            }
-        }
-        // TODO - if it has topicAreas more than 2 levels!?
-        // is it relevant? all children are linked with id
-        
-        // check if topicAreaHasChanged
-        var updateTopicAreas = false;
-        foreach (var updateDtoTopicArea in entity.TopicAreas)
-        {
-            if (existingDomainObject!.HasTopicAreas.FirstOrDefault(ta => ta.TopicAreaId == updateDtoTopicArea.Id) ==
-                null)
-            {
-                updateTopicAreas = true;
-                break;
-            }
-        }
-        
-        // update topicAreas
-        if (updateTopicAreas)
-        {
-            var newTopicAreas = new List<HasTopicArea>();
-            foreach (var bllTa in entity.TopicAreas)
-            {
-                var hasTopicAreaId = Guid.NewGuid();
-                var hasTopicArea = new App.Domain.HasTopicArea()
-                {
-                    Id = hasTopicAreaId,
-                    NewsId = existingDomainObject!.Id,
-                    TopicAreaId = bllTa.Id
-                };
-                newTopicAreas.Add(hasTopicArea);
-            }
-
-            // TODO - maybe check if the HasTopicAreas is not null?
-            // is it relevant, as its mandatory to have atelast one TopicArea
-            var unionList = existingDomainObject!.HasTopicAreas!.Union(newTopicAreas).ToList();
-            existingDomainObject.HasTopicAreas = unionList;
-        }
-        
-        Uow.NewsRepository.Update(existingDomainObject);
+        var dalEntity = _mapper.Map<global::DAL.DTO.V1.UpdateNews>(entity);
+        await Uow.NewsRepository.Update(dalEntity);
+        await Uow.SaveChangesAsync();
         return entity;
     }
 
@@ -223,7 +155,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     {
       "id": "4819415b-8886-45c4-8981-8c9592b7757f"
     },
-    { "id" : "d981490b-9aec-49f1-bc4e-73d7ae5d4862" }
+    { "id" : "c1999007-1a3a-47a1-bc7b-951ec1940353" }
   ]
 }
 

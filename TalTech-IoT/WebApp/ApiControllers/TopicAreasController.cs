@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Public.DTO.ApiExceptions;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
+using TopicArea = BLL.DTO.V1.TopicArea;
 
 namespace WebApp.ApiControllers;
 
@@ -45,10 +46,10 @@ public class TopicAreasController : ControllerBase
         {
             throw new ValueAlreadyExistsException(entity.GetName());
         }
-        
+
         return Ok(new
         {
-            TopicAreaId = entity.Id.ToString()
+            Id = entity.Id
         });
     }
     /// <summary>
