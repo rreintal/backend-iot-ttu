@@ -1,8 +1,9 @@
+using App.Domain.Contracts;
 using Base.Domain;
 
 namespace App.Domain;
 
-public class News : DomainEntityIdMetaData
+public class News : DomainEntityIdMetaData, IHasTopicAreaEntity, IContentEntity
 {
     public ICollection<Content> Content { get; set; } = default!;
     public ICollection<HasTopicArea> HasTopicAreas { get; set; } = default!;

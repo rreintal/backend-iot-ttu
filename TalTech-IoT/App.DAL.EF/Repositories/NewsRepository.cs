@@ -34,15 +34,8 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     {
         
         var query = await DbSet.Where(x => x.Id == Id)
-            .Include(x => x.HasTopicAreas)
-                .ThenInclude(x => x.TopicArea)
-            .ThenInclude(x => x!.LanguageString)
-                        .ThenInclude(x => x!.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
-            .Include(x => x.Content)
-                .ThenInclude(x => x.ContentType)
-            .Include(x => x.Content)
-                .ThenInclude(x => x.LanguageString)
-                    .ThenInclude(x => x.LanguageStringTranslations)
+            .IncludeHasTopicAreasWithTranslation()
+            .IncludeContentWithTranslation()
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
@@ -143,15 +136,8 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     public async override Task<Domain.News?> FindAsync(Guid id)
     {
         var query = await DbSet.Where(x => x.Id == id)
-            .Include(x => x.HasTopicAreas)
-                .ThenInclude(x => x.TopicArea)
-                    .ThenInclude(x => x!.LanguageString)
-                        .ThenInclude(x => x!.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
-                .Include(x => x.Content)
-                    .ThenInclude(x => x.ContentType)
-                .Include(x => x.Content)
-                .ThenInclude(x => x.LanguageString)
-                    .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
+            .IncludeHasTopicAreasWithTranslation(languageCulture)
+            .IncludeContentWithTranslation(languageCulture)
             .FirstOrDefaultAsync();
         if (query == null)
         {
@@ -168,15 +154,8 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     {
         
         return await DbSet
-            .Include(x => x.HasTopicAreas)
-                .ThenInclude(x => x.TopicArea)
-                    .ThenInclude(x => x!.LanguageString)
-                        .ThenInclude(x => x!.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
-            .Include(x => x.Content)
-                .ThenInclude(x => x.ContentType)
-            .Include(x => x.Content)
-                .ThenInclude(x => x.LanguageString)
-                    .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
+            .IncludeHasTopicAreasWithTranslation(languageCulture)
+            .IncludeContentWithTranslation(languageCulture)
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
     }
@@ -190,15 +169,8 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         // TODO - error
         return await DbSet
             .AsNoTracking()
-            .Include(x => x.HasTopicAreas)
-                .ThenInclude(x => x.TopicArea)
-                    .ThenInclude(x => x!.LanguageString)
-                        .ThenInclude(x => x!.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
-            .Include(x => x.Content)
-                .ThenInclude(x => x.ContentType)
-            .Include(x => x.Content)
-                .ThenInclude(x => x.LanguageString)
-                    .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
+            .IncludeHasTopicAreasWithTranslation(languageCulture)
+            .IncludeContentWithTranslation(languageCulture)
             .OrderByDescending(x => x.CreatedAt)
                 .Skip(page.Value * size.Value)
                 .Take(size.Value)
