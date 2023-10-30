@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Factory\Factory.csproj" />
       <ProjectReference Include="..\WebApp\WebApp.csproj" />
     </ItemGroup>
 
