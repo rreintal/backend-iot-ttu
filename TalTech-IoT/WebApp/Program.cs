@@ -178,3 +178,5 @@ static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment environmen
         context.SaveChanges();
     }
 }
+
+public partial class Program { }

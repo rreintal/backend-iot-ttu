@@ -16,6 +16,7 @@ public class ReturnNewsMapper
             TopicAreas = GetTopicAreaMapper.Map(data.TopicAreas),
             Image = data.Image
         };
+        // TODO - viga on äkki DOMAIN - BLL mappingus!
 
         if (thumbnail)
         {

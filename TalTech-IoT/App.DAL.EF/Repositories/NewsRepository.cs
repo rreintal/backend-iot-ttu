@@ -1,4 +1,5 @@
 using App.DAL.Contracts;
+using App.DAL.EF.DbExtensions;
 using App.Domain;
 using AutoMapper;
 using Base.DAL.EF;
@@ -152,7 +153,6 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     // need HasTopicArea-d oleks mpaitud juba TopicArea
     public override async Task<IEnumerable<App.Domain.News>> AllAsync()
     {
-        
         return await DbSet
             .IncludeHasTopicAreasWithTranslation(languageCulture)
             .IncludeContentWithTranslation(languageCulture)
