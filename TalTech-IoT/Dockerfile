@@ -24,6 +24,9 @@ COPY App.Domain/*.csproj ./App.Domain/
 COPY Base.BLL.Contracts/*.csproj ./Base.BLL.Contracts/
 COPY Base.DAL.EF/*.csproj ./Base.DAL.EF/
 COPY Base.Domain.Contracts/*.csproj ./Base.Domain.Contracts/
+COPY Integration/*.csproj ./Integration/
+COPY Factory/*.csproj ./Factory/
+COPY Util/*.csproj ./Util/
 
 RUN dotnet restore
 
@@ -46,6 +49,9 @@ COPY App.Domain/. ./App.Domain/
 COPY Base.BLL.Contracts/. ./Base.BLL.Contracts/
 COPY Base.DAL.EF/. ./Base.DAL.EF/
 COPY Base.Domain.Contracts/. ./Base.Domain.Contracts/
+COPY Integration/. ./Integration/
+COPY Factory/. ./Factory/
+COPY Util/. ./Util/
 
 
 WORKDIR /src/WebApp

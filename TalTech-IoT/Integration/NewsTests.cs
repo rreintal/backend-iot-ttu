@@ -19,6 +19,7 @@ public class NewsTests : IClassFixture<WebApplicationFactory<Program>>
     private readonly WebApplicationFactory<Program> _factory;
     private readonly ITestOutputHelper _testOutputHelper;
 
+    
     public NewsTests(ITestOutputHelper testOutputHelper)
     {
         // TODO: Küsi Käverilt kuidas siia panna ainult teine db connectionstring?
@@ -44,7 +45,6 @@ public class NewsTests : IClassFixture<WebApplicationFactory<Program>>
     
     // TODO : Populate db before running tests!!
     // maybe add a sequence to run tests or smth?!
-    
     [Fact]
     public async void AddNews()
     {

@@ -25,8 +25,6 @@ public static class MyCustomDbExtensions
                 .ThenInclude(x => x.TopicArea)
                 .ThenInclude(x => x!.LanguageString)
                 .ThenInclude(x => x!.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture));
-        
-        
 
         return result;
     }
