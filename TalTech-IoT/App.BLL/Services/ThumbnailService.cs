@@ -18,8 +18,8 @@ public class ThumbnailService : IThumbnailService
         using (var originalBitmap = SKBitmap.Decode(stream))
         {
             // Set the size of the thumbnail
-            int thumbnailWidth = 250;
-            int thumbnailHeight = 250;
+            int thumbnailWidth = 1000; // 16
+            int thumbnailHeight = 562; // 9
 
             // Create a new SKBitmap for the thumbnail
             using (var thumbnailBitmap = originalBitmap.Resize(new SKImageInfo(thumbnailWidth, thumbnailHeight), SKBitmapResizeMethod.Lanczos3))

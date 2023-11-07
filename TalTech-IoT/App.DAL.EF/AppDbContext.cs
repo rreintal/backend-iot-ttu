@@ -68,13 +68,17 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         // Thats why we use "TopicAreaId" instead of [TopicAreaId] as shown in the officaly documentation.
         
         // TODO - kas filter peaks kehtima ainult neile topicutele, millel pole ParentTopicId?
+        // TODO - seda checki service tasandil, kas selline eksisteerib juba
         builder.Entity<LanguageString>()
             .HasIndex(x => x.Value)
             .IsUnique()
             .HasFilter(TopicAreaUniqueNameExpression);
         
+        //builder.Entity<LanguageString>()
+        //        .HasIndex(x => new { x.Value, x.TopicAreaId })
+        //      .IsUnique();
+        // private const string TopicAreaUniqueNameExpression = "\"TopicAreaId\" IS NOT NULL";
 
-        
         // disable cascade delete
         foreach (var relationship in builder.Model
                      .GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
