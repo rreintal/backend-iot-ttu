@@ -66,6 +66,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     {
         var domainObject = _mapper.Map<App.Domain.News>(entity);
         
+        
         // Add thumbnail
         // TODO - check if its valid!
         try

@@ -1,4 +1,5 @@
 using App.DAL.Contracts;
+using App.DAL.EF.DbExceptions;
 using App.Domain;
 using AutoMapper;
 using Base.DAL.EF;
@@ -15,6 +16,28 @@ public class TopicAreaRepository : EFBaseRepository<App.Domain.TopicArea, AppDbC
     public TopicAreaRepository(AppDbContext dataContext, IMapper mapper) : base(dataContext, mapper)
     {
         
+    }
+
+    // TODO - eraldi klass/objekt, mis seda kontrollib!
+    private bool TopicAreaWithThisNameExists(TopicArea entity)
+    {
+        return DbSet.Any(ta => ta.LanguageString!.Value == entity.LanguageString!.Value);
+    }
+
+    
+    
+    public override TopicArea Add(TopicArea entity)
+    {
+        // TODO - tee mingi index, value pealt äkki ja kasuta seda?
+        if (TopicAreaWithThisNameExists(entity))
+        {
+            throw new DbValidationExceptions()
+            {
+                ErrorMessage = "NAME_ALREADY_EXISTS",
+                ErrorCode = 400
+            };
+        }
+        return base.Add(entity);
     }
 
     public async override Task<IEnumerable<TopicArea>> AllAsync()

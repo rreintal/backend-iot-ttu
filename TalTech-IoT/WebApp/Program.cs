@@ -1,4 +1,4 @@
-using App.BLL;
+giusing App.BLL;
 using App.BLL.Contracts;
 using App.DAL.Contracts;
 using App.DAL.EF;
@@ -43,7 +43,7 @@ builder.Services.AddCors(options =>
 //DockerDbConnection 
 //DevDbConnection
 // TestDbConnection
-var connectionString = builder.Configuration.GetConnectionString("DevDbConnection") ??
+var connectionString = builder.Configuration.GetConnectionString("DockerDbConnection") ??
                        throw new InvalidOperationException("Connection string not found");
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

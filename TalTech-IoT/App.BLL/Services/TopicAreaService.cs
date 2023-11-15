@@ -18,7 +18,6 @@ public class TopicAreaService : BaseEntityService<TopicArea, Domain.TopicArea, I
         Uow = uow;
     }
 
-
     public async Task<IEnumerable<TopicAreaWithCount>> GetTopicAreaWithCount(TopicAreaCountFilter filter)
     {
         

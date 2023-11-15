@@ -1,8 +1,10 @@
 using App.BLL.Contracts;
+using App.DAL.EF.DbExceptions;
 using AutoMapper;
 using DAL.DTO.V1.FilterObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Public.DTO;
 using Public.DTO.ApiExceptions;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
@@ -34,24 +36,25 @@ public class TopicAreasController : ControllerBase
     public async Task<IActionResult> Create([FromBody] PostTopicAreaDto data)
     {
         var bllEntity = CreateTopicAreaMapper.Map(data);
-        var entity = _bll.TopicAreaService.Add(bllEntity);
+        Console.WriteLine("OLEN SIIN!");
         try
         {
-            await _bll.SaveChangesAsync();
+            var entity = _bll.TopicAreaService.Add(bllEntity);
+            return Ok(new
+            {
+                Id = entity.Id
+            });
         }
-        
-        // If Topic Area with that name already exists then it throws that error!
-        // All Topic Areas must be with unique name.
-        catch (DbUpdateException e)
+        catch (DbValidationExceptions myException)
         {
-            throw new ValueAlreadyExistsException(entity.GetName());
+            return BadRequest(new RestApiResponse()
+            {
+                Message = myException.ErrorMessage,
+                StatusCode = myException.ErrorCode
+            });
         }
-
-        return Ok(new
-        {
-            Id = entity.Id
-        });
     }
+    
     /// <summary>
     /// Get all TopicAreas
     /// </summary>
