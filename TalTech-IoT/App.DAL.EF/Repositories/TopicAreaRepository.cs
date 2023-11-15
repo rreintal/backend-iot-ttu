@@ -21,7 +21,14 @@ public class TopicAreaRepository : EFBaseRepository<App.Domain.TopicArea, AppDbC
     // TODO - eraldi klass/objekt, mis seda kontrollib!
     private bool TopicAreaWithThisNameExists(TopicArea entity)
     {
-        return DbSet.Any(ta => ta.LanguageString!.Value == entity.LanguageString!.Value);
+        var entityTranslationValues = entity.LanguageString!.LanguageStringTranslations
+            .Select(elt => elt.TranslationValue)
+            .ToList();
+
+        return DbSet
+            .SelectMany(ta => ta.LanguageString!.LanguageStringTranslations!)
+            .Select(lst => lst.TranslationValue)
+            .Any(lstValue => entityTranslationValues.Contains(lstValue));
     }
 
     
