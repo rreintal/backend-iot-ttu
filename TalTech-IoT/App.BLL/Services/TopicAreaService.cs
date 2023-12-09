@@ -4,7 +4,7 @@ using Base.BLL;
 using Base.Contracts;
 using BLL.DTO.V1;
 using DAL.DTO.V1.FilterObjects;
-using Public.DTO.V1.Mappers;
+
 
 namespace App.BLL.Services;
 
@@ -18,10 +18,10 @@ public class TopicAreaService : BaseEntityService<TopicArea, Domain.TopicArea, I
         Uow = uow;
     }
 
-    public async Task<IEnumerable<TopicAreaWithCount>> GetTopicAreaWithCount(TopicAreaCountFilter filter)
+    public async Task<IEnumerable<TopicAreaWithCount>> GetTopicAreaWithCount(TopicAreaCountFilter filter, string languageCulture)
     {
         
-        var domainObjects = await Uow.TopicAreaRepository.GetHasTopicArea(filter);
+        var domainObjects = await Uow.TopicAreaRepository.GetHasTopicArea(filter, languageCulture);
         
         var bufferDict = new Dictionary<Guid, TopicAreaWithCount>();
         var result = new List<TopicAreaWithCount>();
@@ -84,9 +84,14 @@ public class TopicAreaService : BaseEntityService<TopicArea, Domain.TopicArea, I
         return result;
     }
 
-    public async Task<IEnumerable<TopicArea>> GetTopicAreasWithTranslations()
+    public async Task<IEnumerable<TopicArea>> AllAsync()
     {
-        return (await Uow.TopicAreaRepository.GetTopicAreasWithAllTranslations()).Select(e => Mapper.Map(e));
+        return (await Uow.TopicAreaRepository.AllAsync()).Select(e => Mapper.Map(e));
+    }
+    
+    public async Task<IEnumerable<TopicArea>> AllAsync(string? languageCulture)
+    {
+        return (await Uow.TopicAreaRepository.AllAsync(languageCulture)).Select(e => Mapper.Map(e));
     }
 
 
@@ -101,5 +106,10 @@ public class TopicAreaService : BaseEntityService<TopicArea, Domain.TopicArea, I
             }
         }
         return false;
+    }
+
+    public Task<TopicArea?> FindAsync(Guid id, string? languageCulture)
+    {
+        throw new NotImplementedException();
     }
 }

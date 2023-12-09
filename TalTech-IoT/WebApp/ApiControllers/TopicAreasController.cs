@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Mime;
 using App.BLL.Contracts;
 using App.DAL.EF.DbExceptions;
 using AutoMapper;
@@ -31,15 +33,36 @@ public class TopicAreasController : ControllerBase
     /// Create TopicArea
     /// </summary>
     /// <param name="data"></param>
+    /// <response code="409">TOPIC_AREA_CREATE_PARENT_DOES_NOT_EXIST, TOPIC_AREA_CREATE_NAME_EXISTS</response>
+    /// <remarks>
+    /// Sample request:
+    ///
+    /// {
+    ///     "parentTopicId" : "parent-id",
+    ///     "name" : [
+    ///         {
+    ///             "Value": "Robootika",
+    ///             "Culutre": "et"
+    ///         },
+    ///         {
+    ///             "Value": "Robotics",
+    ///             "Culutre": "en"
+    ///         }
+    ///         ]
+    /// }
+    /// </remarks>
     /// <returns></returns>
     [HttpPost("api/[controller]/")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Create([FromBody] PostTopicAreaDto data)
     {
         var bllEntity = CreateTopicAreaMapper.Map(data);
-        Console.WriteLine("OLEN SIIN!");
         try
         {
             var entity = _bll.TopicAreaService.Add(bllEntity);
+            await _bll.SaveChangesAsync();
             return Ok(new
             {
                 Id = entity.Id
@@ -49,8 +72,8 @@ public class TopicAreasController : ControllerBase
         {
             return BadRequest(new RestApiResponse()
             {
-                Message = myException.ErrorMessage,
-                StatusCode = myException.ErrorCode
+                Error = "value already exists",
+                Status = HttpStatusCode.Conflict
             });
         }
     }
@@ -63,8 +86,7 @@ public class TopicAreasController : ControllerBase
     [HttpGet("api/{languageCulture}/[controller]/")]
     public async Task<IEnumerable<Public.DTO.V1.TopicArea>> Get(string languageCulture)
     {
-        _bll.TopicAreaService.SetLanguageStrategy(languageCulture);
-        var items = (await _bll.TopicAreaService.AllAsync()).ToList();
+        var items = (await _bll.TopicAreaService.AllAsync(languageCulture)).ToList();
         var result = TopicAreaMapper.Map(items);
         return result;
     }
@@ -80,8 +102,7 @@ public class TopicAreasController : ControllerBase
         // TODO - create an object where you store list of languageCultures as method parameter {languageStringList}
         // overkill?
         
-        //var items = (await _bll.TopicAreaService.AllAsync()).ToList();
-        var items = (await _bll.TopicAreaService.GetTopicAreasWithTranslations()).ToList();
+        var items = (await _bll.TopicAreaService.AllAsync()).ToList();
 
         return TopicAreaWithTranslationMapper.Map(items);
     }
@@ -96,15 +117,13 @@ public class TopicAreasController : ControllerBase
     [HttpGet]
     public async Task<IEnumerable<TopicAreaWithCount>> GetWithCount(string languageCulture, bool? News, bool? Projects)
     {
-        _bll.TopicAreaService.SetLanguageStrategy(languageCulture);
-        
         var filter = new TopicAreaCountFilter()
         {
             News = News,
             Projects = Projects
         };
         
-        var result = await _bll.TopicAreaService.GetTopicAreaWithCount(filter);
+        var result = await _bll.TopicAreaService.GetTopicAreaWithCount(filter, languageCulture);
         return result.Select(e => TopicAreaWithCountMapper.Map(e));
     }
 }

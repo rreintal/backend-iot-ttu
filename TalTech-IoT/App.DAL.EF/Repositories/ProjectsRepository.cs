@@ -12,34 +12,34 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
     {
     }
 
-    public async override Task<IEnumerable<Project>> AllAsync()
+    public async Task<IEnumerable<Project>> AllAsync(string? languageString)
     {
         var res = await DbSet
             .Include(x => x.HasTopicAreas)
-                .ThenInclude(x => x.TopicArea)
-                    .ThenInclude(x => x!.LanguageString)
-                        .ThenInclude(x => x!.LanguageStringTranslations)
+            .ThenInclude(x => x.TopicArea)
+            .ThenInclude(x => x!.LanguageString)
+            .ThenInclude(x => x!.LanguageStringTranslations)
             .Include(x => x.Content)
-                .ThenInclude(x => x.ContentType)
+            .ThenInclude(x => x.ContentType)
             .Include(x => x.Content)
-                .ThenInclude(x => x.LanguageString)
-                    .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
+            .ThenInclude(x => x.LanguageString)
+            .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageString))
             .ToListAsync();
         return res;
     }
 
-    public async Task<Project?> FindAsync(Guid id)
+    public async Task<Project?> FindAsync(Guid id, string? languageCulture)
     {
         var query = await DbSet.Where(x => x.Id == id)
             .Include(x => x.HasTopicAreas)
-                .ThenInclude(x => x.TopicArea)
-                    .ThenInclude(x => x!.LanguageString)
-                        .ThenInclude(x => x!.LanguageStringTranslations)
+            .ThenInclude(x => x.TopicArea)
+            .ThenInclude(x => x!.LanguageString)
+            .ThenInclude(x => x!.LanguageStringTranslations)
             .Include(x => x.Content)
-                .ThenInclude(x => x.ContentType)
+            .ThenInclude(x => x.ContentType)
             .Include(x => x.Content)
-                .ThenInclude(x => x.LanguageString)
-                    .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
+            .ThenInclude(x => x.LanguageString)
+            .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
             .FirstOrDefaultAsync();
         if (query == null)
         {
@@ -47,6 +47,5 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
         }
 
         return query;
-
     }
 }

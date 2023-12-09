@@ -23,11 +23,7 @@ public class EFBaseRepository<TEntity, TKey, TDbContext> : IBaseRepository<TEnti
     protected TDbContext DbContext;
     protected DbSet<TEntity> DbSet;
     protected IMapper _mapper;
-    
-    // in order to select the correct languageString value.
-    // default is EST.
-    public string? languageCulture { get; set; } = "et";
-    
+
     public EFBaseRepository(TDbContext dbContext, IMapper mapper)
     {
         DbContext = dbContext;
@@ -37,11 +33,6 @@ public class EFBaseRepository<TEntity, TKey, TDbContext> : IBaseRepository<TEnti
         
         _mapper = mapper;
         DbSet = dbContext.Set<TEntity>();
-    }
-
-    public void SetLanguageStrategy(string languageCulture)
-    {
-        this.languageCulture = languageCulture;
     }
 
     public virtual async Task<IEnumerable<TEntity>> AllAsync()

@@ -18,9 +18,34 @@ public class TopicAreaRepository : EFBaseRepository<App.Domain.TopicArea, AppDbC
         
     }
 
+    public async override Task<IEnumerable<TopicArea>> AllAsync()
+    {
+        var res = await DbSet
+            .Include(x => x.LanguageString)
+            .ThenInclude(x => x!.LanguageStringTranslations)
+            .ToListAsync();
+        return res;
+    }
+
+    public async Task<IEnumerable<TopicArea>> AllAsync(string? languageString)
+    {
+        var res = await DbSet
+            .Include(x => x.LanguageString)
+            .ThenInclude(x => x!.LanguageStringTranslations.Where(x => x.LanguageCulture == languageString))
+            .ToListAsync();
+        return res;
+    }
+
+    public Task<TopicArea?> FindAsync(Guid id, string? languageCulture)
+    {
+        throw new NotImplementedException();
+    }
+    
+    
     // TODO - eraldi klass/objekt, mis seda kontrollib!
     private bool TopicAreaWithThisNameExists(TopicArea entity)
     {
+        // TODO : REFACTORI KERGEMAKS!! EI OLE VAJA LISTI SAADA!
         var entityTranslationValues = entity.LanguageString!.LanguageStringTranslations
             .Select(elt => elt.TranslationValue)
             .ToList();
@@ -47,19 +72,7 @@ public class TopicAreaRepository : EFBaseRepository<App.Domain.TopicArea, AppDbC
         return base.Add(entity);
     }
 
-    public async override Task<IEnumerable<TopicArea>> AllAsync()
-    {
-        var res =await DbSet
-            .AsTracking()
-            .Include(x => x.LanguageString)
-            .ThenInclude(x => x!.LanguageStringTranslations
-                .Where(x => x.LanguageCulture == languageCulture))
-            .ToListAsync();
-        return res;
-
-    }
-
-    public async Task<IEnumerable<HasTopicArea>> GetHasTopicArea(TopicAreaCountFilter filter)
+    public async Task<IEnumerable<HasTopicArea>> GetHasTopicArea(TopicAreaCountFilter filter, string languageCulture)
     {
         // Võiks olla eraldi repo, aga ühe meetodi jaoks, ei näe vajadust.
         
@@ -86,15 +99,5 @@ public class TopicAreaRepository : EFBaseRepository<App.Domain.TopicArea, AppDbC
         }
 
         return new List<HasTopicArea>();
-    }
-
-    public async Task<IEnumerable<TopicArea>> GetTopicAreasWithAllTranslations()
-    {
-        var res = await DbSet
-            .AsTracking()
-            .Include(x => x.LanguageString)
-            .ThenInclude(x => x!.LanguageStringTranslations)
-            .ToListAsync();
-        return res;
     }
 }

@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Mime;
 using App.BLL.Contracts;
 using App.DAL.EF;
 using Microsoft.AspNetCore.Mvc;
@@ -24,9 +25,12 @@ public class NewsController : ControllerBase
     /// <param name="payload"></param>
     /// <returns></returns>
     [HttpPost("api/[controller]/")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] PostNewsDto payload)
     {
-        
+        // TODO - TopicArea to optional
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
@@ -50,11 +54,14 @@ public class NewsController : ControllerBase
     /// <param name="languageCulture"></param>
     /// <returns></returns>
     [HttpGet("api/{languageCulture}/[controller]/")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IEnumerable<Public.DTO.V1.News>> Get(string languageCulture, int? page, int? size)
     {
         // TODO - filter news by author/topic
-        _bll.NewsService.SetLanguageStrategy(languageCulture);
-        var news = (await _bll.NewsService.AllAsyncFiltered(page, size)).ToList();
+        var news = (await _bll.NewsService.AllAsyncFiltered(page, size, languageCulture)).ToList();
         return news.Select(x => ReturnNewsMapper.Map(x, true));
     }
 
@@ -65,15 +72,26 @@ public class NewsController : ControllerBase
     /// <param name="languageCulture"></param>
     /// <returns></returns>
     [HttpGet("api/{languageCulture}/[controller]/{id}")]
-    public async Task<Public.DTO.V1.News> GetById(Guid id, string languageCulture)
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Public.DTO.V1.News>> GetById(Guid id, string languageCulture)
     {
-        _bll.NewsService.SetLanguageStrategy(languageCulture);
-        var bllEntity = await _bll.NewsService.FindAsync(id);
+        var bllEntity = await _bll.NewsService.FindAsync(id, languageCulture);
+        if (bllEntity == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Error = RestApiResponseError.NotFound,
+                Status = HttpStatusCode.NotFound
+            });
+            
+        }
         var res = ReturnNewsMapper.Map(bllEntity);
         return res;
     }
 
-    
     /// <summary>
     /// Update News
     /// </summary>
@@ -93,8 +111,8 @@ public class NewsController : ControllerBase
 
         return Ok(new RestApiResponse()
         {
-            Message = $"Updated news. id={result.Id}",
-            StatusCode = 200
+            Error = $"Updated news. id={result.Id}",
+            Status = HttpStatusCode.OK
         });
     }
 
@@ -111,8 +129,8 @@ public class NewsController : ControllerBase
         {
             return NotFound(new RestApiResponse()
             {
-                Message = $"News with id {id.ToString()} not found.",
-                StatusCode = (int)HttpStatusCode.NotFound
+                Error = $"News with id {id.ToString()} not found.",
+                Status = HttpStatusCode.NotFound
             });
         }
         var result = _bll.NewsService.Remove(entity);

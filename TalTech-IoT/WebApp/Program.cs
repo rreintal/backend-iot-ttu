@@ -17,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews(cfg =>
 {
     cfg.Filters.Add(new MyAPIExceptionFilter());
+    
 });
 
 // Dependency injection
@@ -43,7 +44,7 @@ builder.Services.AddCors(options =>
 //DockerDbConnection 
 //DevDbConnection
 // TestDbConnection
-var connectionString = builder.Configuration.GetConnectionString("DockerDbConnection") ??
+var connectionString = builder.Configuration.GetConnectionString("DevDbConnection") ??
                        throw new InvalidOperationException("Connection string not found");
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

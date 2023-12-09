@@ -32,6 +32,8 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         return (await Uow.NewsRepository.AllAsync()).Select(x => _mapper.Map<News>(x));
     }
 
+
+
     public async Task<News?> FindAsync(Guid id)
     {
         // domain object
@@ -61,7 +63,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         };
         return types;
     }
-
+    
     public News Add(News entity)
     {
         var domainObject = _mapper.Map<App.Domain.News>(entity);
@@ -106,9 +108,9 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         return entity;
     }
 
-    public async Task<IEnumerable<News>> AllAsyncFiltered(int? page, int? size)
+    public async Task<IEnumerable<News>> AllAsyncFiltered(int? page, int? size, string languageString)
     {
-        return (await Uow.NewsRepository.AllAsyncFiltered(page, size)).Select(e => _mapper.Map<News>(e));
+        return (await Uow.NewsRepository.AllAsyncFiltered(page, size, languageString)).Select(e => _mapper.Map<News>(e));
     }
     
 
@@ -125,42 +127,15 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
          var entity = await Uow.NewsRepository.FindByIdWithAllTranslationsAsync(id);
          return _mapper.Map<News>(entity);
     }
-}
-/*
- *
-{
-  "id": "5ae4fd34-1400-45c2-9bbf-f5b209f38091",
-  "author": "RICHARD REINTAL UUS",
-  "body": [
+
+    public async Task<IEnumerable<News>> AllAsync(string? languageCulture)
     {
-      "value": "UUS BODY EESTI",
-      "culture": "et"
-    },
-{
-      "value": "NEW BODY Eng",
-      "culture": "en"
+        return (await Uow.NewsRepository.AllAsync(languageCulture)).Select(entity => _mapper.Map<News>(entity));
     }
-  ],
-  "title": [
+
+    public async Task<News?> FindAsync(Guid id, string? languageCulture)
     {
-      "value": "UUS TITLE EST",
-      "culture": "et"
-    },
-{
-      "value": "NEW TITLE ENG",
-      "culture": "en"
+        var item = await Uow.NewsRepository.FindAsync(id, languageCulture);
+        return _mapper.Map<News>(item);
     }
-  ],
-  "image": "abcdef",
-  "topicAreas": [
-    {
-      "id": "4819415b-8886-45c4-8981-8c9592b7757f"
-    },
-    { "id" : "c1999007-1a3a-47a1-bc7b-951ec1940353" }
-  ]
 }
-
-
-d981490b-9aec-49f1-bc4e-73d7ae5d4862
-*/
-

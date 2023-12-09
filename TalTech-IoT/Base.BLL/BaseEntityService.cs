@@ -4,7 +4,6 @@ using Base.DAL.EF.Contracts;
 using Contracts;
 
 namespace Base.BLL;
-
 public class BaseEntityService<TBllEntity, TDalEntity, TRepository> :
     BaseEntityService<TBllEntity, TDalEntity, TRepository, Guid>, IEntityService<TBllEntity> 
     where TBllEntity : class, IDomainEntityId 
@@ -22,7 +21,6 @@ public class BaseEntityService<TBllEntity, TDalEntity, TRepository, TKey> : IEnt
     where TRepository : class, IBaseRepository<TDalEntity, TKey>
     where TKey : struct, IEquatable<TKey>
 {
-    public string? languageCulture { get; set; }
     protected readonly TRepository Repository;
     protected readonly IMapper<TBllEntity, TDalEntity> Mapper;
 
@@ -31,11 +29,7 @@ public class BaseEntityService<TBllEntity, TDalEntity, TRepository, TKey> : IEnt
         Repository = repository;
         Mapper = mapper;
     }
-
-    public void SetLanguageStrategy(string languageCulture)
-    {
-        Repository.languageCulture = languageCulture;
-    }
+    
 
     public async Task<IEnumerable<TBllEntity>> AllAsync()
     {

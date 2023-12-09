@@ -50,8 +50,7 @@ public class ProjectController : ControllerBase
     [HttpGet("api/{languageCulture}/[controller]/")]
     public async Task<IEnumerable<GetProject>> Get(string languageCulture)
     {
-        _bll.ProjectService.SetLanguageStrategy(languageCulture);
-        return (await _bll.ProjectService.AllAsync()).Select(x => GetProjectMapper.Map(x, true));
+        return (await _bll.ProjectService.AllAsync(languageCulture)).Select(x => GetProjectMapper.Map(x, true));
     }
 
     /// <summary>
@@ -66,16 +65,16 @@ public class ProjectController : ControllerBase
         {
             return NotFound(new RestApiResponse()
             {
-                Message = "Project with this id does not exist.",
-                StatusCode = (int)HttpStatusCode.NotFound
+                Error = "Project with this id does not exist.",
+                Status = HttpStatusCode.NotFound
             });
         }
         _bll.ProjectService.Remove(entity);
         await _bll.SaveChangesAsync();
         return Ok(new RestApiResponse()
         {
-            Message = $"Deleted project with id {id.ToString()}",
-            StatusCode = (int)HttpStatusCode.OK
+            Error = $"Deleted project with id {id.ToString()}",
+            Status = HttpStatusCode.OK
         });
     }
 
@@ -88,14 +87,14 @@ public class ProjectController : ControllerBase
     [HttpGet("api/{languageCulture}/[controller]/{id}")]
     public async Task<ActionResult<GetProject>> Get(string languageCulture, Guid id)
     {
-        _bll.ProjectService.SetLanguageStrategy(languageCulture);
-        var entity = await _bll.ProjectService.FindAsync(id);
+        //var entity = await _bll.ProjectService.FindAsync(id, languageCulture);
+        var entity = await _bll.ProjectService.FindAsync(id, languageCulture);
         if (entity == null)
         {
             return NotFound(new RestApiResponse()
             {
-                Message = "Project with this id does not exist.",
-                StatusCode = (int)HttpStatusCode.NotFound
+                Error = "Project with this id does not exist.",
+                Status = HttpStatusCode.NotFound
             });
         }
 

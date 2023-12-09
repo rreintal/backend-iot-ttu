@@ -134,33 +134,10 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         return result;
     }
 
-    public async override Task<Domain.News?> FindAsync(Guid id)
-    {
-        var query = await DbSet.Where(x => x.Id == id)
-            .IncludeHasTopicAreasWithTranslation(languageCulture)
-            .IncludeContentWithTranslation(languageCulture)
-            .FirstOrDefaultAsync();
-        if (query == null)
-        {
-            return null;
-        }
-
-        return query;
-    }
-    
-
     // see peaks vist DAL objekt olema tegelt?!
     // need HasTopicArea-d oleks mpaitud juba TopicArea
-    public override async Task<IEnumerable<App.Domain.News>> AllAsync()
-    {
-        return await DbSet
-            .IncludeHasTopicAreasWithTranslation(languageCulture)
-            .IncludeContentWithTranslation(languageCulture)
-            .OrderByDescending(x => x.CreatedAt)
-            .ToListAsync();
-    }
 
-    public async Task<IEnumerable<App.Domain.News>> AllAsyncFiltered(int? page, int? size)
+    public async Task<IEnumerable<App.Domain.News>> AllAsyncFiltered(int? page, int? size, string languageCulture)
     {
         // TODO - optimize!!!!
         page = page ?? 0;
@@ -174,6 +151,30 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             .OrderByDescending(x => x.CreatedAt)
                 .Skip(page.Value * size.Value)
                 .Take(size.Value)
+            .ToListAsync();
+    }
+    
+    public async Task<News?> FindAsync(Guid id, string? languageCulture)
+    {
+        var query = await DbSet.Where(x => x.Id == id)
+            .IncludeHasTopicAreasWithTranslation(languageCulture)
+            .IncludeContentWithTranslation(languageCulture)
+            .FirstOrDefaultAsync();
+        if (query == null)
+        {
+            return null;
+        }
+
+        return query;
+    }
+
+
+    public async Task<IEnumerable<News>> AllAsync(string? languageString)
+    {
+        return await DbSet
+            .IncludeHasTopicAreasWithTranslation(languageString)
+            .IncludeContentWithTranslation(languageString)
+            .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
     }
 }

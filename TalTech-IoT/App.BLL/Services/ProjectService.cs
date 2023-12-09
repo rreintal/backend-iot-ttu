@@ -52,5 +52,14 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
         return entity;
     }
 
-    
+
+    public Task<IEnumerable<Project>> AllAsync(string? languageCulture)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Project?> FindAsync(Guid id, string? languageCulture)
+    {
+        throw new NotImplementedException();
+    }
 }

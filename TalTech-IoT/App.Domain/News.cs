@@ -1,5 +1,6 @@
 using App.Domain.Contracts;
 using Base.Domain;
+using Contracts;
 
 namespace App.Domain;
 
