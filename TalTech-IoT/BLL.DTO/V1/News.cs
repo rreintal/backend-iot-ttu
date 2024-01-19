@@ -17,9 +17,10 @@ public class News : DomainEntityId, IContainsContent
     public string GetContentValue(string contentType)
     {
         var result = Content.First(c => c.ContentType!.Name == contentType)
-            .LanguageString.LanguageStringTranslations!.First();
-        return result.TranslationValue;
-    }
+                .LanguageString.LanguageStringTranslations!.First();
+            return result.TranslationValue;
+
+        }
     
     public string GetContentValue(string contentType, string languageCulture)
     {

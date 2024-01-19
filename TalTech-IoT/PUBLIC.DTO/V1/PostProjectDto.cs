@@ -15,7 +15,7 @@ public class PostProjectDto
     [Required(ErrorMessage = nameof(ProjectVolume) + " is required")]
     public double ProjectVolume { get; set; } = default!;
 
-    public string Image { get; set; } = default!;
+    public string? Image { get; set; }
     
     [Required]
     public List<ContentDto> Title { get; set; } = default!;

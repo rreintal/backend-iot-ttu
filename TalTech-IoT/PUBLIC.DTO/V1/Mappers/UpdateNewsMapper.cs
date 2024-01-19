@@ -11,7 +11,7 @@ public class UpdateNewsMapper
             Id = entity.Id,
             Author = entity.Author,
             Image = entity.Image,
-            CreatedAt = entity.CreatedAt,
+            CreatedAt = entity.CreatedAt ?? new DateTime(),
             Body =
                 entity.Body.Select(publicDto =>
                 {

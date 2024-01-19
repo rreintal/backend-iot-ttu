@@ -8,5 +8,5 @@ public class UpdateNews : DomainEntityId
     public List<ContentDto> Title { get; set; } = default!;
     public string Image { get; set; } = default!;
     public List<TopicArea> TopicAreas { get; set; } = default!;
-    public DateTime CreatedAt { get; set; } = default!;
+    public DateTime? CreatedAt { get; set; }
 }

@@ -29,6 +29,9 @@ public class ProjectController : ControllerBase
     [HttpPost("api/[controller]/")]
     public async Task<ActionResult> Create([FromBody] Public.DTO.V1.PostProjectDto data)
     {
+        // TODO - image optionaliks!
+        
+        // TODO: TopicArea must only have Id, other is optional!
         // TODO - tee eraldi service ehk?
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = ProjectMapper.Map(data, types);

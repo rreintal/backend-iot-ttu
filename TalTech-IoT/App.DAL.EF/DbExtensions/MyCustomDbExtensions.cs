@@ -54,4 +54,18 @@ public static class MyCustomDbExtensions
                 .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture));
         return result;
     }
+
+    public static IQueryable<T> IncludeContentWithTitlesTranslation<T>(
+        this IQueryable<T> queryable)
+    where T : class, IContentEntity
+    {
+        var result = queryable.Include(x => 
+                x.Content.Where(y=> y.ContentType!.Name == "TITLE"))
+            .ThenInclude(x => x.ContentType)
+            .Include(x => x.Content)
+            .ThenInclude(x => x.LanguageString)
+            .ThenInclude(x => x.LanguageStringTranslations);
+
+        return result;
+    }
 }

@@ -1,6 +1,7 @@
 using App.BLL.Contracts;
 using App.DAL.Contracts;
 using App.Domain;
+using App.Domain.Helpers;
 using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
@@ -11,7 +12,7 @@ using News = BLL.DTO.V1.News;
 
 namespace App.BLL.Services;
 
-public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>, INewsService, INewsRepositoryCustom<News>
+public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>, INewsService
 {
     private IAppUOW Uow { get; set; }
     private IMapper _mapper { get; }
@@ -108,9 +109,10 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         return entity;
     }
 
-    public async Task<IEnumerable<News>> AllAsyncFiltered(int? page, int? size, string languageString)
+    public async Task<IEnumerable<News>> AllAsyncFiltered(NewsFilterSet filterSet, string languageString)
     {
-        return (await Uow.NewsRepository.AllAsyncFiltered(page, size, languageString)).Select(e => _mapper.Map<News>(e));
+        // TODO: add this method to common interface w service/repo
+        return (await Uow.NewsRepository.AllAsyncFiltered(filterSet, languageString)).Select(e => _mapper.Map<News>(e));
     }
     
 
@@ -137,5 +139,11 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     {
         var item = await Uow.NewsRepository.FindAsync(id, languageCulture);
         return _mapper.Map<News>(item);
+    }
+
+
+    public async Task<int> FindNewsTotalCount()
+    {
+        return await Uow.NewsRepository.FindNewsTotalCount();
     }
 }

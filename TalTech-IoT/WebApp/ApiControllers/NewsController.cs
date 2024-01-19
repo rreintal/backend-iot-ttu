@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Mime;
 using App.BLL.Contracts;
 using App.DAL.EF;
+using App.Domain.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1;
@@ -58,10 +59,10 @@ public class NewsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IEnumerable<Public.DTO.V1.News>> Get(string languageCulture, int? page, int? size)
+    public async Task<IEnumerable<Public.DTO.V1.News>> Get(string languageCulture, NewsFilterSet filterSet)
     {
         // TODO - filter news by author/topic
-        var news = (await _bll.NewsService.AllAsyncFiltered(page, size, languageCulture)).ToList();
+        var news = (await _bll.NewsService.AllAsyncFiltered(filterSet, languageCulture)).ToList();
         return news.Select(x => ReturnNewsMapper.Map(x, true));
     }
 
@@ -93,7 +94,7 @@ public class NewsController : ControllerBase
     }
 
     /// <summary>
-    /// Update News
+    /// Update News. Updateing with Topic Areas is not working YET!
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
@@ -104,6 +105,8 @@ public class NewsController : ControllerBase
         // TODO - when updating, should we add the language culture which one we want to update?
         
         // TODO - updating is with both languages!!!
+        
+        // TODO: ei tööta
         var bllEntity = UpdateNewsMapper.Map(data);
         var result = await _bll.NewsService.UpdateNews(bllEntity);
 
@@ -141,10 +144,18 @@ public class NewsController : ControllerBase
         });
     }
 
+    [HttpGet("api/[controller]/News/Count")]
+    public async Task<int> CountAllNews()
+    {
+        return await _bll.NewsService.FindNewsTotalCount();
+    }
+    
+
     [HttpGet("api/[controller]/Preview/{id}")]
     public async Task<Public.DTO.V1.NewsAllLangs> GetNewsAllLanguages(Guid id)
     {
         var entity = await _bll.NewsService.FindByIdAllTranslationsAsync(id);
         return NewsAllLangMapper.Map(entity);
     }
+
 }

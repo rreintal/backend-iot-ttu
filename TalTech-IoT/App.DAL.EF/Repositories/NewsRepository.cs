@@ -1,6 +1,7 @@
 using App.DAL.Contracts;
 using App.DAL.EF.DbExtensions;
 using App.Domain;
+using App.Domain.Helpers;
 using AutoMapper;
 using Base.DAL.EF;
 using DAL.DTO.V1;
@@ -52,7 +53,6 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     {
         // Maybe should be await?!
         // TODO - error handling
-
         // TODO - is it neccesary?! optimize?
         var existingDomainObject = await FindByIdWithAllTranslationsAsync(entity.Id);
         
@@ -62,8 +62,10 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
 
         // check if content has changed!
         // TODO - helper function for detecting changes, can use for Project!
-        foreach (var lang in LanguageCulture.ALL_LANGUAGES)
+        var cults = new List<String>{ "et", "en" };
+        foreach (var lang in cults)
         {
+            //var newBodyValue = entity.GetContentValue(ContentTypes.BODY, lang);
             var newBodyValue = entity.GetContentValue(ContentTypes.BODY, lang);
             var newTitleValue = entity.GetContentValue(ContentTypes.TITLE, lang);
     
@@ -86,6 +88,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         // is it relevant? all children are linked with id
         
         // check if topicAreaHasChanged
+        /*
         var updateTopicAreas = true;
         foreach (var updateDtoTopicArea in entity.TopicAreas)
         {
@@ -96,10 +99,12 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
                 break;
             }
         }
+        */
         // TODO - refactor!!!!!
         // remove all previous topicAreas
 
         // TODO - 
+        /*
         foreach (var ta in existingDomainObject!.HasTopicAreas)
         {
             DbContext.HasTopicAreas.Attach(ta);
@@ -129,28 +134,45 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         
         // TODO - what is going on here?!
         DbContext.HasTopicAreas.AddRange(existingDomainObject.HasTopicAreas);
-
+        existingDomainObject.Author = "a";
+        */
         var result = Update(existingDomainObject);
-        return result;
+        Console.WriteLine(entity.Author);
+        Console.WriteLine(result.Author);
+        return existingDomainObject;
     }
 
     // see peaks vist DAL objekt olema tegelt?!
     // need HasTopicArea-d oleks mpaitud juba TopicArea
 
-    public async Task<IEnumerable<App.Domain.News>> AllAsyncFiltered(int? page, int? size, string languageCulture)
+    public async Task<IEnumerable<App.Domain.News>> AllAsyncFiltered(NewsFilterSet filterSet, string languageCulture)
     {
         // TODO - optimize!!!!
-        page = page ?? 0;
-        size = size ?? DEFAULT_PAGE_SIZE;
+        filterSet.Size ??= DEFAULT_PAGE_SIZE;
+        filterSet.Page ??= 0;
+        IQueryable<App.Domain.News> query = DbSet;
 
+        
+        if (filterSet.TopicAreaId.HasValue)
+        {
+            query = query.Where(x => x.HasTopicAreas.Any(hta => hta.TopicAreaId == filterSet.TopicAreaId));
+        }
+
+        if (filterSet.OnlyTitles.HasValue)
+        {
+            
+            return await query
+                .IncludeHasTopicAreasWithTranslation()
+                .IncludeContentWithTitlesTranslation()
+                .ToListAsync();
+        }
         // TODO - error
-        return await DbSet
-            .AsNoTracking()
+        return await query
             .IncludeHasTopicAreasWithTranslation(languageCulture)
             .IncludeContentWithTranslation(languageCulture)
             .OrderByDescending(x => x.CreatedAt)
-                .Skip(page.Value * size.Value)
-                .Take(size.Value)
+                .Skip(filterSet.Page.Value * filterSet.Size.Value)
+                .Take(filterSet.Size.Value)
             .ToListAsync();
     }
     
@@ -176,5 +198,10 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             .IncludeContentWithTranslation(languageString)
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
+    }
+
+    public async Task<int> FindNewsTotalCount()
+    {
+        return await DbSet.CountAsync();
     }
 }

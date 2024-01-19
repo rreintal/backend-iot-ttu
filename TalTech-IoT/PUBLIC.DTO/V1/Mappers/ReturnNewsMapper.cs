@@ -1,3 +1,4 @@
+
 using App.Domain;
 
 namespace Public.DTO.V1.Mappers;
@@ -6,9 +7,12 @@ public class ReturnNewsMapper
 {
     public static Public.DTO.V1.News Map(BLL.DTO.V1.News data, bool thumbnail = false)
     {
+        
+        // TODO: better fix, currently hack 
+        var body = data.Content.Count == 1 ? "" : data.GetContentValue(ContentTypes.BODY);
         var result =  new Public.DTO.V1.News()
         {
-            Body = data.GetContentValue(ContentTypes.BODY),
+            Body = body,
             CreatedAt = data.CreatedAt,
             Title = data.GetContentValue(ContentTypes.TITLE),
             Id = data.Id,

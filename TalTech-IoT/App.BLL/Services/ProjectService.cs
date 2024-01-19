@@ -22,8 +22,13 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
         var domainEntity = Mapper.Map(entity);
         
         // Add Thumbnail
-        domainEntity!.ThumbnailImage = ThumbnailService.Compress(domainEntity.Image);
+        // TODO: check if domainEntity is null. probably not but still check
+        // TODO: think through about the mappers structure
         
+        if (domainEntity!.Image != null)
+        {
+            domainEntity!.ThumbnailImage = ThumbnailService.Compress(domainEntity.Image);   
+        }
         foreach (var bllTopicArea in entity.TopicAreas)
         {
             var hasTopicAreaId = Guid.NewGuid();
