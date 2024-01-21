@@ -12,14 +12,13 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<LanguageString> LanguageStrings { get; set; } = default!;
     public DbSet<LanguageStringTranslation> LanguageStringTranslations { get; set; } = default!;
 
-    public DbSet<AppUser> Users { get; set; } = default!;
-    public DbSet<AppRole> Roles { get; set; } = default!;
     public DbSet<News> News { get; set; } = default!;
     public DbSet<Content> Contents { get; set; } = default!;
     public DbSet<Project> Projects { get; set; } = default!;
     public DbSet<ContentType> ContentTypes { get; set; } = default!;
     public DbSet<TopicArea> TopicAreas { get; set; } = default!;
     public DbSet<HasTopicArea> HasTopicAreas { get; set; } = default!;
+    public DbSet<AppRefreshToken> AppRefreshTokens { get; set; } = default!;
     
     private const string TopicAreaUniqueNameExpression = "\"TopicAreaId\" IS NOT NULL";
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)

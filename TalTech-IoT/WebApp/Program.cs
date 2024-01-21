@@ -1,12 +1,17 @@
+using System.Text;
 using App.BLL;
 using App.BLL.Contracts;
 using App.DAL.Contracts;
 using App.DAL.EF;
 using App.DAL.EF.Seeding;
+using App.Domain;
+using App.Domain.Identity;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Public.DTO.ApiExceptions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApp;
@@ -46,13 +51,41 @@ builder.Services.AddCors(options =>
 // TestDbConnection
 var connectionString = builder.Configuration.GetConnectionString("DevDbConnection") ??
                        throw new InvalidOperationException("Connection string not found");
-builder.Services.AddDbContext<AppDbContext>(options =>
+
+builder.Services
+    .AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(connectionString, options =>
     {
         options.CommandTimeout(60);
     });
 });
+
+builder.Services.AddIdentity<AppUser, AppRole>(
+        options =>
+            options.SignIn.RequireConfirmedAccount = false)
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
+
+
+// Authentication
+// ----------------------------
+builder.Services
+    .AddAuthentication()
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = false;
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidIssuer = builder.Configuration.GetValue<string>(StartupConfigConstants.JWT_ISSUER),
+            ValidAudience = builder.Configuration.GetValue<string>(StartupConfigConstants.JWT_AUDIENCE),
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>(StartupConfigConstants.JWT_KEY)!)),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
 
 // ----------------------------
 // Automapper
