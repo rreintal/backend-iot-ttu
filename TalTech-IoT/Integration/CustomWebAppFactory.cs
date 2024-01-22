@@ -10,15 +10,17 @@ using Microsoft.Extensions.Logging;
 
 namespace Integration;
 
-public class TestStartup<TStartup> : WebApplicationFactory<TStartup>
+public class CustomWebAppFactory<TStartup> : WebApplicationFactory<TStartup>
 where TStartup : class
 {
     private readonly IConfiguration _configuration;
 
-    public TestStartup()
+    public CustomWebAppFactory()
     {
+        var projectRootDirectory = AppContext.BaseDirectory;   
         var configuration = new ConfigurationBuilder()
-            .SetBasePath("/Users/richardreintal/RiderProjects/Backend-IoT/TalTech-IoT/WebApp")
+            //.SetBasePath("/Users/richardreintal/RiderProjects/Backend-IoT/TalTech-IoT/WebApp")
+            .SetBasePath(projectRootDirectory)
             .AddJsonFile("appsettings.json") // Use a test-specific configuration file
             .Build();
         _configuration = configuration;
@@ -54,7 +56,7 @@ where TStartup : class
             var scopedServices = scope.ServiceProvider;
             //var db = scopedServices.GetRequiredService<AppDbContext>();
             var logger = scopedServices
-                .GetRequiredService<ILogger<TestStartup<TStartup>>>();
+                .GetRequiredService<ILogger<CustomWebAppFactory<TStartup>>>();
         });
     }
 

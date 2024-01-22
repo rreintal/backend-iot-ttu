@@ -11,7 +11,7 @@ services:
     depends_on:
       - db
     environment:
-      - DockerDbConnection="Server=iot-ttu-db:5432;Database=iot-ttu;Username=postgres;Password=postgres;"
+      - DOCKERDBCONNECTION=Server=iot-ttu-db:5432;Database=iot-ttu;Username=postgres;Password=postgres;
   db:
     container_name: iot-ttu-db
     image: "postgres:15.2-bullseye"

@@ -13,6 +13,8 @@ COPY Base.DAL.EF.Contracts/*.csproj ./Base.DAL.EF.Contracts/
 COPY DAL.DTO/*.csproj ./DAL.DTO/
 COPY IDomainEntityId/*.csproj ./IDomainEntityId/
 COPY WebApp/*.csproj ./WebApp/
+# this might cause some issues, but the point is that it copies all the conf files also
+COPY WebApp/*.json ./WebApp/ 
 COPY App.BLL.Contracts/*.csproj ./App.BLL.Contracts/
 COPY App.DAL.EF.Contracts/*.csproj ./App.DAL.EF.Contracts/
 COPY Base.BLL/*.csproj ./Base.BLL/
