@@ -49,7 +49,14 @@ builder.Services.AddCors(options =>
 //DockerDbConnection 
 //DevDbConnection
 // TestDbConnection
-var connectionString = builder.Configuration.GetConnectionString("DevDbConnection") ??
+
+string? databaseUrl = System.Environment.GetEnvironmentVariable("DockerDbConnection");
+
+if (string.IsNullOrWhiteSpace(databaseUrl))
+{
+    databaseUrl = "DevDbConnection";
+}
+var connectionString = builder.Configuration.GetConnectionString(databaseUrl) ??
                        throw new InvalidOperationException("Connection string not found");
 
 builder.Services
