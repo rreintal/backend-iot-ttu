@@ -27,6 +27,7 @@ COPY Base.Domain.Contracts/*.csproj ./Base.Domain.Contracts/
 COPY Integration/*.csproj ./Integration/
 COPY Factory/*.csproj ./Factory/
 COPY Util/*.csproj ./Util/
+COPY Helpers/*.csproj ./Helpers/
 
 RUN dotnet restore
 
@@ -52,6 +53,7 @@ COPY Base.Domain.Contracts/. ./Base.Domain.Contracts/
 COPY Integration/. ./Integration/
 COPY Factory/. ./Factory/
 COPY Util/. ./Util/
+COPY Helpers/. ./Helpers/
 
 
 WORKDIR /src/WebApp

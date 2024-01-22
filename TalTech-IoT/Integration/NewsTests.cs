@@ -14,17 +14,17 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Integration;
 
-public class NewsTests : IClassFixture<WebApplicationFactory<Program>>
+public class NewsTests : IClassFixture<TestStartup<Program>>
 {
-    private readonly WebApplicationFactory<Program> _factory;
+    private readonly TestStartup<Program> _factory;
     private readonly ITestOutputHelper _testOutputHelper;
 
-    
-    public NewsTests(ITestOutputHelper testOutputHelper)
+    public NewsTests(ITestOutputHelper testOutputHelper, TestStartup<Program> factory)
     {
+        _factory = factory;
         // TODO: Küsi Käverilt kuidas siia panna ainult teine db connectionstring?
         // Kui teen TestStartup klassi siis kuidas ma saan küsida kõik sama conf. mis Program aga muuda ainult db string?
-        _factory = new WebApplicationFactory<Program>()
+        /*_factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
                 //builder.UseStartup<TestStartup>();
@@ -39,9 +39,10 @@ public class NewsTests : IClassFixture<WebApplicationFactory<Program>>
                     });
                 });
             });
-            
+        */
         _testOutputHelper = testOutputHelper;
     }
+    
     
     // TODO : Populate db before running tests!!
     // maybe add a sequence to run tests or smth?!

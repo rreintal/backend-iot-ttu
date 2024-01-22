@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Mime;
@@ -45,7 +46,7 @@ public class UsersController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(JWTResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(RestApiResponse), 400)]
-    public async Task<ActionResult<JWTResponse>> Register(Register register)
+    public async Task<ActionResult<JWTResponse>> Register([FromBody]Register register)
     {
         var user = await _context.Users.Where(x => x.UserName == register.Username || x.Email == register.Email)
             .FirstOrDefaultAsync();
@@ -84,7 +85,7 @@ public class UsersController : ControllerBase
         };
         refreshToken.AppUser = appUser;
         
-        var result = await _userManager.CreateAsync(appUser, register.Password);
+        var result = await _userManager.CreateAsync(appUser, "Change.Me123");
         result = await _userManager.AddClaimsAsync(appUser, new List<Claim>()
         {
             new Claim(ClaimTypes.GivenName, appUser.Firstname),
@@ -373,5 +374,99 @@ public class UsersController : ControllerBase
             Status = "user logged out"
         });
     }
+
+    /// <summary>
+    /// Change password
+    /// </summary>
+    /// <param name="model">A model containing UserId and the new password.</param>
+    /// <returns></returns>
+    [HttpPost("ChangePassword")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(typeof(JWTResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(RestApiResponse), 400)]
+    public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordModel model, string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null)
+        {
+            return BadRequest(
+                new RestApiResponse
+                {
+                    Error = "User not found.",
+                    Status = HttpStatusCode.BadRequest
+                });
+        }
+
+        // Change the user's password
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+        var result = await _userManager.ResetPasswordAsync(user, token, model.Password);
+
+        if (result.Succeeded)
+        {
+            // TODO: generate new jwt
+            var jwt = await MakeJWT(user);
+            
+            return Ok(jwt);
+        }
+        
+        // Password change failed
+        return BadRequest(
+            new RestApiResponse
+            {
+                Error = "CHANGE_PASSWORD_FAILED",
+                Status = HttpStatusCode.BadRequest
+            });
+        }
+
+
+    private async Task<JWTResponse> MakeJWT(AppUser appUser)
+    {
+        
+        appUser.AppRefreshTokens = await _context
+            .Entry(appUser)
+            .Collection(a => a.AppRefreshTokens!)
+            .Query()
+            .Where(t => t.AppUserId == appUser.Id)
+            .ToListAsync();
+        
+        // remove expired REFRESH tokens!!
+        foreach (var userRefreshToken in appUser.AppRefreshTokens)
+        {
+            if (userRefreshToken.ExpirtationDT < DateTime.UtcNow)
+            {
+                _context.AppRefreshTokens.Remove(userRefreshToken);
+            }
+        }
+        
+        var refreshToken = new AppRefreshToken
+        {
+            AppUserId = appUser.Id
+        };
+        _context.AppRefreshTokens.Add(refreshToken);
+        
+        await _context.SaveChangesAsync();
+        // generate JWT
+        var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
+        var jwt = IdentityHelpers.GenerateJwt(
+            claimsPrincipal.Claims,
+            _Configuration.GetValue<string>(StartupConfigConstants.JWT_KEY)!,
+            _Configuration.GetValue<string>(StartupConfigConstants.JWT_ISSUER)!,
+            _Configuration.GetValue<string>(StartupConfigConstants.JWT_AUDIENCE)!,
+            _Configuration.GetValue<int>(StartupConfigConstants.JWT_EXPIRATION_TIME)
+        );
+        Console.WriteLine($"AppUserId is: {appUser.Id.ToString()}");
+        var res = new JWTResponse()
+        {
+            JWT = jwt,
+            RefreshToken = refreshToken.RefreshToken,
+            AppUserId = appUser.Id.ToString()
+        };
+
+        return res;
+    }
     
+
 }
