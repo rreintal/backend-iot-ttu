@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230808103059_cascadeDelete")]
-    partial class cascadeDelete
+    [Migration("20240122201134_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,6 +101,30 @@ namespace App.DAL.EF.Migrations
                     b.ToTable("HasTopicAreas");
                 });
 
+            modelBuilder.Entity("App.Domain.Identity.AppRefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AppUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpirtationDT")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("AppRefreshTokens");
+                });
+
             modelBuilder.Entity("App.Domain.Identity.AppRole", b =>
                 {
                     b.Property<Guid>("Id")
@@ -148,6 +172,14 @@ namespace App.DAL.EF.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Firstname")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Lastname")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
@@ -193,30 +225,6 @@ namespace App.DAL.EF.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("App.Domain.LanguageStringTranslation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("LanguageCulture")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("LanguageStringId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("TranslationValue")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LanguageStringId");
-
-                    b.ToTable("LanguageStringTranslations");
-                });
-
             modelBuilder.Entity("App.Domain.News", b =>
                 {
                     b.Property<Guid>("Id")
@@ -231,6 +239,10 @@ namespace App.DAL.EF.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ThumbnailImage")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -249,7 +261,6 @@ namespace App.DAL.EF.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Image")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<double>("PriceVolume")
@@ -257,6 +268,9 @@ namespace App.DAL.EF.Migrations
 
                     b.Property<string>("ProjectManager")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ThumbnailImage")
                         .HasColumnType("text");
 
                     b.Property<int>("Year")
@@ -312,6 +326,30 @@ namespace App.DAL.EF.Migrations
                         .HasFilter("\"TopicAreaId\" IS NOT NULL");
 
                     b.ToTable("LanguageStrings");
+                });
+
+            modelBuilder.Entity("App.Domain.Translations.LanguageStringTranslation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("LanguageCulture")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("LanguageStringId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TranslationValue")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LanguageStringId");
+
+                    b.ToTable("LanguageStringTranslations");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -428,17 +466,17 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.Translations.LanguageString", "LanguageString")
                         .WithOne("Content")
                         .HasForeignKey("App.Domain.Content", "LanguageStringId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("App.Domain.News", "News")
                         .WithMany("Content")
                         .HasForeignKey("NewsId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("App.Domain.Project", "Project")
                         .WithMany("Content")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("ContentType");
 
@@ -454,12 +492,12 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.News", "News")
                         .WithMany("HasTopicAreas")
                         .HasForeignKey("NewsId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("App.Domain.Project", "Project")
                         .WithMany("HasTopicAreas")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("App.Domain.TopicArea", "TopicArea")
                         .WithMany()
@@ -474,15 +512,15 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("TopicArea");
                 });
 
-            modelBuilder.Entity("App.Domain.LanguageStringTranslation", b =>
+            modelBuilder.Entity("App.Domain.Identity.AppRefreshToken", b =>
                 {
-                    b.HasOne("App.Domain.Translations.LanguageString", "LanguageString")
-                        .WithMany("LanguageStringTranslations")
-                        .HasForeignKey("LanguageStringId")
+                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
+                        .WithMany("AppRefreshTokens")
+                        .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("LanguageString");
+                    b.Navigation("AppUser");
                 });
 
             modelBuilder.Entity("App.Domain.TopicArea", b =>
@@ -500,6 +538,17 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("LanguageString");
 
                     b.Navigation("ParentTopicArea");
+                });
+
+            modelBuilder.Entity("App.Domain.Translations.LanguageStringTranslation", b =>
+                {
+                    b.HasOne("App.Domain.Translations.LanguageString", "LanguageString")
+                        .WithMany("LanguageStringTranslations")
+                        .HasForeignKey("LanguageStringId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LanguageString");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -551,6 +600,11 @@ namespace App.DAL.EF.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("App.Domain.Identity.AppUser", b =>
+                {
+                    b.Navigation("AppRefreshTokens");
                 });
 
             modelBuilder.Entity("App.Domain.News", b =>

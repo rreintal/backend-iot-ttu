@@ -64,11 +64,6 @@ else
     connectionString = databaseUrl;
 }
 
-
-/*
- var connectionString = builder.Configuration.GetConnectionString(databaseUrl) ??
-                       throw new InvalidOperationException("Connection string not found");
-*/
 builder.Services
     .AddDbContext<AppDbContext>(options =>
 {

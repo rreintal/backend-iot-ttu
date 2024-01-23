@@ -75,7 +75,6 @@ public static class AppDataSeeding
         }
     }
     
-    
     public static Guid GetContentTypeId(string contentType)
     {
         switch (contentType)

@@ -29,6 +29,7 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
         {
             domainEntity!.ThumbnailImage = ThumbnailService.Compress(domainEntity.Image);   
         }
+        
         foreach (var bllTopicArea in entity.TopicAreas)
         {
             var hasTopicAreaId = Guid.NewGuid();
@@ -58,13 +59,17 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
     }
 
 
-    public Task<IEnumerable<Project>> AllAsync(string? languageCulture)
+    public async Task<IEnumerable<Project>> AllAsync(string? languageCulture)
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
+        return (await Uow.ProjectsRepository.AllAsync(languageCulture)).Select(e => Mapper.Map(e));
     }
 
-    public Task<Project?> FindAsync(Guid id, string? languageCulture)
+    public async Task<Project?> FindAsync(Guid id, string? languageCulture)
     {
-        throw new NotImplementedException();
+        //Uow.ProjectsRepository.FindAsync(languageCulture, id);
+        var entity = await Uow.ProjectsRepository.FindAsync(id, languageCulture);
+        var result = Mapper.Map(entity);
+        return result;
     }
 }

@@ -31,6 +31,8 @@ namespace App.DAL.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Firstname = table.Column<string>(type: "text", nullable: false),
+                    Lastname = table.Column<string>(type: "text", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -83,6 +85,7 @@ namespace App.DAL.EF.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Image = table.Column<string>(type: "text", nullable: false),
+                    ThumbnailImage = table.Column<string>(type: "text", nullable: false),
                     Author = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -92,18 +95,20 @@ namespace App.DAL.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Project",
+                name: "Projects",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Year = table.Column<int>(type: "integer", nullable: false),
                     PriceVolume = table.Column<double>(type: "double precision", nullable: false),
                     ProjectManager = table.Column<string>(type: "text", nullable: false),
+                    Image = table.Column<string>(type: "text", nullable: true),
+                    ThumbnailImage = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Project", x => x.Id);
+                    table.PrimaryKey("PK_Projects", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -123,6 +128,26 @@ namespace App.DAL.EF.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppRefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AppUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RefreshToken = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    ExpirtationDT = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppRefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppRefreshTokens_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -229,7 +254,7 @@ namespace App.DAL.EF.Migrations
                         column: x => x.LanguageStringId,
                         principalTable: "LanguageStrings",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -264,7 +289,7 @@ namespace App.DAL.EF.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ContentTypeId = table.Column<Guid>(type: "uuid", nullable: false),
                     NewsId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProjectId = table.Column<Guid>(type: "uuid", nullable: true),
                     LanguageStringId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -281,19 +306,19 @@ namespace App.DAL.EF.Migrations
                         column: x => x.LanguageStringId,
                         principalTable: "LanguageStrings",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Contents_News_NewsId",
                         column: x => x.NewsId,
                         principalTable: "News",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Contents_Project_ProjectId",
+                        name: "FK_Contents_Projects_ProjectId",
                         column: x => x.ProjectId,
-                        principalTable: "Project",
+                        principalTable: "Projects",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -313,13 +338,13 @@ namespace App.DAL.EF.Migrations
                         column: x => x.NewsId,
                         principalTable: "News",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_HasTopicAreas_Project_ProjectId",
+                        name: "FK_HasTopicAreas_Projects_ProjectId",
                         column: x => x.ProjectId,
-                        principalTable: "Project",
+                        principalTable: "Projects",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_HasTopicAreas_TopicAreas_TopicAreaId",
                         column: x => x.TopicAreaId,
@@ -327,6 +352,11 @@ namespace App.DAL.EF.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppRefreshTokens_AppUserId",
+                table: "AppRefreshTokens",
+                column: "AppUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -435,6 +465,9 @@ namespace App.DAL.EF.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AppRefreshTokens");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -471,7 +504,7 @@ namespace App.DAL.EF.Migrations
                 name: "News");
 
             migrationBuilder.DropTable(
-                name: "Project");
+                name: "Projects");
 
             migrationBuilder.DropTable(
                 name: "TopicAreas");

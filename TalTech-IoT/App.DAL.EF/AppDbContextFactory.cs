@@ -10,12 +10,11 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
         var builder = new DbContextOptionsBuilder<AppDbContext>();
         // this is needed for creation and migrations
         // Dev db connection
-        string? databaseUrl = System.Environment.GetEnvironmentVariable("DOCKERDBCONNECTION");
         //builder.UseNpgsql("Server=localhost:5432;Database=iot-ttu;Username=postgres;Password=postgres;");
-        builder.UseNpgsql(databaseUrl!);
         
-        // test db connection
-        //builder.UseNpgsql("Server=iot-ttu-db:5432;Database=iot-ttu-test;Username=postgres;Password=postgres;");
+        
+        //test db connection
+        builder.UseNpgsql("Server=iot-ttu-db:5432;Database=iot-ttu-test;Username=postgres;Password=postgres;");
         // Docker-compose connection
         //builder.UseNpgsql("Server=iot-ttu-db:5432;Database=iot-ttu;Username=postgres;Password=postgres;");
         return new AppDbContext(builder.Options);

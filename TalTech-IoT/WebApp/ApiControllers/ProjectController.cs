@@ -32,9 +32,11 @@ public class ProjectController : ControllerBase
         // TODO - image optionaliks!
         
         // TODO: TopicArea must only have Id, other is optional!
-        // TODO - tee eraldi service ehk?
-        var types = await _bll.NewsService.GetContentTypes();
+        
+        var types = await _bll.NewsService.GetContentTypes(); // TODO - tee eraldi service ehk?
+        
         var bllEntity = ProjectMapper.Map(data, types);
+        
         var result = _bll.ProjectService.Add(bllEntity);
         await _bll.SaveChangesAsync();
 

@@ -1,4 +1,5 @@
 using App.DAL.EF;
+using App.DAL.EF.Seeding;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -17,9 +18,10 @@ where TStartup : class
 
     public CustomWebAppFactory()
     {
+        // TODO: how to drop Db every time before running tests?
+        
         var projectRootDirectory = AppContext.BaseDirectory;   
         var configuration = new ConfigurationBuilder()
-            //.SetBasePath("/Users/richardreintal/RiderProjects/Backend-IoT/TalTech-IoT/WebApp")
             .SetBasePath(projectRootDirectory)
             .AddJsonFile("appsettings.json") // Use a test-specific configuration file
             .Build();
@@ -40,7 +42,7 @@ where TStartup : class
             {
                 services.Remove(descriptor);
             }
-
+            
             var connectionString = _configuration.GetConnectionString("TestDbConnection") ??
                                    throw new InvalidOperationException("Connection string not found");
             // and new DbContext
@@ -54,28 +56,10 @@ where TStartup : class
             var sp = services.BuildServiceProvider();
             using var scope = sp.CreateScope();
             var scopedServices = scope.ServiceProvider;
-            //var db = scopedServices.GetRequiredService<AppDbContext>();
+            var db = scopedServices.GetRequiredService<AppDbContext>();
             var logger = scopedServices
                 .GetRequiredService<ILogger<CustomWebAppFactory<TStartup>>>();
         });
     }
 
-    /*
-    public void ConfigureServices(IServiceCollection services)
-    {
-        var connectionString = Configuration.GetConnectionString("TestDbConnection") ??
-                               throw new InvalidOperationException("Connection string not found");
-        services.AddDbContext<AppDbContext>(options =>
-        {
-            options.UseNpgsql(connectionString);
-            //options.UseNpgsql("Server=localhost:5432;Database=iot-ttu-test;Username=postgres;Password=postgres;");
-        });
-    }
-    
-    
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        // Additional test-specific app configuration if needed
-    }
-    */
 }
