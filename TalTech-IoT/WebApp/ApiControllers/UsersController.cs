@@ -59,7 +59,7 @@ public class UsersController : ControllerBase
                     new RestApiResponse()
                     {
                         Status = HttpStatusCode.Conflict,
-                        Error = "Email already registered!"
+                        Message = "Email already registered!"
                     });
             }
             if (user.NormalizedUserName == register.Username.ToUpper())
@@ -68,7 +68,7 @@ public class UsersController : ControllerBase
                     new RestApiResponse()
                     {
                         Status = HttpStatusCode.Conflict,
-                        Error = "Username already registered!"
+                        Message = "Username already registered!"
                     });
             }
         }
@@ -99,7 +99,7 @@ public class UsersController : ControllerBase
                 {
                     // Lisa korralik selgitus!!
                     Status = HttpStatusCode.MethodNotAllowed,
-                    Error = "registration failed!"
+                    Message = "registration failed!"
                 }); 
         }
         
@@ -142,7 +142,7 @@ public class UsersController : ControllerBase
             return NotFound(new RestApiResponse()
             {
                 Status = HttpStatusCode.NotFound,
-                Error = "Login failed!"
+                Message = "Login failed!"
             });
         }
         
@@ -155,7 +155,7 @@ public class UsersController : ControllerBase
             return NotFound(new RestApiResponse()
             {
                 Status = HttpStatusCode.NotFound,
-                Error = "Login failed!"
+                Message = "Login failed!"
             });
         }
         
@@ -227,7 +227,7 @@ public class UsersController : ControllerBase
                 return BadRequest(new RestApiResponse()
                 {
                     Status = HttpStatusCode.BadRequest,
-                    Error = "No token!"
+                    Message = "No token!"
                 });
             }
         }
@@ -236,7 +236,7 @@ public class UsersController : ControllerBase
             return BadRequest(new RestApiResponse()
             {
                 Status = HttpStatusCode.BadRequest,
-                Error = $"Cant parse token, {e.Message}"
+                Message = $"Cant parse token, {e.Message}"
             });
         }
         
@@ -250,7 +250,7 @@ public class UsersController : ControllerBase
             return BadRequest(new RestApiResponse()
             {
                 Status = HttpStatusCode.BadRequest,
-                Error = $"JWT validation fail"
+                Message = $"JWT validation fail"
             });
         }
         
@@ -261,7 +261,7 @@ public class UsersController : ControllerBase
             return BadRequest(new RestApiResponse()
             {
                 Status = HttpStatusCode.BadRequest,
-                Error = "No email in jwt"
+                Message = "No email in jwt"
             });
         }
         
@@ -276,7 +276,7 @@ public class UsersController : ControllerBase
         {
             return BadRequest(new RestApiResponse()
             {
-                Error = "Refresh token doesn't exist!",
+                Message = "Refresh token doesn't exist!",
                 Status = HttpStatusCode.BadRequest
             });
         }
@@ -287,7 +287,7 @@ public class UsersController : ControllerBase
         {
             return BadRequest(new RestApiResponse()
             {
-                Error = "Refresh token is expired!",
+                Message = "Refresh token is expired!",
                 Status = HttpStatusCode.BadRequest
             });
         }
@@ -301,7 +301,7 @@ public class UsersController : ControllerBase
             return NotFound(new RestApiResponse()
             {
                 Status = HttpStatusCode.NotFound,
-                Error = "Cannot get claims!"
+                Message = "Cannot get claims!"
             });
         }
         
@@ -357,7 +357,7 @@ public class UsersController : ControllerBase
             return BadRequest(new RestApiResponse()
             {
                 Status = HttpStatusCode.BadRequest,
-                Error = "Username/password error"
+                Message = "Username/password error"
             });
         }
         
@@ -393,7 +393,7 @@ public class UsersController : ControllerBase
             return BadRequest(
                 new RestApiResponse
                 {
-                    Error = "User not found.",
+                    Message = "User not found.",
                     Status = HttpStatusCode.BadRequest
                 });
         }
@@ -416,7 +416,7 @@ public class UsersController : ControllerBase
         return BadRequest(
             new RestApiResponse
             {
-                Error = "CHANGE_PASSWORD_FAILED",
+                Message = "CHANGE_PASSWORD_FAILED",
                 Status = HttpStatusCode.BadRequest
             });
         }

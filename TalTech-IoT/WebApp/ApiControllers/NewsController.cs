@@ -84,7 +84,7 @@ public class NewsController : ControllerBase
         {
             return NotFound(new RestApiResponse()
             {
-                Error = RestApiResponseError.NotFound,
+                Message = RestApiResponseError.NotFound,
                 Status = HttpStatusCode.NotFound
             });
             
@@ -114,7 +114,7 @@ public class NewsController : ControllerBase
 
         return Ok(new RestApiResponse()
         {
-            Error = $"Updated news. id={result.Id}",
+            Message = $"Updated news. id={result.Id}",
             Status = HttpStatusCode.OK
         });
     }
@@ -132,7 +132,7 @@ public class NewsController : ControllerBase
         {
             return NotFound(new RestApiResponse()
             {
-                Error = $"News with id {id.ToString()} not found.",
+                Message = $"News with id {id.ToString()} not found.",
                 Status = HttpStatusCode.NotFound
             });
         }

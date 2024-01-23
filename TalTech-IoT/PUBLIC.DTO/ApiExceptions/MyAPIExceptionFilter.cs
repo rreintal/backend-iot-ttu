@@ -14,7 +14,7 @@ public class MyAPIExceptionFilter : ExceptionFilterAttribute
             context.Result = new JsonResult(
                 new RestApiResponse()
                 {
-                    Error = $"Topic Area '{indexConflictException.Name}' already exists. Can't add duplicate.",
+                    Message = $"Topic Area '{indexConflictException.Name}' already exists. Can't add duplicate.",
                     Status = HttpStatusCode.Forbidden
                 });
         }

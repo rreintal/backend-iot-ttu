@@ -72,7 +72,7 @@ public class TopicAreasController : ControllerBase
         {
             return BadRequest(new RestApiResponse()
             {
-                Error = "value already exists",
+                Message = "value already exists",
                 Status = HttpStatusCode.Conflict
             });
         }

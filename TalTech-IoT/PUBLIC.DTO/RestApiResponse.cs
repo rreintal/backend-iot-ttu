@@ -54,7 +54,7 @@ namespace Public.DTO;
 
 public class RestApiResponse
 {
-    public string Error { get; set; } = default!;
+    public string Message { get; set; } = default!;
     public HttpStatusCode Status { get; set; }
 }
 

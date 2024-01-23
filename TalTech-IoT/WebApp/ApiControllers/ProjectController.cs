@@ -70,7 +70,7 @@ public class ProjectController : ControllerBase
         {
             return NotFound(new RestApiResponse()
             {
-                Error = "Project with this id does not exist.",
+                Message = "Project with this id does not exist.",
                 Status = HttpStatusCode.NotFound
             });
         }
@@ -78,7 +78,7 @@ public class ProjectController : ControllerBase
         await _bll.SaveChangesAsync();
         return Ok(new RestApiResponse()
         {
-            Error = $"Deleted project with id {id.ToString()}",
+            Message = $"Deleted project with id {id.ToString()}",
             Status = HttpStatusCode.OK
         });
     }
@@ -98,7 +98,7 @@ public class ProjectController : ControllerBase
         {
             return NotFound(new RestApiResponse()
             {
-                Error = "Project with this id does not exist.",
+                Message = "Project with this id does not exist.",
                 Status = HttpStatusCode.NotFound
             });
         }
