@@ -85,7 +85,7 @@ public class UsersController : ControllerBase
         };
         refreshToken.AppUser = appUser;
         
-        var result = await _userManager.CreateAsync(appUser, "Change.Me123");
+        var result = await _userManager.CreateAsync(appUser, register.Password);
         result = await _userManager.AddClaimsAsync(appUser, new List<Claim>()
         {
             new Claim(ClaimTypes.GivenName, appUser.Firstname),
