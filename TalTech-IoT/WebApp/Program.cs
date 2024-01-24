@@ -129,15 +129,15 @@ apiVersioningBuilder.AddApiExplorer(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 builder.Services.AddSwaggerGen();
-/*
+
 builder.Services.Configure<IdentityOptions>(options =>
 { // Password settings
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 8;
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 1;
     options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = true;
+    options.Password.RequireUppercase = false;
     options.Password.RequireLowercase = false;
-    //options.Password.RequiredUniqueChars = 6;
+    options.Password.RequiredUniqueChars = 1;
     options.User.RequireUniqueEmail = true;
     // Lockout settings
     //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
@@ -145,7 +145,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     //options.Lockout.AllowedForNewUsers = true;
     // User settings
 });
-*/
+
 
 
 var app = builder.Build();
