@@ -28,16 +28,18 @@ public class UsersController : ControllerBase
     private readonly IConfiguration _Configuration;
     private readonly AppDbContext _context;
     private readonly IAppBLL _bll;
+    private readonly RoleManager<AppRole> _roleManager;
 
 
     // TODO: how to remove this yellow line and make it with private documentation?
-    public UsersController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration configuration, AppDbContext context, IAppBLL bll)
+    public UsersController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration configuration, AppDbContext context, IAppBLL bll, RoleManager<AppRole> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _Configuration = configuration;
         _context = context;
         _bll = bll;
+        _roleManager = roleManager;
     }
 
     /// <summary>
@@ -90,6 +92,7 @@ public class UsersController : ControllerBase
         
 
         var result = await _userManager.CreateAsync(appUser);
+        await _userManager.AddToRoleAsync(appUser, "USER");
         result = await _userManager.AddClaimsAsync(appUser, new List<Claim>()
             {
                 new Claim(ClaimTypes.GivenName, appUser.Firstname),
@@ -485,8 +488,8 @@ public class UsersController : ControllerBase
     [HttpGet("api/v1/Users")]
     public async Task<IEnumerable<AppUser>> GetAllUsers()
     {
+        //return await _userManager.Users.ToListAsync();
         return await _bll.UsersService.AllAsync();
     }
-
 
 }

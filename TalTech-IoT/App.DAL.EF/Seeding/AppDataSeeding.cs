@@ -2,6 +2,7 @@ using App.Domain;
 using App.Domain.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,7 @@ public static class AppDataSeeding
     public const string TOPIC_AREA_ROBOTICS_ID = "23e18f8b-0f97-496c-99a3-774f66b8c43d";
     public const string TOPIC_AREA_TECHNOLOGY_ID = "daf06b3e-26f0-4d0e-b68a-6b236ce6a84c";
     
-    public static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment environment, IConfiguration configuration)
+    public static async Task SetupAppData(IApplicationBuilder app, IWebHostEnvironment environment, IConfiguration configuration)
     {
         using var serviceScope = app.ApplicationServices
             .GetRequiredService<IServiceScopeFactory>()
@@ -71,23 +72,50 @@ public static class AppDataSeeding
                     .SetParent(t3);
                 context.TopicAreas.AddRangeAsync(new List<TopicArea>() { t1, t2, t3, t3child2, t3Child });
             }
-            /*
-            var rolesCount = context.Roles.ToList().Count;
-            if (rolesCount == 0)
-            {
-                var adminRole = new AppRole()
-                {
-                    Name = "ROLE_ADMIN"
-                };
 
-                var userRole = new AppRole()
+            using var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<AppRole>>();
+            
+            var roles = new List<AppRole>()
+            {
+                new AppRole()
                 {
-                    Name = "ROLE_USER"
-                };
-                context.Roles.AddRange(adminRole, userRole);
+                    Name = "ADMIN"
+                },
+                new AppRole()
+                {
+                    Name = "USER"
+                }
+            };
+            foreach (var role in roles)
+            {
+                // TODO: logger if roleManager is null!
+                if (!await roleManager!.RoleExistsAsync(role.Name))
+                {
+                    await roleManager.CreateAsync(role);
+                }
             }
-            */
-            context.SaveChanges();
+
+            var userManager = serviceScope.ServiceProvider.GetService<UserManager<AppUser>>()!;
+            
+            var adminUser = new AppUser()
+            {
+                Firstname = "AdminFN",
+                Lastname = "AdminLN",
+                Email = "admin@email.ee",
+                UserName = "admin",
+                Roles =  new List<AppRole>()
+                {
+                    new AppRole()
+                    {
+                        Name = "ADMIN"
+                    }
+                }
+            };
+
+            await userManager.CreateAsync(adminUser, "admin");
+            await userManager.AddToRoleAsync(adminUser, "ADMIN");
+            
+            await context.SaveChangesAsync();
         }
     }
     

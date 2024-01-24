@@ -77,6 +77,7 @@ builder.Services.AddIdentity<AppUser, AppRole>(
         options =>
             options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<AppDbContext>()
+    .AddRoles<AppRole>()
     .AddDefaultTokenProviders();
 
 
@@ -151,7 +152,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 var app = builder.Build();
 
 // Setup start data
-AppDataSeeding.SetupAppData(app, app.Environment, app.Configuration);
+await AppDataSeeding.SetupAppData(app, app.Environment, app.Configuration);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -10,4 +10,12 @@ public class UsersRepository : EFBaseRepository<App.Domain.Identity.AppUser, App
 {
     public UsersRepository(AppDbContext dataContext, IMapper mapper) : base(dataContext, mapper)
     {}
+
+    public override async Task<IEnumerable<AppUser>> AllAsync()
+    {
+        return await DbSet
+            .Include(x => x.Roles)
+            .ToListAsync();
+    }
+    
 }
