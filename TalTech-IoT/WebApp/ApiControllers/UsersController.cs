@@ -25,21 +25,19 @@ public class UsersController : ControllerBase
     
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
-    private readonly RoleManager<AppUser> _roleManager;
     private readonly IConfiguration _Configuration;
     private readonly AppDbContext _context;
     private readonly IAppBLL _bll;
 
 
     // TODO: how to remove this yellow line and make it with private documentation?
-    public UsersController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration configuration, AppDbContext context, IAppBLL bll, RoleManager<AppUser> roleManager)
+    public UsersController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration configuration, AppDbContext context, IAppBLL bll)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _Configuration = configuration;
         _context = context;
         _bll = bll;
-        _roleManager = roleManager;
     }
 
     /// <summary>
@@ -77,16 +75,6 @@ public class UsersController : ControllerBase
                     });
             }
         }
-        /*
-{
-  "email": "peeter@email.ee",
-  "firstname": "Peeter",
-  "lastname": "Paan",
-  "username": "Peeterpaan",
-  "password": "Peeterpaan123."
-}
-         */
-
         // Register account
         var refreshToken = new AppRefreshToken();
         var appUser = new AppUser()
