@@ -48,4 +48,9 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
 
         return query;
     }
+
+    public async Task<int> FindProjectTotalCount()
+    {
+         return await DbSet.CountAsync();
+    }
 }

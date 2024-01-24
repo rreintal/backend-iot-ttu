@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Mime;
 using System.Security.Claims;
+using App.BLL.Contracts;
 using App.DAL.EF;
 using App.Domain;
 using App.Domain.Identity;
@@ -24,17 +25,21 @@ public class UsersController : ControllerBase
     
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
+    private readonly RoleManager<AppUser> _roleManager;
     private readonly IConfiguration _Configuration;
     private readonly AppDbContext _context;
+    private readonly IAppBLL _bll;
 
 
     // TODO: how to remove this yellow line and make it with private documentation?
-    public UsersController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration configuration, AppDbContext context)
+    public UsersController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration configuration, AppDbContext context, IAppBLL bll, RoleManager<AppUser> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _Configuration = configuration;
         _context = context;
+        _bll = bll;
+        _roleManager = roleManager;
     }
 
     /// <summary>
@@ -72,7 +77,16 @@ public class UsersController : ControllerBase
                     });
             }
         }
-        
+        /*
+{
+  "email": "peeter@email.ee",
+  "firstname": "Peeter",
+  "lastname": "Paan",
+  "username": "Peeterpaan",
+  "password": "Peeterpaan123."
+}
+         */
+
         // Register account
         var refreshToken = new AppRefreshToken();
         var appUser = new AppUser()
@@ -85,43 +99,47 @@ public class UsersController : ControllerBase
         };
         refreshToken.AppUser = appUser;
         
-        var result = await _userManager.CreateAsync(appUser, register.Password);
-        result = await _userManager.AddClaimsAsync(appUser, new List<Claim>()
-        {
-            new Claim(ClaimTypes.GivenName, appUser.Firstname),
-            new Claim(ClaimTypes.Surname, appUser.Lastname)
-        });
         
-        if (!result.Succeeded)
-        {
-            return BadRequest(
-                new RestApiResponse()
-                {
-                    // Lisa korralik selgitus!!
-                    Status = HttpStatusCode.MethodNotAllowed,
-                    Message = "registration failed!"
-                }); 
-        }
-        
-        // generate JWT
-        var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
-        var jwt = IdentityHelpers.GenerateJwt(
-            claimsPrincipal.Claims,
-            _Configuration.GetValue<string>(StartupConfigConstants.JWT_KEY)!,
-            _Configuration.GetValue<string>(StartupConfigConstants.JWT_ISSUER)!,
-            _Configuration.GetValue<string>(StartupConfigConstants.JWT_AUDIENCE)!,
-            _Configuration.GetValue<int>(StartupConfigConstants.JWT_EXPIRATION_TIME)
-            
-        );
 
-        var res = new JWTResponse()
-        {
-            JWT = jwt,
-            RefreshToken = refreshToken.RefreshToken,
-            AppUserId = appUser.Id.ToString()
-        };
-        await _context.SaveChangesAsync();
-        return Ok(res);
+        var result = await _userManager.CreateAsync(appUser);
+        result = await _userManager.AddClaimsAsync(appUser, new List<Claim>()
+            {
+                new Claim(ClaimTypes.GivenName, appUser.Firstname),
+                new Claim(ClaimTypes.Surname, appUser.Lastname),
+            });
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(
+                    new RestApiResponse()
+                    {
+                        // Lisa korralik selgitus!!
+                        Status = HttpStatusCode.MethodNotAllowed,
+                        Message = "registration failed!"
+                    });
+            }
+
+            // generate JWT
+            var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
+            var jwt = IdentityHelpers.GenerateJwt(
+                claimsPrincipal.Claims,
+                _Configuration.GetValue<string>(StartupConfigConstants.JWT_KEY)!,
+                _Configuration.GetValue<string>(StartupConfigConstants.JWT_ISSUER)!,
+                _Configuration.GetValue<string>(StartupConfigConstants.JWT_AUDIENCE)!,
+                _Configuration.GetValue<int>(StartupConfigConstants.JWT_EXPIRATION_TIME)
+
+            );
+
+            var res = new JWTResponse()
+            {
+                JWT = jwt,
+                RefreshToken = refreshToken.RefreshToken,
+                AppUserId = appUser.Id.ToString()
+            };
+            await _context.SaveChangesAsync();
+            return Ok(res);
+        
+
     }
 
     /// <summary>
@@ -399,7 +417,7 @@ public class UsersController : ControllerBase
         }
 
         // Change the user's password
-
+        
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
         var result = await _userManager.ResetPasswordAsync(user, token, model.Password);
@@ -467,6 +485,17 @@ public class UsersController : ControllerBase
 
         return res;
     }
-    
+
+    /// <summary>
+    /// Gets all users
+    /// </summary>
+    /// <returns></returns>
+    //[Authorize]
+    [HttpGet("api/v1/Users")]
+    public async Task<IEnumerable<AppUser>> GetAllUsers()
+    {
+        return await _bll.UsersService.AllAsync();
+    }
+
 
 }

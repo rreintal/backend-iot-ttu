@@ -14,4 +14,6 @@ public interface IAppUOW : IBaseUOW
     ITopicAreaRepository TopicAreaRepository { get; }
     
     IProjectsRepository ProjectsRepository { get; }
+    
+    IUsersRepository UsersRepository { get; }
 }

@@ -1,11 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using App.Domain;
-
 namespace Public.DTO.V1;
 
 public class PostProjectDto
 {
-    [Required(ErrorMessage = "News year is required")]
+    [Required(ErrorMessage = "Project year is required")]
     public int Year { get; set; } = default!;
 
     [Required(ErrorMessage = "ProjectManager field is required!")]

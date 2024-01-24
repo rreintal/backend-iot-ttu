@@ -31,4 +31,9 @@ public class AppUOW : EFBaseUOW<AppDbContext>, IAppUOW
         _projectsRepository ??= new ProjectsRepository(UowDbContext, _mapper);
 
     private IProjectsRepository? _projectsRepository;
+
+    public IUsersRepository UsersRepository =>
+        _usersRepository ??= new UsersRepository(UowDbContext, _mapper);
+
+    private IUsersRepository? _usersRepository;
 }

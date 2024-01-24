@@ -13,4 +13,6 @@ public interface IAppBLL : IBaseUOW
     
     IThumbnailService ThumbnailService { get; }
     
+    IUsersService UsersService { get; }
+    
 }

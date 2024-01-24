@@ -27,26 +27,25 @@ public class NewsController : ControllerBase
     /// <returns></returns>
     [HttpPost("api/[controller]/")]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] PostNewsDto payload)
+    public async Task<ActionResult<Public.DTO.V1.News>> Create([FromBody] PostNewsDto payload)
     {
+        
         // TODO - TopicArea to optional
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-        Console.WriteLine("Creating News!");
         
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
         var entity = _bll.NewsService.Add(bllEntity);
-        
+
         await _bll.SaveChangesAsync();
-        return Ok(new
-        {
-            NewsId = entity.Id.ToString()
-        });
+        
+        var result = ReturnNewsMapper.Map(entity);
+        return Ok(result) ;
     }
 
     /// <summary>

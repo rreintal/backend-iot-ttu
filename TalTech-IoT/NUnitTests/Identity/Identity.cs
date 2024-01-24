@@ -5,7 +5,7 @@ using Integration;
 using Public.DTO;
 using Public.DTO.Identity;
 
-namespace NUnitTests;
+namespace NUnitTests.Identity;
 
 public class Identity
 {
@@ -35,6 +35,7 @@ public class Identity
             Lastname = "Doe",
             Email = "john.doe@example.com",
             Username = "johndoe123",
+            Password = "Johndoe123."
             // Add other required properties
         };
 
@@ -63,6 +64,7 @@ public class Identity
             Lastname = "Doe",
             Email = "john.doe@example.com",
             Username = "johndoe123",
+            Password = "Johndoe123."
         };
 
         // Act
@@ -81,7 +83,7 @@ public class Identity
         var loginModel = new Login
         {
             Email = "john.doe@example.com",
-            Password = "Change.Me123" 
+            Password = "Johndoe123." 
         };
 
         // Act

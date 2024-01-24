@@ -50,8 +50,9 @@ where TStartup : class
             {
                 options.UseNpgsql(connectionString);
             });
-
             // data seeding
+            
+            
             // create db and seed data
             var sp = services.BuildServiceProvider();
             using var scope = sp.CreateScope();

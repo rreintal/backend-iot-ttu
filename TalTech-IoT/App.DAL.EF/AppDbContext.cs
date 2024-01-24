@@ -19,7 +19,9 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<TopicArea> TopicAreas { get; set; } = default!;
     public DbSet<HasTopicArea> HasTopicAreas { get; set; } = default!;
     public DbSet<AppRefreshToken> AppRefreshTokens { get; set; } = default!;
-    
+
+    public DbSet<AppRole> AppRoles { get; set; } = default!;
+
     private const string TopicAreaUniqueNameExpression = "\"TopicAreaId\" IS NOT NULL";
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {

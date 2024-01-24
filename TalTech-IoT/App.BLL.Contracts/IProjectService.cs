@@ -1,10 +1,11 @@
+using App.DAL.Contracts;
 using Base.BLL.Contracts;
 using Base.DAL.EF.Contracts;
 using BLL.DTO.V1;
 
 namespace App.BLL.Contracts;
 
-public interface IProjectService : IBaseRepository<Project>, ITranslateableEntityService<Project>
+public interface IProjectService : IBaseRepository<Project>, ITranslateableEntityService<Project>, IProjectsRepositoryCustom<Project>
 {
     
 }

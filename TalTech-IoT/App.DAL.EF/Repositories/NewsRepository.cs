@@ -158,7 +158,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             query = query.Where(x => x.HasTopicAreas.Any(hta => hta.TopicAreaId == filterSet.TopicAreaId));
         }
 
-        if (filterSet.OnlyTitles.HasValue)
+        if (filterSet.IncludeBody.HasValue)
         {
             
             return await query

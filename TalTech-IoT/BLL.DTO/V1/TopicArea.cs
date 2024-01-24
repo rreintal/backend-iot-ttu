@@ -14,7 +14,7 @@ public class TopicArea : DomainEntityId
     
     public string GetName()
     {
-        return LanguageString!.LanguageStringTranslations.First().TranslationValue;
+        return LanguageString?.LanguageStringTranslations?.First().TranslationValue ?? "";
     }
 
     public string GetName(string languageCulture)

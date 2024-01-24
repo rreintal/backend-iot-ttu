@@ -72,4 +72,9 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
         var result = Mapper.Map(entity);
         return result;
     }
+
+    public async Task<int> FindProjectTotalCount()
+    {
+        return await Uow.ProjectsRepository.FindProjectTotalCount();
+    }
 }

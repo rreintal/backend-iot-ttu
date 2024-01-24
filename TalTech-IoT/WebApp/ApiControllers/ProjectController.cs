@@ -82,6 +82,16 @@ public class ProjectController : ControllerBase
             Status = HttpStatusCode.OK
         });
     }
+    
+    /// <summary>
+    /// Get Projects count
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("api/[controller]/Count")]
+    public async Task<int> GetTotalProjectsCount()
+    {
+        return await _bll.ProjectService.FindProjectTotalCount();
+    }
 
     /// <summary>
     /// Get Project by id
@@ -106,5 +116,5 @@ public class ProjectController : ControllerBase
         var result = GetProjectMapper.Map(entity);
         return result;
     }
-    
+
 }

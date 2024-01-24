@@ -1,4 +1,5 @@
 using App.Domain;
+using App.Domain.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -70,7 +71,22 @@ public static class AppDataSeeding
                     .SetParent(t3);
                 context.TopicAreas.AddRangeAsync(new List<TopicArea>() { t1, t2, t3, t3child2, t3Child });
             }
+            /*
+            var rolesCount = context.Roles.ToList().Count;
+            if (rolesCount == 0)
+            {
+                var adminRole = new AppRole()
+                {
+                    Name = "ROLE_ADMIN"
+                };
 
+                var userRole = new AppRole()
+                {
+                    Name = "ROLE_USER"
+                };
+                context.Roles.AddRange(adminRole, userRole);
+            }
+            */
             context.SaveChanges();
         }
     }

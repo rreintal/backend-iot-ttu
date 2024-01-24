@@ -43,4 +43,9 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
     public IThumbnailService ThumbnailService => _thumbnailService ??= new ThumbnailService();
 
     private IThumbnailService? _thumbnailService;
+
+    public IUsersService UsersService =>
+        _usersService ??= new UsersService(Uow, new UsersMapper(_mapper));
+
+    private IUsersService? _usersService;
 }

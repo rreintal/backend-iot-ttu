@@ -30,6 +30,7 @@ COPY Integration/*.csproj ./Integration/
 COPY Factory/*.csproj ./Factory/
 COPY Util/*.csproj ./Util/
 COPY Helpers/*.csproj ./Helpers/
+COPY NUnitTests/*.csproj ./NUnitTests/
 
 RUN dotnet restore
 
@@ -56,6 +57,7 @@ COPY Integration/. ./Integration/
 COPY Factory/. ./Factory/
 COPY Util/. ./Util/
 COPY Helpers/. ./Helpers/
+COPY NUnitTests/. ./NUnitTests/
 
 
 WORKDIR /src/WebApp

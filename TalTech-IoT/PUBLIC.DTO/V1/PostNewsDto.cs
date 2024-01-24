@@ -10,9 +10,7 @@ public class PostNewsDto
 
     [Required]
     public string Author { get; set; } = default!;
-    
-    // TODO - if image is not sent, then set default image!
-    public string Image { get; set; } = default!;
+    public string? Image { get; set; }
     
     //[Required(ErrorMessage = "News must have at least one topic area.")]
     [AtleastOneTopicArea(ErrorMessage = "News must have at least one topic area.")]

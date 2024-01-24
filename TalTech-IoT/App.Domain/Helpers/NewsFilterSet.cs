@@ -6,6 +6,6 @@ public class NewsFilterSet
     public int? Page { get; set; }
     public Guid? TopicAreaId  { get; set; }
 
-    public bool? OnlyTitles { get; set; }
+    public bool? IncludeBody { get; set; }
 
 }

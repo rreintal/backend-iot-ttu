@@ -1,11 +1,7 @@
 using Integration;
-using Xunit;
 using Xunit.Abstractions;
-using System.Net.Http;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Public.DTO.V1;
 
 namespace XUnitTests.News
