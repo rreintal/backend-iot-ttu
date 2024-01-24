@@ -122,7 +122,8 @@ public class UsersController : ControllerBase
             {
                 JWT = jwt,
                 RefreshToken = refreshToken.RefreshToken,
-                AppUserId = appUser.Id.ToString()
+                AppUserId = appUser.Id.ToString(),
+                Username = register.Username
             };
             await _context.SaveChangesAsync();
             return Ok(res);
@@ -205,7 +206,8 @@ public class UsersController : ControllerBase
         {
             JWT = jwt,
             RefreshToken = refreshToken.RefreshToken,
-            AppUserId = appUser.Id.ToString()
+            AppUserId = appUser.Id.ToString(),
+            Username = appUser.UserName
         };
 
         
@@ -338,7 +340,8 @@ public class UsersController : ControllerBase
         var res = new JWTResponse()
         {
             JWT = jwt,
-            RefreshToken = newRefreshToken.RefreshToken
+            RefreshToken = newRefreshToken.RefreshToken,
+            Username = appUser.UserName
         };
 
         return Ok(res);
