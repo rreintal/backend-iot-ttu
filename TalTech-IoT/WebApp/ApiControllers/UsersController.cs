@@ -492,4 +492,12 @@ public class UsersController : ControllerBase
         return await _bll.UsersService.AllAsync();
     }
 
+    [HttpPost("api/v1/users/role")]
+    public async Task<AppUser> AddRole([FromBody] AddRole data)
+    {
+        var user = await _userManager.FindByIdAsync(data.UserId.ToString());
+        await _userManager.AddToRoleAsync(user, data.Role);
+        return user;
+    } 
+
 }
