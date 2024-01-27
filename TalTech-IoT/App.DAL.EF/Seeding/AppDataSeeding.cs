@@ -96,25 +96,21 @@ public static class AppDataSeeding
             }
 
             var userManager = serviceScope.ServiceProvider.GetService<UserManager<AppUser>>()!;
-            
-            var adminUser = new AppUser()
+            var usersCount = (await userManager.Users.ToListAsync()).Count;
+            if (usersCount == 0)
             {
-                Firstname = "AdminFN",
-                Lastname = "AdminLN",
-                Email = "admin@email.ee",
-                UserName = "admin",
-                Roles =  new List<AppRole>()
+                var adminUser = new AppUser()
                 {
-                    new AppRole()
-                    {
-                        Name = "ADMIN"
-                    }
-                }
-            };
+                    Firstname = "AdminFN",
+                    Lastname = "AdminLN",
+                    Email = "admin@email.ee",
+                    UserName = "admin",
+                };
 
-            await userManager.CreateAsync(adminUser, "admin");
-            await userManager.AddToRoleAsync(adminUser, "ADMIN");
-            
+                await userManager.CreateAsync(adminUser, "admin");
+                await userManager.AddToRoleAsync(adminUser, "ADMIN");   
+            }
+
             await context.SaveChangesAsync();
         }
     }

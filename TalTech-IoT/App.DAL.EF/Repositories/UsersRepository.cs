@@ -13,9 +13,29 @@ public class UsersRepository : EFBaseRepository<App.Domain.Identity.AppUser, App
 
     public override async Task<IEnumerable<AppUser>> AllAsync()
     {
-        return await DbSet
-            .Include(x => x.Roles)
+        
+        var res = await DbContext.Users
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.AppRole)
+            .Select(user => new AppUser
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Firstname = user.Firstname,
+                Lastname = user.Lastname,
+                AppRefreshTokens = user.AppRefreshTokens,
+                UserRoles = user.UserRoles.Select(ur => new AppUserRole
+                {
+                    AppRole = new AppRole
+                    {
+                        Name = ur.AppRole!.Name,
+                    }
+                }).ToList()
+            })
             .ToListAsync();
+
+        return res;
+        
     }
     
 }

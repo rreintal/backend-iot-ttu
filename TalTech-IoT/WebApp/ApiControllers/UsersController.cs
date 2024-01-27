@@ -32,6 +32,15 @@ public class UsersController : ControllerBase
 
 
     // TODO: how to remove this yellow line and make it with private documentation?
+    /// <summary>
+    /// Controller for users
+    /// </summary>
+    /// <param name="userManager"></param>
+    /// <param name="signInManager"></param>
+    /// <param name="configuration"></param>
+    /// <param name="context"></param>
+    /// <param name="bll"></param>
+    /// <param name="roleManager"></param>
     public UsersController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration configuration, AppDbContext context, IAppBLL bll, RoleManager<AppRole> roleManager)
     {
         _userManager = userManager;
@@ -90,7 +99,6 @@ public class UsersController : ControllerBase
         refreshToken.AppUser = appUser;
         
         
-
         var result = await _userManager.CreateAsync(appUser);
         await _userManager.AddToRoleAsync(appUser, "USER");
         result = await _userManager.AddClaimsAsync(appUser, new List<Claim>()
@@ -469,7 +477,6 @@ public class UsersController : ControllerBase
             _Configuration.GetValue<string>(StartupConfigConstants.JWT_AUDIENCE)!,
             _Configuration.GetValue<int>(StartupConfigConstants.JWT_EXPIRATION_TIME)
         );
-        Console.WriteLine($"AppUserId is: {appUser.Id.ToString()}");
         var res = new JWTResponse()
         {
             JWT = jwt,
@@ -492,12 +499,26 @@ public class UsersController : ControllerBase
         return await _bll.UsersService.AllAsync();
     }
 
+    //[Authorize]
     [HttpPost("api/v1/users/role")]
-    public async Task<AppUser> AddRole([FromBody] AddRole data)
+    public async Task<bool> AddRole([FromBody] AddRole data)
     {
+        
+        // [FromBody] AddRole data
+        /*
+        if (!await _roleManager.RoleExistsAsync(data.Role))
+        {
+            await _roleManager.CreateAsync(new AppRole()
+            {
+                Name = data.Role
+            });
+        }
         var user = await _userManager.FindByIdAsync(data.UserId.ToString());
         await _userManager.AddToRoleAsync(user, data.Role);
-        return user;
+        */
+        Console.WriteLine(User);
+        return true;
+
     } 
 
 }

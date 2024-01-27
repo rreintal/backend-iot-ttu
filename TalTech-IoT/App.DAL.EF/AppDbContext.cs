@@ -1,12 +1,15 @@
 ﻿using App.Domain;
 using App.Domain.Identity;
 using App.Domain.Translations;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.DAL.EF;
 
-public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
+public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid, 
+    IdentityUserClaim<Guid>, AppUserRole, IdentityUserLogin<Guid>,
+    IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
 {
 
     public DbSet<LanguageString> LanguageStrings { get; set; } = default!;
@@ -15,13 +18,15 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<News> News { get; set; } = default!;
     public DbSet<Content> Contents { get; set; } = default!;
     public DbSet<Project> Projects { get; set; } = default!;
+
+    //public DbSet<AppUser> AppUsers { get; set; } = default!;
+    //public DbSet<AppRole> AppRoles { get; set; } = default!;
+    //public DbSet<AppUserRole> AppUserRoles { get; set; } = default!;
     public DbSet<ContentType> ContentTypes { get; set; } = default!;
     public DbSet<TopicArea> TopicAreas { get; set; } = default!;
     public DbSet<HasTopicArea> HasTopicAreas { get; set; } = default!;
     public DbSet<AppRefreshToken> AppRefreshTokens { get; set; } = default!;
-
-    public DbSet<AppRole> AppRoles { get; set; } = default!;
-
+    
     private const string TopicAreaUniqueNameExpression = "\"TopicAreaId\" IS NOT NULL";
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -31,6 +36,19 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        
+        // Identity
+        // do not allow EF to create multiple FK-s, use existing RoleId and UserId
+        builder.Entity<AppUserRole>()
+            .HasOne(x => x.AppUser)
+            .WithMany(x => x!.UserRoles)
+            .HasForeignKey(x => x.UserId);
+
+        builder.Entity<AppUserRole>()
+            .HasOne(x => x.AppRole)
+            .WithMany(x => x!.UserRoles)
+            .HasForeignKey(x => x.RoleId);
+
 
         // Define that Content has LanguageString and LanguageString might not have Content!
         builder.Entity<Content>()
@@ -123,6 +141,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
             .HasOne<Project>(x => x.Project)
             .WithMany(x => x.HasTopicAreas)
             .OnDelete(DeleteBehavior.Cascade);
+
     }
     
     

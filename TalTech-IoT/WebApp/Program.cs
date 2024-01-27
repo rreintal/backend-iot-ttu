@@ -8,7 +8,10 @@ using App.Domain;
 using App.Domain.Identity;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Server.HttpSys;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -77,7 +80,6 @@ builder.Services.AddIdentity<AppUser, AppRole>(
         options =>
             options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<AppDbContext>()
-    .AddRoles<AppRole>()
     .AddDefaultTokenProviders();
 
 
@@ -99,6 +101,8 @@ builder.Services
             ClockSkew = TimeSpan.Zero
         };
     });
+
+builder.Services.AddAuthorization();
 
 // ----------------------------
 // Automapper
@@ -174,17 +178,23 @@ app.UseSwaggerUI(options =>
     }
 });
 
-app.UseCors("develop");
 app.UseHttpsRedirection();
+
+app.UseCors("develop");
+
+
+app.UseRouting();
+
+// Order counts!!!!
+app.UseAuthorization(); 
+
 app.UseStaticFiles();
 
 
 
 
+
 app.UseRouting();
-
-app.UseAuthorization();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
