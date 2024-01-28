@@ -1,4 +1,5 @@
 using App.Domain;
+using App.Domain.Constants;
 using App.Domain.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -108,7 +109,7 @@ public static class AppDataSeeding
                 };
 
                 await userManager.CreateAsync(adminUser, "admin");
-                await userManager.AddToRoleAsync(adminUser, "ADMIN");   
+                await userManager.AddToRoleAsync(adminUser, IdentityRolesConstants.ROLE_ADMIN);   
             }
 
             await context.SaveChangesAsync();

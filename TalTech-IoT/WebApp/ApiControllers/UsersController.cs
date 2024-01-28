@@ -6,8 +6,10 @@ using System.Security.Claims;
 using App.BLL.Contracts;
 using App.DAL.EF;
 using App.Domain;
+using App.Domain.Constants;
 using App.Domain.Identity;
 using Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -67,7 +69,7 @@ public class UsersController : ControllerBase
 
         if (user != null)
         {
-            if (user.NormalizedEmail == register!.Email.ToUpper())
+            if (user.NormalizedEmail == register.Email.ToUpper())
             {
                 return BadRequest(
                     new RestApiResponse()
@@ -99,8 +101,16 @@ public class UsersController : ControllerBase
         refreshToken.AppUser = appUser;
         
         
-        var result = await _userManager.CreateAsync(appUser);
-        await _userManager.AddToRoleAsync(appUser, "USER");
+        var result = await _userManager.CreateAsync(appUser, register.Password);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Message = "PROBLEM WITH PASSWORD", // TODO: for testing!
+                Status = HttpStatusCode.BadRequest
+            });
+        }
+        await _userManager.AddToRoleAsync(appUser, IdentityRolesConstants.ROLE_USER);
         result = await _userManager.AddClaimsAsync(appUser, new List<Claim>()
             {
                 new Claim(ClaimTypes.GivenName, appUser.Firstname),
@@ -112,7 +122,6 @@ public class UsersController : ControllerBase
                 return BadRequest(
                     new RestApiResponse()
                     {
-                        // Lisa korralik selgitus!!
                         Status = HttpStatusCode.MethodNotAllowed,
                         Message = "registration failed!"
                     });
@@ -138,8 +147,6 @@ public class UsersController : ControllerBase
             };
             await _context.SaveChangesAsync();
             return Ok(res);
-        
-
     }
 
     /// <summary>
@@ -173,7 +180,7 @@ public class UsersController : ControllerBase
             return NotFound(new RestApiResponse()
             {
                 Status = HttpStatusCode.NotFound,
-                Message = "Login failed!"
+                Message = "WRONG PASSWORD" // TODO: for testing!
             });
         }
         
@@ -367,7 +374,7 @@ public class UsersController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(RestApiResponse), 400)]
-    [Authorize(AuthenticationSchemes = "Bearer")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> LogOut([FromBody] Logout logoutModel)
     {
         var userId = User.GetUserId();
@@ -495,30 +502,48 @@ public class UsersController : ControllerBase
     [HttpGet("api/v1/Users")]
     public async Task<IEnumerable<AppUser>> GetAllUsers()
     {
-        //return await _userManager.Users.ToListAsync();
         return await _bll.UsersService.AllAsync();
     }
-
-    //[Authorize]
+    
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "ADMIN")]
     [HttpPost("api/v1/users/role")]
-    public async Task<bool> AddRole([FromBody] AddRole data)
+    public async Task<ActionResult<RestApiResponse>> AddRole([FromBody] AddRole data)
     {
         
-        // [FromBody] AddRole data
-        /*
-        if (!await _roleManager.RoleExistsAsync(data.Role))
+        if (await _roleManager.RoleExistsAsync(data.Role))
         {
-            await _roleManager.CreateAsync(new AppRole()
+            var user = await _userManager.FindByIdAsync(data.UserId.ToString());
+            
+            var isUserAlreadyInRole = await _userManager.IsInRoleAsync(user, data.Role);
+            if (isUserAlreadyInRole)
             {
-                Name = data.Role
+                return BadRequest(new RestApiResponse()
+                {
+                    Message = "USER_ALREADY_IN_ROLE",
+                    Status = HttpStatusCode.BadRequest
+                });
+            }
+            
+            var result = await _userManager.AddToRoleAsync(user, data.Role);
+            if (result.Succeeded)
+            {
+                return Ok(new RestApiResponse()
+                {
+                    Message = "ROLE_ADD_SUCCESS",
+                    Status = HttpStatusCode.OK
+                });
+            }
+            // If adding result failed
+            return BadRequest(new RestApiResponse()
+                {
+                    Message = "ROLE_ADD_FAILED"
+                });
+        }
+        return BadRequest(new RestApiResponse()
+            {
+                Message = "ROLE_NOT_EXISTS",
+                Status = HttpStatusCode.BadRequest
             });
         }
-        var user = await _userManager.FindByIdAsync(data.UserId.ToString());
-        await _userManager.AddToRoleAsync(user, data.Role);
-        */
-        Console.WriteLine(User);
-        return true;
-
-    } 
 
 }
