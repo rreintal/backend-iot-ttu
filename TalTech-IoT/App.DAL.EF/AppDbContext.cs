@@ -7,7 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace App.DAL.EF;
 
-public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
+// Tee mingi BaseDb jne
+public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid, 
+    IdentityUserClaim<Guid>, AppUserRole, IdentityUserLogin<Guid>,
+    IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
 {
 
     public DbSet<LanguageString> LanguageStrings { get; set; } = default!;
@@ -16,10 +19,6 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<News> News { get; set; } = default!;
     public DbSet<Content> Contents { get; set; } = default!;
     public DbSet<Project> Projects { get; set; } = default!;
-
-    //public DbSet<AppUser> AppUsers { get; set; } = default!;
-    //public DbSet<AppRole> AppRoles { get; set; } = default!;
-    //public DbSet<AppUserRole> AppUserRoles { get; set; } = default!;
     public DbSet<ContentType> ContentTypes { get; set; } = default!;
     public DbSet<TopicArea> TopicAreas { get; set; } = default!;
     public DbSet<HasTopicArea> HasTopicAreas { get; set; } = default!;

@@ -80,11 +80,11 @@ public static class AppDataSeeding
             {
                 new AppRole()
                 {
-                    Name = "ADMIN"
+                    Name = IdentityRolesConstants.ROLE_ADMIN
                 },
                 new AppRole()
                 {
-                    Name = "USER"
+                    Name = IdentityRolesConstants.ROLE_USER
                 }
             };
             foreach (var role in roles)

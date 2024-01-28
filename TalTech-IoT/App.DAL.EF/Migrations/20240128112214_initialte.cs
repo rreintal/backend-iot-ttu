@@ -5,7 +5,7 @@
 namespace App.DAL.EF.Migrations
 {
     /// <inheritdoc />
-    public partial class ososos : Migration
+    public partial class initialte : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

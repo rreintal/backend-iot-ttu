@@ -1,8 +1,9 @@
 using Base.BLL.Contracts;
+using BLL.DTO.Identity;
 
 namespace App.BLL.Contracts;
 
-public interface IUsersService : IEntityService<App.Domain.Identity.AppUser>
+public interface IUsersService : IEntityService<AppUser>
 {
     
 }

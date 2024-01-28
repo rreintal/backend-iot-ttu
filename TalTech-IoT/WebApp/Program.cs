@@ -80,7 +80,7 @@ builder.Services.AddIdentity<AppUser, AppRole>(
         options =>
             options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<AppDbContext>()
-    .AddRoles<AppRole>()
+    //.AddRoles<AppRole>()
     .AddDefaultTokenProviders();
 
 

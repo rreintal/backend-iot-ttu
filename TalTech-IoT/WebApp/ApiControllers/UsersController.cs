@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Mime;
@@ -16,6 +15,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Public.DTO;
 using Public.DTO.Identity;
+using Public.DTO.V1.Mappers;
+using AppRole = App.Domain.Identity.AppRole;
+using AppUser = App.Domain.Identity.AppUser;
 
 namespace WebApp.ApiControllers;
 
@@ -115,6 +117,7 @@ public class UsersController : ControllerBase
             {
                 new Claim(ClaimTypes.GivenName, appUser.Firstname),
                 new Claim(ClaimTypes.Surname, appUser.Lastname),
+                new Claim(ClaimTypes.Role, IdentityRolesConstants.ROLE_USER)
             });
 
             if (!result.Succeeded)
@@ -219,7 +222,6 @@ public class UsersController : ControllerBase
             _Configuration.GetValue<string>(StartupConfigConstants.JWT_AUDIENCE)!,
             _Configuration.GetValue<int>(StartupConfigConstants.JWT_EXPIRATION_TIME)
         );
-        Console.WriteLine($"AppUserId is: {appUser.Id.ToString()}");
         var res = new JWTResponse()
         {
             JWT = jwt,
@@ -494,22 +496,41 @@ public class UsersController : ControllerBase
         return res;
     }
 
+    /*
+    [HttpGet("api/v1/Users/Test")]
+    public async Task<List<AppUser>> Test()
+    {
+        return await _context.Users
+            .Include(x => x.UserRoles)
+            .ThenInclude(x => x.AppRole)
+            .Select(x => new AppUser()
+            {
+                UserRoles = x.UserRoles.Select(x => new AppRole()
+                {
+                    Id = "empty",
+                    Name = x.AppRole.Name
+                })
+            });
+    }
+    */
+
     /// <summary>
     /// Gets all users
     /// </summary>
     /// <returns></returns>
     //[Authorize]
     [HttpGet("api/v1/Users")]
-    public async Task<IEnumerable<AppUser>> GetAllUsers()
+    public async Task<IEnumerable<Public.DTO.Identity.AppUser>> GetAllUsers()
     {
-        return await _bll.UsersService.AllAsync();
+        return (await _bll.UsersService.AllAsync()).Select(e => GetUsersMapper.Map(e));
     }
     
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "ADMIN")]
     [HttpPost("api/v1/users/role")]
     public async Task<ActionResult<RestApiResponse>> AddRole([FromBody] AddRole data)
     {
-        
+        // TODO: user to which roles were added needs to generate new jwt to be able to use these new roles
+        // TODO: maybe display this for the user? something like "log in again to get latest permissions"??
         if (await _roleManager.RoleExistsAsync(data.Role))
         {
             var user = await _userManager.FindByIdAsync(data.UserId.ToString());

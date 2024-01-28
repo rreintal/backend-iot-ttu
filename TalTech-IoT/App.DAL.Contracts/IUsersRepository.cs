@@ -1,9 +1,8 @@
-using App.Domain.Identity;
 using Base.DAL.EF.Contracts;
 
 namespace App.DAL.Contracts;
 
-public interface IUsersRepository : IBaseRepository<AppUser>, IUsersRepositoryCustom<App.Domain.Identity.AppUser>
+public interface IUsersRepository : IBaseRepository<global::DAL.DTO.Identity.AppUser> //IUsersRepositoryCustom<AppUser>
 {
     
 }
