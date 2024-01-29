@@ -497,6 +497,16 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
+    /// Get all existing roles.
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("api/v1/Users/Roles")]
+    public async Task<IEnumerable<Public.DTO.Identity.AppRole>> GetAllRoles()
+    {
+        return (await _roleManager.Roles.ToListAsync()).Select(e => GetAppRoleMapper.Map(e));
+    }
+
+    /// <summary>
     /// Gets all users
     /// </summary>
     /// <returns></returns>
