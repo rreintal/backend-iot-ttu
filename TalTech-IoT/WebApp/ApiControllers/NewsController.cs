@@ -40,7 +40,7 @@ public class NewsController : ControllerBase
         
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
-        var entity = _bll.NewsService.Add(bllEntity);
+        var entity = await _bll.NewsService.AddAsync(bllEntity);
 
         await _bll.SaveChangesAsync();
         

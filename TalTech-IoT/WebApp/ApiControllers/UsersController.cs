@@ -496,24 +496,6 @@ public class UsersController : ControllerBase
         return res;
     }
 
-    /*
-    [HttpGet("api/v1/Users/Test")]
-    public async Task<List<AppUser>> Test()
-    {
-        return await _context.Users
-            .Include(x => x.UserRoles)
-            .ThenInclude(x => x.AppRole)
-            .Select(x => new AppUser()
-            {
-                UserRoles = x.UserRoles.Select(x => new AppRole()
-                {
-                    Id = "empty",
-                    Name = x.AppRole.Name
-                })
-            });
-    }
-    */
-
     /// <summary>
     /// Gets all users
     /// </summary>

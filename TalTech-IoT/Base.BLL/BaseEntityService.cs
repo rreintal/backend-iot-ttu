@@ -45,7 +45,6 @@ public class BaseEntityService<TBllEntity, TDalEntity, TRepository, TKey> : IEnt
     {
         return Mapper.Map(Repository.Add(Mapper.Map(entity)))!;
     }
-
     public TBllEntity Update(TBllEntity entity)
     {
         return Mapper.Map(Repository.Update(Mapper.Map(entity)))!;

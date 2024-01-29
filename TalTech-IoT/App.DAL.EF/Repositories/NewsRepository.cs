@@ -12,7 +12,7 @@ namespace App.DAL.EF.Repositories;
 public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, INewsRepository
 {
     private const int DEFAULT_PAGE_SIZE = 5;
-    
+
     public NewsRepository(AppDbContext dataContext, IMapper mapper) : base(dataContext, mapper) {}
     
     // TODO - TEE DAL OBJECT; et HasTopicArea -> TopicArea?

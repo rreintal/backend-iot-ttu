@@ -1,6 +1,7 @@
 using System.Text;
 using App.BLL;
 using App.BLL.Contracts;
+using App.BLL.Services;
 using App.DAL.Contracts;
 using App.DAL.EF;
 using App.DAL.EF.Seeding;
@@ -34,6 +35,9 @@ builder.Services.AddScoped<AppDbContext>();
 // Add UOW
 builder.Services.AddScoped<IAppUOW, AppUOW>();
 builder.Services.AddScoped<IAppBLL, AppBLL>();
+
+// DI for custom services
+builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
 
 // Add CORS
 
