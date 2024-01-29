@@ -181,7 +181,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
                 domainObject.HasTopicAreas.Add(hasTopicArea);
             }
         }
-        
+        /*
         // Testing CDN
         var estonianBody = domainObject.GetContentValue(ContentTypes.BODY, LanguageCulture.EST);
         estonianBody = await HandleImageContent(estonianBody);
@@ -192,7 +192,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         domainObject.SetContentTranslationValue(ContentTypes.BODY, LanguageCulture.EST, estonianBody);
         domainObject.SetContentTranslationValue(ContentTypes.BODY, LanguageCulture.ENG, englishBody);
         // -----
-        
+        */
         Uow.NewsRepository.Add(domainObject);
         return entity;
     }
