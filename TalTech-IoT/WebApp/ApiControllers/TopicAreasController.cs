@@ -99,7 +99,7 @@ public class TopicAreasController : ControllerBase
     /// </summary>
     /// <returns></returns>
 
-    [HttpGet("api/[action]")]
+    [HttpGet("[action]")]
     public async Task<IEnumerable<TopicAreaWithTranslation>> GetWithTranslation()
     {
         // TODO - create an object where you store list of languageCultures as method parameter {languageStringList}

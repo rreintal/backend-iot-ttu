@@ -12,6 +12,10 @@ public class MailController : ControllerBase
 {
     private IAppBLL _Bll { get; set; }
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="bll"></param>
     public MailController(IAppBLL bll)
     {
         _Bll = bll;
