@@ -32,7 +32,7 @@ public class ProjectController : ControllerBase
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    [HttpPost("[controller]")]
+    [HttpPost]
     public async Task<ActionResult> Create([FromBody] Public.DTO.V1.PostProjectDto data)
     {
         // TODO - image optionaliks!
