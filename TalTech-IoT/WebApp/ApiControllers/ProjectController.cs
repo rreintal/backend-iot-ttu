@@ -58,7 +58,7 @@ public class ProjectController : ControllerBase
     /// <param name="languageCulture"></param>
     /// <returns></returns>
     /// 
-    [HttpGet("{languageCulture}/[controller]/")]
+    [HttpGet("{languageCulture}")]
     public async Task<IEnumerable<GetProject>> Get(string languageCulture)
     {
         return (await _bll.ProjectService.AllAsync(languageCulture)).Select(x => GetProjectMapper.Map(x, true));
@@ -68,7 +68,7 @@ public class ProjectController : ControllerBase
     /// Delete Project
     /// </summary>
     /// <returns></returns>
-    [HttpDelete("[controller]/{id}")]
+    [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.ProjectService.FindAsync(id);
@@ -93,7 +93,7 @@ public class ProjectController : ControllerBase
     /// Get Projects count
     /// </summary>
     /// <returns></returns>
-    [HttpGet("[controller]/Count")]
+    [HttpGet("Count")]
     public async Task<int> GetTotalProjectsCount()
     {
         return await _bll.ProjectService.FindProjectTotalCount();
@@ -105,7 +105,7 @@ public class ProjectController : ControllerBase
     /// <param name="languageCulture"></param>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("{languageCulture}/[controller]/{id}")]
+    [HttpGet("{languageCulture}/{id}")]
     public async Task<ActionResult<GetProject>> Get(string languageCulture, Guid id)
     {
         //var entity = await _bll.ProjectService.FindAsync(id, languageCulture);
