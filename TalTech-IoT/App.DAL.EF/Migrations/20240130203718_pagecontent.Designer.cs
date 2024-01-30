@@ -3,6 +3,7 @@ using System;
 using App.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240130203718_pagecontent")]
+    partial class pagecontent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,6 +43,9 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid?>("PageContentId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("PageContentId1")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("ProjectId")
                         .HasColumnType("uuid");
 
@@ -53,6 +59,8 @@ namespace App.DAL.EF.Migrations
                     b.HasIndex("NewsId");
 
                     b.HasIndex("PageContentId");
+
+                    b.HasIndex("PageContentId1");
 
                     b.HasIndex("ProjectId");
 
@@ -485,9 +493,14 @@ namespace App.DAL.EF.Migrations
                         .HasForeignKey("NewsId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Domain.PageContent", "PageContent")
-                        .WithMany("Content")
+                    b.HasOne("App.Domain.PageContent", null)
+                        .WithMany("Body")
                         .HasForeignKey("PageContentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("App.Domain.PageContent", null)
+                        .WithMany("Title")
+                        .HasForeignKey("PageContentId1")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("App.Domain.Project", "Project")
@@ -500,8 +513,6 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("LanguageString");
 
                     b.Navigation("News");
-
-                    b.Navigation("PageContent");
 
                     b.Navigation("Project");
                 });
@@ -646,7 +657,9 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("App.Domain.PageContent", b =>
                 {
-                    b.Navigation("Content");
+                    b.Navigation("Body");
+
+                    b.Navigation("Title");
                 });
 
             modelBuilder.Entity("App.Domain.Project", b =>

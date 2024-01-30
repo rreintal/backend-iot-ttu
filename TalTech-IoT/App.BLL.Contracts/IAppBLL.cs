@@ -1,4 +1,5 @@
-﻿using Base.DAL.EF.Contracts;
+﻿using App.DAL.Contracts;
+using Base.DAL.EF.Contracts;
 
 namespace App.BLL.Contracts;
 
@@ -14,5 +15,7 @@ public interface IAppBLL : IBaseUOW
     IThumbnailService ThumbnailService { get; }
     
     IUsersService UsersService { get; }
+    
+    IPageContentService PageContentService { get; }
     
 }

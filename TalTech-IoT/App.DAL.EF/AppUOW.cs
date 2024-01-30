@@ -36,4 +36,9 @@ public class AppUOW : EFBaseUOW<AppDbContext>, IAppUOW
         _usersRepository ??= new UsersRepository(UowDbContext, _mapper);
 
     private IUsersRepository? _usersRepository;
+
+    private IPageContentRepository? _pageContentRepository;
+
+    public IPageContentRepository PageContentRepository =>
+        _pageContentRepository ??= new PageContentRepository(UowDbContext, _mapper);
 }

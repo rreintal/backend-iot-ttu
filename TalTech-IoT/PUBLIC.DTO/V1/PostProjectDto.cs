@@ -24,12 +24,12 @@ public class PostProjectDto
 
     public string? Image { get; set; }
     
-    [ValidCultures]
-    [IncludesAllCultures]
+    //[ValidCultures]
+    //[IncludesAllCultures]
     public List<ContentDto> Title { get; set; } = default!;
     
-    [ValidCultures]
-    [IncludesAllCultures]
+    //[ValidCultures]
+    //[IncludesAllCultures]
     public List<ContentDto> Body { get; set; } = default!;
     
 

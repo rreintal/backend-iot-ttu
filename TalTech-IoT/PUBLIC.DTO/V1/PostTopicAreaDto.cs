@@ -7,8 +7,8 @@ public class PostTopicAreaDto
 {
     public Guid? ParentTopicId { get; set; }
 
-    [ValidCultures]
-    [IncludesAllCultures]
+    //[ValidCultures]
+    //[IncludesAllCultures]
     public List<ContentDto> Name { get; set; } = default!;
     
 }

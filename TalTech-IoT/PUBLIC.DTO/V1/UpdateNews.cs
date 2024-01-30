@@ -9,11 +9,11 @@ public class UpdateNews : DomainEntityId
     public string Author { get; set; } = default!;
     
     [ValidCultures]
-    [IncludesAllCultures]
+    //[IncludesAllCultures]
     public List<ContentDto> Body { get; set; } = default!;
     
     [ValidCultures]
-    [IncludesAllCultures]
+    //[IncludesAllCultures]
     public List<ContentDto> Title { get; set; } = default!;
     
     public string Image { get; set; } = default!;

@@ -14,6 +14,9 @@ public class Content : DomainEntityId
     public Guid? ProjectId { get; set; }
     public Project? Project { get; set; }
 
+    public Guid? PageContentId { get; set; }
+    public PageContent? PageContent { get; set; }
+
     
     public Guid LanguageStringId { get; set; }
     public LanguageString LanguageString { get; set; } = default!;

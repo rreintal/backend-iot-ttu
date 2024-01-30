@@ -7,12 +7,12 @@ namespace Public.DTO.V1;
 // TODO parem nimi create/update on sama
 public class PostNewsDto
 {
-    [IncludesAllCultures]
-    [ValidCultures]
+    //[IncludesAllCultures]
+    //[ValidCultures]
     public List<ContentDto> Title { get; set; } = default!;
     
-    [IncludesAllCultures]
-    [ValidCultures]
+    //[IncludesAllCultures]
+    //[ValidCultures]
     public List<ContentDto> Body { get; set; } = default!;
 
     [Required]

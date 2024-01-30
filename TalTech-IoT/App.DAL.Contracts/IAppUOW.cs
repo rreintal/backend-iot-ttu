@@ -16,4 +16,6 @@ public interface IAppUOW : IBaseUOW
     IProjectsRepository ProjectsRepository { get; }
     
     IUsersRepository UsersRepository { get; }
+    
+    IPageContentRepository PageContentRepository { get; }
 }

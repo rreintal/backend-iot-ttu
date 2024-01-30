@@ -15,6 +15,6 @@ public class ContentDto
     [Required]
     [MinLength(2)]
     [MaxLength(2)]
-    [ValidCultures]
+    //[ValidCultures]
     public string Culture { get; set; } = default!;
 }

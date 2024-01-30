@@ -50,4 +50,9 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
         _usersService ??= new UsersService(Uow, new UsersMapper(_mapper));
 
     private IUsersService? _usersService;
+
+    private IPageContentService? _pageContentService;
+    public IPageContentService PageContentService =>
+        _pageContentService ??= new PageContentService(Uow, new PageContentMapper(_mapper));
+        
 }
