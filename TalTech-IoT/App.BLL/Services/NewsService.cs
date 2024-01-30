@@ -3,11 +3,11 @@ using App.BLL.Contracts;
 using App.DAL.Contracts;
 using App.Domain;
 using App.Domain.Constants;
-using App.Domain.Helpers;
 using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
 using BLL.DTO.V1;
+using Public.DTO;
 using ContentType = BLL.DTO.V1.ContentType;
 using News = BLL.DTO.V1.News;
 

@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Public.DTO.Identity;
 
 public class ChangePasswordModel
 {
-    //public string UserId { get; set; } = default!;
+    [Required]
     public string Password { get; set; } = default!;
 }

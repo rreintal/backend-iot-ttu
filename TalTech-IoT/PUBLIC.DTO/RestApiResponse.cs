@@ -8,7 +8,8 @@ MISSING_TRANSLATION_VALUE -> kasutaja annab 1 contenti koos translationiga
 INVALID_TRANSLATION_LANGUAGE_STRING -> kui kasutaja annab vale lang str
 
 Middleware
-INVALID_LANGUAGE_STRING @Tee middleware, mis juba enne detectib kas lang str on õige
+INVALID_LANGUAGE_STRING @Tee middleware, mis juba enne detectib kas lang str on õige || See on controlleritele!!
+
 
 TopicArea
 TOPIC_AREA_CREATE_PARENT_DOES_NOT_EXIST
@@ -28,6 +29,7 @@ MISSING_AUTHOR
 TOO_BIG_IMAGE -> validation
 IMAGE_MISSING 
 TOO_MANY_TOPIC_AREAS -> validation
+MISISNG_TOPIC_AREA
 general 
 
 
@@ -61,7 +63,4 @@ public class RestApiResponse
 public struct RestApiResponseError
 {
     // General
-    
-    public static string NotFound = "NOT_FOUND";
-
 }

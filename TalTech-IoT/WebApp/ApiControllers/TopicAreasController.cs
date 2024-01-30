@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Mime;
 using App.BLL.Contracts;
 using App.DAL.EF.DbExceptions;
+using Asp.Versioning;
 using AutoMapper;
 using DAL.DTO.V1.FilterObjects;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,9 @@ namespace WebApp.ApiControllers;
 /// <summary>
 /// Controller regarding TopicAreas
 /// </summary>
-//[Route("api/{languageCulture}/[controller]/[action]")]
+[ApiVersion("1")]
+[Route("api/v{version:apiVersion}/[controller]")]
+[ApiController]
 public class TopicAreasController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -52,7 +55,7 @@ public class TopicAreasController : ControllerBase
     /// }
     /// </remarks>
     /// <returns></returns>
-    [HttpPost("api/[controller]/")]
+    [HttpPost]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -83,7 +86,7 @@ public class TopicAreasController : ControllerBase
     /// </summary>
     /// <param name="languageCulture"></param>
     /// <returns></returns>
-    [HttpGet("api/{languageCulture}/[controller]/")]
+    [HttpGet("{languageCulture}")]
     public async Task<IEnumerable<Public.DTO.V1.TopicArea>> Get(string languageCulture)
     {
         var items = (await _bll.TopicAreaService.AllAsync(languageCulture)).ToList();
@@ -96,7 +99,7 @@ public class TopicAreasController : ControllerBase
     /// </summary>
     /// <returns></returns>
 
-    [HttpGet("api/[controller]/[action]")]
+    [HttpGet("api/[action]")]
     public async Task<IEnumerable<TopicAreaWithTranslation>> GetWithTranslation()
     {
         // TODO - create an object where you store list of languageCultures as method parameter {languageStringList}

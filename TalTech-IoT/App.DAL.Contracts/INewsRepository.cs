@@ -1,6 +1,6 @@
-using App.Domain.Helpers;
 using Base.DAL.EF.Contracts;
 using DAL.DTO.V1;
+using Public.DTO;
 
 namespace App.DAL.Contracts;
 

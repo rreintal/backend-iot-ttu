@@ -1,33 +1,26 @@
 using System.ComponentModel.DataAnnotations;
+using App.Domain.Constants;
+using Public.DTO.ValidationAttributes;
 
 namespace Public.DTO.V1;
 
 // TODO parem nimi create/update on sama
 public class PostNewsDto
 {
+    [IncludesAllCultures]
+    [ValidCultures]
     public List<ContentDto> Title { get; set; } = default!;
+    
+    [IncludesAllCultures]
+    [ValidCultures]
     public List<ContentDto> Body { get; set; } = default!;
 
     [Required]
+    [MinLength(2)]
+    [MaxLength(80)]
     public string Author { get; set; } = default!;
     public string? Image { get; set; }
     
-    //[Required(ErrorMessage = "News must have at least one topic area.")]
-    [AtleastOneTopicArea(ErrorMessage = "News must have at least one topic area.")]
+    [MinLength(1, ErrorMessage = RestApiErrorMessages.GeneralMissingTopicArea)]
     public List<TopicArea> TopicAreas { get; set; } = default!;
-    
-    
-    
-    public class AtleastOneTopicArea : ValidationAttribute
-    {
-        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
-        {
-            if (value is List<TopicArea> topicArea && topicArea.Count > 0)
-            {
-                return ValidationResult.Success;
-            }
-
-            return new ValidationResult("News must have at least one topic area.");
-        }
-    }
 }

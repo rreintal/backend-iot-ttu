@@ -1,24 +1,35 @@
 using System.ComponentModel.DataAnnotations;
+using App.Domain.Constants;
+using Public.DTO.ValidationAttributes;
+
 namespace Public.DTO.V1;
 
 public class PostProjectDto
 {
-    [Required(ErrorMessage = "Project year is required")]
+    [Required(ErrorMessage = RestApiErrorMessages.MissingProjectYear)]
+    [MinLength(0)]
+    [MaxLength(5)] // igaksjuhuks 5
     public int Year { get; set; } = default!;
 
-    [Required(ErrorMessage = "ProjectManager field is required!")]
+    [Required(ErrorMessage = RestApiErrorMessages.MissingProjectManager)]
+    [MinLength(2)]
+    [MaxLength(64)]
     public string ProjectManager { get; set; } = default!;
     
     // In Euros
-    [Required(ErrorMessage = nameof(ProjectVolume) + " is required")]
+    [Required(ErrorMessage = RestApiErrorMessages.MissingProjectVolume)]
+    [MinLength(2)]
+    [MaxLength(64)]
     public double ProjectVolume { get; set; } = default!;
 
     public string? Image { get; set; }
     
-    [Required]
+    [ValidCultures]
+    [IncludesAllCultures]
     public List<ContentDto> Title { get; set; } = default!;
     
-    [Required]
+    [ValidCultures]
+    [IncludesAllCultures]
     public List<ContentDto> Body { get; set; } = default!;
     
 
@@ -27,6 +38,7 @@ public class PostProjectDto
     
     // one project can be inside many topic areas
     // for example - programming, Java, microservices ...
+    [MinLength(1, ErrorMessage = RestApiErrorMessages.GeneralMissingTopicArea)]
     public List<TopicArea> TopicAreas { get; set; } = default!;
 }
 

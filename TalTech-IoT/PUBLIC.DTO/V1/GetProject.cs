@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Public.DTO.V1;
 
 public class GetProject

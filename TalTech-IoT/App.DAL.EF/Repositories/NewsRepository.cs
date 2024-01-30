@@ -1,11 +1,11 @@
 using App.DAL.Contracts;
 using App.DAL.EF.DbExtensions;
 using App.Domain;
-using App.Domain.Helpers;
 using AutoMapper;
 using Base.DAL.EF;
 using DAL.DTO.V1;
 using Microsoft.EntityFrameworkCore;
+using Public.DTO;
 
 namespace App.DAL.EF.Repositories;
 

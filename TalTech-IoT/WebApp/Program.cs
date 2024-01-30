@@ -84,7 +84,6 @@ builder.Services.AddIdentity<AppUser, AppRole>(
         options =>
             options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<AppDbContext>()
-    //.AddRoles<AppRole>()
     .AddDefaultTokenProviders();
 
 
@@ -133,6 +132,7 @@ apiVersioningBuilder.AddApiExplorer(options =>
     // note: this option is only necessary when versioning by url segment. the SubstitutionFormat
     // can also be used to control the format of the API version in route templates
     options.SubstituteApiVersionInUrl = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
 });
 
 builder.Services.AddEndpointsApiExplorer();

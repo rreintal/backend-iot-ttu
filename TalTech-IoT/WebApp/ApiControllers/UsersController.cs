@@ -7,6 +7,7 @@ using App.DAL.EF;
 using App.Domain;
 using App.Domain.Constants;
 using App.Domain.Identity;
+using Asp.Versioning;
 using Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -24,6 +25,8 @@ namespace WebApp.ApiControllers;
 /// <summary>
 /// Controller for users authorization and registration service.
 /// </summary>
+[Route("api/v{version:apiVersion}/[controller]")]
+[ApiController]
 public class UsersController : ControllerBase
 {
     
@@ -60,7 +63,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="register"></param>
     /// <returns></returns>
-    [HttpPost("api/[controller]/Register")]
+    [HttpPost("Register")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(JWTResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(RestApiResponse), 400)]
@@ -157,7 +160,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="payload"></param>
     /// <returns></returns>
-    [HttpPost("api/[controller]/Login")]
+    [HttpPost("Login")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(JWTResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(RestApiResponse), 400)]
@@ -239,7 +242,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="payload"></param>
     /// <returns></returns>
-    [HttpPost("api/[controller]/RefreshToken")]
+    [HttpPost("RefreshToken")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(JWTResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(RestApiResponse), 400)]
@@ -372,7 +375,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="payload"></param>
     /// <returns></returns>
-    [HttpPost("api/[controller]/Logout")]
+    [HttpPost("Logout")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(RestApiResponse), 400)]
@@ -500,7 +503,7 @@ public class UsersController : ControllerBase
     /// Get all existing roles.
     /// </summary>
     /// <returns></returns>
-    [HttpGet("api/v1/Users/Roles")]
+    [HttpGet("Roles")]
     public async Task<IEnumerable<Public.DTO.Identity.AppRole>> GetAllRoles()
     {
         return (await _roleManager.Roles.ToListAsync()).Select(e => GetAppRoleMapper.Map(e));
@@ -511,18 +514,18 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <returns></returns>
     //[Authorize]
-    [HttpGet("api/v1/Users")]
+    [HttpGet]
     public async Task<IEnumerable<Public.DTO.Identity.AppUser>> GetAllUsers()
     {
         return (await _bll.UsersService.AllAsync()).Select(e => GetUsersMapper.Map(e));
     }
     
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "ADMIN")]
-    [HttpPost("api/v1/users/role")]
+    [HttpPost("role")]
     public async Task<ActionResult<RestApiResponse>> AddRole([FromBody] AddRole data)
     {
         // TODO: user to which roles were added needs to generate new jwt to be able to use these new roles
-        // TODO: maybe display this for the user? something like "log in again to get latest permissions"??
+        // TODO: maybe display this for the user? omething like "log in again to get latest permissions"??
         if (await _roleManager.RoleExistsAsync(data.Role))
         {
             var user = await _userManager.FindByIdAsync(data.UserId.ToString());
@@ -558,5 +561,8 @@ public class UsersController : ControllerBase
                 Status = HttpStatusCode.BadRequest
             });
         }
+    
+    // TODO: register method for admin, where he puts in the FN, LN, Email, and then register account
+    // and generate random pw (UUID), send this user details to recipent on email!
 
 }

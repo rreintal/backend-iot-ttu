@@ -1,8 +1,8 @@
 using App.DAL.Contracts;
-using App.Domain.Helpers;
 using Base.BLL.Contracts;
 using Base.DAL.EF.Contracts;
 using BLL.DTO.V1;
+using Public.DTO;
 
 namespace App.BLL.Contracts;
 

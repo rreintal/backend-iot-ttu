@@ -1,8 +1,8 @@
 using System.Net;
 using System.Net.Mime;
 using App.BLL.Contracts;
-using App.DAL.EF;
-using App.Domain.Helpers;
+using App.Domain.Constants;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1;
@@ -10,11 +10,19 @@ using Public.DTO.V1.Mappers;
 
 namespace WebApp.ApiControllers;
 
-//[Route("api/{languageCulture}/[controller]/[action]")]
+/// <summary>
+/// Controller for News
+/// </summary>
+[ApiVersion("1")]
+[Route("api/v{version:apiVersion}/[controller]")]
+[ApiController]
 public class NewsController : ControllerBase
 {
     private readonly IAppBLL _bll;
     
+    /// <summary>
+    /// Controller for News
+    /// </summary>
     public NewsController(IAppBLL bll)
     {
         _bll = bll;
@@ -25,19 +33,12 @@ public class NewsController : ControllerBase
     /// </summary>
     /// <param name="payload"></param>
     /// <returns></returns>
-    [HttpPost("api/[controller]/")]
+    [HttpPost]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Public.DTO.V1.News>> Create([FromBody] PostNewsDto payload)
     {
-        
-        // TODO - TopicArea to optional
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
         var entity = await _bll.NewsService.AddAsync(bllEntity);
@@ -53,7 +54,7 @@ public class NewsController : ControllerBase
     /// </summary>
     /// <param name="languageCulture"></param>
     /// <returns></returns>
-    [HttpGet("api/{languageCulture}/[controller]/")]
+    [HttpGet("{languageCulture}/")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -71,7 +72,7 @@ public class NewsController : ControllerBase
     /// <param name="id"></param>
     /// <param name="languageCulture"></param>
     /// <returns></returns>
-    [HttpGet("api/{languageCulture}/[controller]/{id}")]
+    [HttpGet("{languageCulture}/{id}")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -83,7 +84,7 @@ public class NewsController : ControllerBase
         {
             return NotFound(new RestApiResponse()
             {
-                Message = RestApiResponseError.NotFound,
+                Message = RestApiErrorMessages.GeneralNotFound,
                 Status = HttpStatusCode.NotFound
             });
             
@@ -97,8 +98,7 @@ public class NewsController : ControllerBase
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    [HttpPut("api/[controller]/")]
+    [HttpPut]
     public async Task<ActionResult> Update([FromBody] Public.DTO.V1.UpdateNews data)
     {
         // TODO - when updating, should we add the language culture which one we want to update?
@@ -123,7 +123,7 @@ public class NewsController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpDelete("api/[controller]/{id}")]
+    [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.NewsService.FindAsync(id);
@@ -131,7 +131,7 @@ public class NewsController : ControllerBase
         {
             return NotFound(new RestApiResponse()
             {
-                Message = $"News with id {id.ToString()} not found.",
+                Message = RestApiErrorMessages.GeneralNotFound,
                 Status = HttpStatusCode.NotFound
             });
         }
@@ -143,14 +143,14 @@ public class NewsController : ControllerBase
         });
     }
 
-    [HttpGet("api/[controller]/News/Count")]
+    [HttpGet("Count")]
     public async Task<int> CountAllNews()
     {
         return await _bll.NewsService.FindNewsTotalCount();
     }
     
 
-    [HttpGet("api/[controller]/Preview/{id}")]
+    [HttpGet("Preview/{id}")]
     public async Task<Public.DTO.V1.NewsAllLangs> GetNewsAllLanguages(Guid id)
     {
         var entity = await _bll.NewsService.FindByIdAllTranslationsAsync(id);
