@@ -24,12 +24,10 @@ public class PostProjectDto
 
     public string? Image { get; set; }
     
-    //[ValidCultures]
-    //[IncludesAllCultures]
+    [MinLength(2, ErrorMessage = RestApiErrorMessages.GeneralMissingTranslationValue)]
     public List<ContentDto> Title { get; set; } = default!;
     
-    //[ValidCultures]
-    //[IncludesAllCultures]
+    [MinLength(2, ErrorMessage = RestApiErrorMessages.GeneralMissingTranslationValue)]
     public List<ContentDto> Body { get; set; } = default!;
     
 

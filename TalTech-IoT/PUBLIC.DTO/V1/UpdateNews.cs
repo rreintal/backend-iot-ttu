@@ -8,12 +8,10 @@ public class UpdateNews : DomainEntityId
 {
     public string Author { get; set; } = default!;
     
-    [ValidCultures]
-    //[IncludesAllCultures]
+    [MinLength(2, ErrorMessage = RestApiErrorMessages.GeneralMissingTranslationValue)]
     public List<ContentDto> Body { get; set; } = default!;
     
-    [ValidCultures]
-    //[IncludesAllCultures]
+    [MinLength(2, ErrorMessage = RestApiErrorMessages.GeneralMissingTranslationValue)]
     public List<ContentDto> Title { get; set; } = default!;
     
     public string Image { get; set; } = default!;
