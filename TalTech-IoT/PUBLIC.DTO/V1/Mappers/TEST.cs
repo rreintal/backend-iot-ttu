@@ -1,14 +1,36 @@
 namespace Public.DTO.V1.Mappers;
 /*
-public class TEST<S, CT, R, Id> // Source, ContentTypes, Result, Id (PRIMARY KEY)
+public class TEST<S, CT, R, Id, LS> // Source (contentDto), ContentTypes, Result, Id (PRIMARY KEY), LanguageString
 {
-    public R CreateLanguageStringsWithAllCultures()
+    public IEnumerable<R> CreateLanguageStringsWithAllCultures()
     {
         Id id;
-        R result;
+        IEnumerable<R> result; // List<Content>
         
-        // 
+        // Hoia contentTypes kuskil listis, et iga contentType kohta tee LanguageString
         
+        /*
+         for languageCulture in allLanguageCultures //  WITHOUT BASE LANGUAGE!!!!
+         
+            contentTypeLanguageStringId = Id<Id>
+                
+            contentTypeLanguageString = LS {
+                    Id = contentTypeLanguageStringId,
+                    Value = S.Value (LanguageString base value)
+            }
+                
+            for contentType in allContentTypes ( BODY, TITLE )  
+            
+            translationValue          
+            
+            
+            
+            
+            
+            
+         
+         */
+        /*
         return R;
     }
 }
@@ -87,11 +109,8 @@ public class TEST<S, CT, R, Id> // Source, ContentTypes, Result, Id (PRIMARY KEY
             { 
                 titleContent, bodyContent
             },
-            Author = postNews.Author
         };
 
-        res.TopicAreas = TopicAreaMapper.Map(postNews.TopicAreas);
-        res.Image = postNews.Image;
 
         return res;
 */

@@ -13,6 +13,7 @@ public static class GetUsersMapper
             Email = bll.Email,
             Firstname = bll.Firstname,
             Lastname = bll.Lastname,
+            UserName = bll.UserName,
             EmailConfirmed = bll.EmailConfirmed,
             LockoutEnabled = bll.LockoutEnabled,
             Roles = bll.UserRoles.Select(role => new Public.DTO.Identity.AppRole()
