@@ -28,6 +28,11 @@ public static class RestApiErrorMessages
     /// Users
     /// </summary>
     public const string UserAlreadyExists = "USER_ALREADY_EXISTS";
+
+    /// <summary>
+    /// Roles
+    /// </summary>
+    public const string RoleNotFound = "ROLE_NOT_FOUND";
 }
 
 /*

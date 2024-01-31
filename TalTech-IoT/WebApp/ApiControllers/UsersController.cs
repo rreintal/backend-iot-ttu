@@ -115,7 +115,18 @@ public class UsersController : ControllerBase
                 Status = HttpStatusCode.BadRequest
             });
         }
-        await _userManager.AddToRoleAsync(appUser, IdentityRolesConstants.ROLE_USER);
+
+        var role = await _roleManager.FindByIdAsync(register.RoleId.ToString());
+        if (role == null)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.RoleNotFound,
+                Status = HttpStatusCode.BadRequest
+            });
+        }
+        await _userManager.AddToRoleAsync(appUser, role.Name);
+        
         result = await _userManager.AddClaimsAsync(appUser, new List<Claim>()
             {
                 new Claim(ClaimTypes.GivenName, appUser.Firstname),
