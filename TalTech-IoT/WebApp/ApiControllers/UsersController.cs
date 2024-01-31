@@ -570,6 +570,7 @@ public class UsersController : ControllerBase
         await _userManager.RemoveFromRolesAsync(appUser, roles);
 
         await _userManager.AddToRoleAsync(appUser, role.Name);
+        await _bll.SaveChangesAsync();
         return Ok();
     }
     
