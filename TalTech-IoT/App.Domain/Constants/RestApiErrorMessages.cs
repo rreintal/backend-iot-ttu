@@ -22,6 +22,12 @@ public static class RestApiErrorMessages
     public const string MissingProjectManager = "MISING_PROJECT_MANAGER"; // TODO: kas vajalik?
     public const string MissingProjectVolume = "MISSING_PROJECT_VOLUME"; // TODO: kas vajalik?
     public const string MissingProjectYear = "MISSING_PROJECT_YEAR";
+
+
+    /// <summary>
+    /// Users
+    /// </summary>
+    public const string UserAlreadyExists = "USER_ALREADY_EXISTS";
 }
 
 /*

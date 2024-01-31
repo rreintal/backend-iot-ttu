@@ -225,12 +225,22 @@ public class UsersController : ControllerBase
             _Configuration.GetValue<string>(StartupConfigConstants.JWT_AUDIENCE)!,
             _Configuration.GetValue<int>(StartupConfigConstants.JWT_EXPIRATION_TIME)
         );
+
+        //var userRoles = await _userManager.GetRolesAsync(appUser);
+        var userRoles = await _roleManager.Roles
+            .Include(x => x.UserRoles)
+            .ThenInclude(x => x.AppUser)
+            .Where(x => x.UserRoles.Any(ur => ur.AppUser!.Id == appUser.Id))
+            .ToListAsync();
+        
+        
         var res = new JWTResponse()
         {
             JWT = jwt,
             RefreshToken = refreshToken.RefreshToken,
             AppUserId = appUser.Id.ToString(),
-            Username = appUser.UserName
+            Username = appUser.UserName,
+            RoleIds = userRoles.Select(e => e.Id)
         };
 
         
@@ -564,5 +574,50 @@ public class UsersController : ControllerBase
     
     // TODO: register method for admin, where he puts in the FN, LN, Email, and then register account
     // and generate random pw (UUID), send this user details to recipent on email!
+
+    /// <summary>
+    /// Suspend an User
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpPost("Lock")]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = IdentityRolesConstants.ROLE_ADMIN)]
+    public async Task<ActionResult> LockAccount(Guid userId)
+    {
+        var user = await _userManager.Users.Where(user => user.Id == userId).FirstOrDefaultAsync();
+        if (user == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
+
+        user.LockoutEnabled = true;
+        user.LockoutEnd = DateTimeOffset.MaxValue;
+        await _bll.SaveChangesAsync();
+        return Ok();
+    }
+
+    [HttpPost("Unlock")]
+    public async Task<ActionResult> UnlockAccount(Guid userId)
+    {
+        var user = await _userManager.Users.Where(user => user.Id == userId).FirstOrDefaultAsync();
+        if (user == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
+
+        user.LockoutEnabled = false;
+        user.LockoutEnd = null;
+
+        await _bll.SaveChangesAsync();
+        return Ok();
+    }
 
 }

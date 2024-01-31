@@ -43,6 +43,8 @@ public class PageContentController : ControllerBase
         return entity;
     }
     
+    
+    // TODO: see oleks nagu Preview!
     [HttpGet("{pageIdentifier}")]
     public async Task<ActionResult<App.Domain.PageContent>> Get(string pageIdentifier)
     {
@@ -59,4 +61,18 @@ public class PageContentController : ControllerBase
         var result = GetPageContentMapper.Map(domainObject);
         return Ok(result);
     }
+
+    [HttpGet("{languageCulture}/{pageIdentifier}")]
+    public async void Get(string languageCulture, string pageIdentifier)
+    {
+        throw new NotImplementedException();
+    }
+    
+    [HttpPut("{languageCulture}/{pageIdentifier}")]
+    public async void Update(string languageCulture, string pageIdentifier)
+    {
+        throw new NotImplementedException();
+    }
+    
+    
 }
