@@ -12,16 +12,10 @@ public class TEST<S, CT, R, Id, LS> // Source (contentDto), ContentTypes, Result
         /*
          for languageCulture in allLanguageCultures //  WITHOUT BASE LANGUAGE!!!!
          
-            contentTypeLanguageStringId = Id<Id>
-                
-            contentTypeLanguageString = LS {
-                    Id = contentTypeLanguageStringId,
-                    Value = S.Value (LanguageString base value)
+            languageStringId = Id.New()
+            languageString = new {
+                Id = languageStringId
             }
-                
-            for contentType in allContentTypes ( BODY, TITLE )  
-            
-            translationValue          
             
             
             

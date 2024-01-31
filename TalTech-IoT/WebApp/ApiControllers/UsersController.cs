@@ -540,52 +540,45 @@ public class UsersController : ControllerBase
     {
         return (await _bll.UsersService.AllAsync()).Select(e => GetUsersMapper.Map(e));
     }
-    
+
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "ADMIN")]
     [HttpPost("role")]
     public async Task<ActionResult<RestApiResponse>> AddRole([FromBody] AddRole data)
     {
-        // TODO: user to which roles were added needs to generate new jwt to be able to use these new roles
-        // TODO: maybe display this for the user? omething like "log in again to get latest permissions"??
-        if (await _roleManager.RoleExistsAsync(data.Role))
+        var role = await _roleManager.FindByIdAsync(data.RoleId.ToString());
+        if (role == null)
         {
-            var user = await _userManager.FindByIdAsync(data.UserId.ToString());
-            
-            var isUserAlreadyInRole = await _userManager.IsInRoleAsync(user, data.Role);
-            if (isUserAlreadyInRole)
-            {
-                return BadRequest(new RestApiResponse()
-                {
-                    Message = "USER_ALREADY_IN_ROLE",
-                    Status = HttpStatusCode.BadRequest
-                });
-            }
-            
-            var result = await _userManager.AddToRoleAsync(user, data.Role);
-            if (result.Succeeded)
-            {
-                return Ok(new RestApiResponse()
-                {
-                    Message = "ROLE_ADD_SUCCESS",
-                    Status = HttpStatusCode.OK
-                });
-            }
-            // If adding result failed
             return BadRequest(new RestApiResponse()
-                {
-                    Message = "ROLE_ADD_FAILED"
-                });
-        }
-        return BadRequest(new RestApiResponse()
             {
                 Message = "ROLE_NOT_EXISTS",
                 Status = HttpStatusCode.BadRequest
             });
         }
+
+        var appUser = await _userManager.FindByIdAsync(data.UserId.ToString());
+
+        if (appUser == null)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.BadRequest
+            });
+        }
+
+        var roles = await _userManager.GetRolesAsync(appUser);
+        await _userManager.RemoveFromRolesAsync(appUser, roles);
+
+        await _userManager.AddToRoleAsync(appUser, role.Name);
+        return Ok();
+    }
+    
     
     // TODO: register method for admin, where he puts in the FN, LN, Email, and then register account
     // and generate random pw (UUID), send this user details to recipent on email!
 
+    
+    
     /// <summary>
     /// Suspend an User
     /// </summary>

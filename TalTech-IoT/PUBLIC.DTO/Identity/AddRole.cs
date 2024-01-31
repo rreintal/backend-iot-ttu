@@ -6,6 +6,7 @@ public class AddRole
 {
     [Required]
     public Guid UserId { get; set; } = default!;
+    
     [Required]
-    public string Role { get; set; } = default!;
+    public Guid RoleId { get; set; } = default!;
 }
