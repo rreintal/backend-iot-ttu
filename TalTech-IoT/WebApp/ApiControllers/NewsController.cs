@@ -59,8 +59,23 @@ public class NewsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IEnumerable<Public.DTO.V1.News>> Get(string languageCulture, NewsFilterSet filterSet)
+    /*
+     * public int? Size { get; set; }
+    public int? Page { get; set; }
+    public Guid? TopicAreaId { get; set; }
+
+    public bool? IncludeBody { get; set; }
+     */
+    public async Task<IEnumerable<Public.DTO.V1.News>> Get(string languageCulture, int? Size, int? page, Guid? TopicAreaId, bool? IncludeBody)
     {
+        var filterSet = new NewsFilterSet()
+        {
+            IncludeBody = IncludeBody,
+            Page = page,
+            Size = Size,
+            TopicAreaId = TopicAreaId
+        };
+        
         // TODO - filter news by author/topic
         var news = (await _bll.NewsService.AllAsyncFiltered(filterSet, languageCulture)).ToList();
         return news.Select(x => ReturnNewsMapper.Map(x, true));

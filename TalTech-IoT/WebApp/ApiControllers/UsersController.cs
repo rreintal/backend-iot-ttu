@@ -422,10 +422,7 @@ public class UsersController : ControllerBase
 
         await _context.SaveChangesAsync();
         
-        return Ok(new
-        {
-            Status = "user logged out"
-        });
+        return Ok();
     }
 
     /// <summary>

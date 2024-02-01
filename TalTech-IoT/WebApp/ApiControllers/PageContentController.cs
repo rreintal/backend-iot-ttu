@@ -62,12 +62,24 @@ public class PageContentController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// NOT WORKING
+    /// </summary>
+    /// <param name="languageCulture"></param>
+    /// <param name="pageIdentifier"></param>
+    /// <exception cref="NotImplementedException"></exception>
     [HttpGet("{languageCulture}/{pageIdentifier}")]
     public async void Get(string languageCulture, string pageIdentifier)
     {
         throw new NotImplementedException();
     }
     
+    /// <summary>
+    /// NOT WORKING
+    /// </summary>
+    /// <param name="languageCulture"></param>
+    /// <param name="pageIdentifier"></param>
+    /// <exception cref="NotImplementedException"></exception>
     [HttpPut("{languageCulture}/{pageIdentifier}")]
     public async void Update(string languageCulture, string pageIdentifier)
     {
