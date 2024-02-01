@@ -435,9 +435,9 @@ public class UsersController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(JWTResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(RestApiResponse), 400)]
-    public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordModel model, string userId)
+    public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordModel model)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(model.UserId.ToString());
 
         if (user == null)
         {
