@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices;
 
 namespace Public.DTO.Identity;
 

@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Public.DTO;
 using Public.DTO.Identity;
+using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
 using AppRole = App.Domain.Identity.AppRole;
 using AppUser = App.Domain.Identity.AppUser;
@@ -584,9 +585,9 @@ public class UsersController : ControllerBase
     /// <returns></returns>
     [HttpPost("Lock")]
     //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = IdentityRolesConstants.ROLE_ADMIN)]
-    public async Task<ActionResult> LockAccount(Guid userId)
+    public async Task<ActionResult> LockAccount([FromBody] UserIdDto data)
     {
-        var user = await _userManager.Users.Where(user => user.Id == userId).FirstOrDefaultAsync();
+        var user = await _userManager.Users.Where(user => user.Id == data.UserId).FirstOrDefaultAsync();
         if (user == null)
         {
             return NotFound(new RestApiResponse()
@@ -596,16 +597,16 @@ public class UsersController : ControllerBase
             });
         }
 
-        user.LockoutEnabled = true;
-        user.LockoutEnd = DateTimeOffset.MaxValue;
+        // TODO: add Deleted field for user!
+        
         await _bll.SaveChangesAsync();
         return Ok();
     }
 
     [HttpPost("Unlock")]
-    public async Task<ActionResult> UnlockAccount(Guid userId)
+    public async Task<ActionResult> UnlockAccount([FromBody] UserIdDto data)
     {
-        var user = await _userManager.Users.Where(user => user.Id == userId).FirstOrDefaultAsync();
+        var user = await _userManager.Users.Where(user => user.Id == data.UserId).FirstOrDefaultAsync();
         if (user == null)
         {
             return NotFound(new RestApiResponse()
@@ -615,8 +616,7 @@ public class UsersController : ControllerBase
             });
         }
 
-        user.LockoutEnabled = false;
-        user.LockoutEnd = null;
+        // TODO: add Deleted field for user!
 
         await _bll.SaveChangesAsync();
         return Ok();
