@@ -7,6 +7,7 @@ public class GetPageContentMapper
 {
     public static PageContent Map(App.Domain.PageContent domainObject)
     {
+        
         return new PageContent()
         {
             PageIdentifier = domainObject.PageIdentifier,
@@ -27,6 +28,15 @@ public class GetPageContentMapper
                 };
             }).ToList(),
         };
-        
+    }
+    
+    public static Public.DTO.V1.GetPageContent MapTemporaryHack(App.Domain.PageContent domainObject, string languageCulture)
+    {
+        return new GetPageContent()
+        {
+            PageIdentifier = domainObject.PageIdentifier,
+            Body = domainObject.GetContentValue(ContentTypes.BODY, languageCulture),
+            Title = domainObject.GetContentValue(ContentTypes.TITLE, languageCulture)
+        };
     }
 }

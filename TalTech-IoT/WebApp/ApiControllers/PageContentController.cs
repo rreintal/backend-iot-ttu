@@ -69,9 +69,21 @@ public class PageContentController : ControllerBase
     /// <param name="pageIdentifier"></param>
     /// <exception cref="NotImplementedException"></exception>
     [HttpGet("{languageCulture}/{pageIdentifier}")]
-    public async void Get(string languageCulture, string pageIdentifier)
+    public async Task<ActionResult<Public.DTO.V1.GetPageContent?>> Get(string languageCulture, string pageIdentifier)
     {
-        throw new NotImplementedException();
+        var domainObject = await _bll.PageContentService.FindAsyncByIdentifierString(pageIdentifier, languageCulture);
+        if (domainObject == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Status = HttpStatusCode.NotFound,
+                Message = RestApiErrorMessages.GeneralNotFound
+            });
+        }
+
+        var result = GetPageContentMapper.MapTemporaryHack(domainObject, languageCulture);
+        return Ok(result);
+        
     }
     
     /// <summary>

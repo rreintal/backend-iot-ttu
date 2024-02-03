@@ -20,4 +20,9 @@ public class PageContentService : BaseEntityService<PageContent, PageContent, IP
     {
         return await Uow.PageContentRepository.FindAsyncByIdentifierString(identifier);
     }
+
+    public async Task<PageContent?> FindAsyncByIdentifierString(string identifier, string languageCulture)
+    {
+        return await Uow.PageContentRepository.FindAsyncByIdentifierString(identifier, languageCulture);
+    }
 }

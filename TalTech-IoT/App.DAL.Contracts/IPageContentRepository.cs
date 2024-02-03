@@ -10,5 +10,6 @@ public interface IPageContentRepository : IBaseRepository<App.Domain.PageContent
 public interface IPageContentRepositoryCustom<TEntity>
 {
     public Task<TEntity?> FindAsyncByIdentifierString(string identifier);
+    public Task<TEntity?> FindAsyncByIdentifierString(string identifier, string languageCulture);
 
 }

@@ -20,4 +20,12 @@ public class PageContentRepository : EFBaseRepository<App.Domain.PageContent, Ap
             .IncludeContentWithTranslation()
             .FirstOrDefaultAsync();
     }
+
+    public async Task<PageContent?> FindAsyncByIdentifierString(string identifier, string languageCulture)
+    {
+        return await DbSet
+            .Where(e => e.PageIdentifier == identifier)
+            .IncludeContentWithTranslation(languageCulture)
+            .FirstOrDefaultAsync();
+    }
 }
