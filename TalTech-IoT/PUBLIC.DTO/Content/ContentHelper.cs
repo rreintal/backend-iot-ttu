@@ -39,7 +39,6 @@ public abstract class ContentHelper
         var content = new BLL.DTO.V1.Content()
         {
             ContentTypeId = contentType.Id,
-            ContentType = contentType,
             LanguageStringId = languageStringId,
             LanguageString = languageString,
             NewsId = newsId,
@@ -64,7 +63,6 @@ public abstract class ContentHelper
         var result = new BLL.DTO.V1.Content()
         {
             ContentTypeId = contentType.Id,
-            ContentType = contentType,
             LanguageStringId = languageString.Id,
             LanguageString = languageString,
             NewsId = newsId,

@@ -10,10 +10,8 @@ public class CreateNewsMapper
     public static BLL.DTO.V1.News Map(Public.DTO.V1.PostNewsDto postNews, List<BLL.DTO.V1.ContentType> contentTypes)
     {
         var newsId = Guid.NewGuid();
-        var estTitle = postNews.Title.First(x => x.Culture == LanguageCulture.EST);
-        var estBody = postNews.Body.First(x => x.Culture == LanguageCulture.EST);
-        var bodyContentType = contentTypes.Where(x => x.Name == "BODY").First();
-        var titleContentType = contentTypes.Where(x => x.Name == "TITLE").First();
+        var bodyContentType = contentTypes.First(x => x.Name == ContentTypes.BODY);
+        var titleContentType = contentTypes.First(x => x.Name == ContentTypes.TITLE);
 
         var titleContent = ContentHelper.CreateContent(postNews.Title, titleContentType, newsId,
             ContentHelper.EContentHelperEntityType.News);
