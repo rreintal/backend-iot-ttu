@@ -46,7 +46,7 @@ public class PageContentController : ControllerBase
     
     // TODO: see oleks nagu Preview!
     [HttpGet("{pageIdentifier}")]
-    public async Task<ActionResult<App.Domain.PageContent>> Get(string pageIdentifier)
+    public async Task<ActionResult<App.Domain.PageContent?>> Get(string pageIdentifier)
     {
         var domainObject = await _bll.PageContentService.FindAsyncByIdentifierString(pageIdentifier);
         if (domainObject == null)

@@ -1,10 +1,6 @@
-using Azure.Core;
-using Base.Domain;
-using Helpers.Content;
+namespace Helpers.Content;
 
-namespace BLL.DTO.V1;
-
-public class Content : DomainEntityId, IContent
+public interface IContent
 {
     public Guid ContentTypeId { get; set; }
     public BLL.DTO.V1.ContentType? ContentType { get; set; }
@@ -16,5 +12,5 @@ public class Content : DomainEntityId, IContent
     public BLL.DTO.V1.Project? Project { get; set; }
 
     public Guid LanguageStringId { get; set; }
-    public BLL.DTO.V1.LanguageString LanguageString { get; set; } = default!;
+    public BLL.DTO.V1.LanguageString LanguageString { get; set; }
 }

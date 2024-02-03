@@ -70,7 +70,7 @@ public class NewsController : ControllerBase
     {
         var filterSet = new NewsFilterSet()
         {
-            IncludeBody = IncludeBody,
+            IncludeBody = IncludeBody ?? false,
             Page = page,
             Size = Size,
             TopicAreaId = TopicAreaId
