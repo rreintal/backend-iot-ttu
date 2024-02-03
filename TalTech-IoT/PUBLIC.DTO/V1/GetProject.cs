@@ -17,6 +17,4 @@ public class GetProject
     
     public int Year { get; set; }
     
-    public List<Public.DTO.V1.GetTopicArea> TopicAreas { get; set; } = default!;
-
 }

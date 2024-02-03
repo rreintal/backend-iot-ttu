@@ -16,7 +16,6 @@ public class GetProjectMapper
             ProjectManager = entity.ProjectManager,
             ProjectVolume = entity.ProjectVolume,
             Year = entity.Year,
-            TopicAreas = GetTopicAreaMapper.Map(entity.TopicAreas),
             CreatedAt = entity.CreatedAt
         };
         if (thumbnail)

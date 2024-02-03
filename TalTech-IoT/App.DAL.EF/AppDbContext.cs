@@ -136,11 +136,6 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .WithOne(x => x.Project)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.Entity<HasTopicArea>()
-            .HasOne<Project>(x => x.Project)
-            .WithMany(x => x.HasTopicAreas)
-            .OnDelete(DeleteBehavior.Cascade);
-
     }
     
     

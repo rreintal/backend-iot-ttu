@@ -11,7 +11,6 @@ public class Project : DomainEntityIdMetaData
     public string? Image { get; set; }
     public string? ThumbnailImage { get; set; }
 
-    public ICollection<HasTopicArea> HasTopicAreas { get; set; } = default!;
     // title, content
     public ICollection<Content> Content { get; set; } = default!;
     

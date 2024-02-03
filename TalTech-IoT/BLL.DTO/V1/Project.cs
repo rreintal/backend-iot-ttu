@@ -14,8 +14,6 @@ public class Project : DomainEntityId, IContainsContent
     
     public DateTime CreatedAt { get; set; }
     
-    public List<BLL.DTO.V1.TopicArea> TopicAreas { get; set; } = default!;
-
     // body + title
     public List<Content> Content { get; set; } = default!;
     

@@ -31,7 +31,6 @@ public class ProjectMapper
             Image = entity.Image,
             ProjectVolume = entity.ProjectVolume,
             ProjectManager = entity.ProjectManager,
-            TopicAreas = TopicAreaMapper.Map(entity.TopicAreas),
             Year = entity.Year
         };
 

@@ -17,7 +17,7 @@ public class PostProjectDto
     
     // In Euros
     [Required(ErrorMessage = RestApiErrorMessages.MissingProjectVolume)]
-    [Range(2, 64)]
+    [Range(0, 1000000000)]
     public double ProjectVolume { get; set; }
 
     public string? Image { get; set; }
@@ -31,11 +31,6 @@ public class PostProjectDto
 
     // TODO - seda pole ju siin vaja, sest date pannakse alles siis kui db salvestan
     //public DateTime CreatedAt { get; set; } = default!;
-    
-    // one project can be inside many topic areas
-    // for example - programming, Java, microservices ...
-    [MinLength(1, ErrorMessage = RestApiErrorMessages.GeneralMissingTopicArea)]
-    public List<TopicArea> TopicAreas { get; set; } = default!;
 }
 
 /*

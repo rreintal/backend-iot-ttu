@@ -15,10 +15,6 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
     public async Task<IEnumerable<Project>> AllAsync(string? languageString)
     {
         var res = await DbSet
-            .Include(x => x.HasTopicAreas)
-            .ThenInclude(x => x.TopicArea)
-            .ThenInclude(x => x!.LanguageString)
-            .ThenInclude(x => x!.LanguageStringTranslations)
             .Include(x => x.Content)
             .ThenInclude(x => x.ContentType)
             .Include(x => x.Content)
@@ -31,10 +27,6 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
     public async Task<Project?> FindAsync(Guid id, string? languageCulture)
     {
         var query = await DbSet.Where(x => x.Id == id)
-            .Include(x => x.HasTopicAreas)
-            .ThenInclude(x => x.TopicArea)
-            .ThenInclude(x => x!.LanguageString)
-            .ThenInclude(x => x!.LanguageStringTranslations)
             .Include(x => x.Content)
             .ThenInclude(x => x.ContentType)
             .Include(x => x.Content)
