@@ -67,7 +67,6 @@ public class PageContentController : ControllerBase
     /// </summary>
     /// <param name="languageCulture"></param>
     /// <param name="pageIdentifier"></param>
-    /// <exception cref="NotImplementedException"></exception>
     [HttpGet("{languageCulture}/{pageIdentifier}")]
     public async Task<ActionResult<Public.DTO.V1.GetPageContent?>> Get(string languageCulture, string pageIdentifier)
     {
@@ -93,9 +92,10 @@ public class PageContentController : ControllerBase
     /// <param name="pageIdentifier"></param>
     /// <exception cref="NotImplementedException"></exception>
     [HttpPut("{languageCulture}/{pageIdentifier}")]
-    public async void Update(string languageCulture, string pageIdentifier)
+    public async Task<ActionResult> Update(string languageCulture, string pageIdentifier, UpdatePageContent content)
     {
-        throw new NotImplementedException();
+        //_bll.PageContentService.Update();
+        return Ok();
     }
     
     
