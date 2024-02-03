@@ -12,6 +12,15 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
     {
     }
 
+    public override Project Add(Project entity)
+    {
+        foreach (var content in entity.Content)
+        {
+            DbContext.ContentTypes.Attach(content.ContentType);
+        }
+        return base.Add(entity);
+    }
+
     public async Task<IEnumerable<Project>> AllAsync(string? languageString)
     {
         var res = await DbSet

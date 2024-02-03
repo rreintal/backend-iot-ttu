@@ -1,4 +1,4 @@
-namespace Helpers.Content;
+namespace BLL.DTO.ContentHelper;
 
 public interface IContent
 {
@@ -13,4 +13,7 @@ public interface IContent
 
     public Guid LanguageStringId { get; set; }
     public BLL.DTO.V1.LanguageString LanguageString { get; set; }
+    
+    public Guid? PageContentId { get; set; }
+    public BLL.DTO.V1.PageContent? PageContent { get; set; }
 }

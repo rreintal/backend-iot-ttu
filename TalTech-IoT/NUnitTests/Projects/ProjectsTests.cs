@@ -60,17 +60,10 @@ public class ProjectsTests
                     Culture = LanguageCulture.ENG,
                     Value = "body in english"
                 }
-            },
-            TopicAreas = new List<TopicArea>()
-            {
-                new TopicArea()
-                {
-                    Id = Guid.Parse(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID)
-                }
             }
         };
         var client = _factory!.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/Project", data);
+        var response = await client.PostAsJsonAsync("/api/v1/Project", data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
     
@@ -109,7 +102,7 @@ public class ProjectsTests
             },
         };
         var client = _factory!.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/Project", data);
+        var response = await client.PostAsJsonAsync("/api/v1/Project", data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
     
@@ -144,27 +137,20 @@ public class ProjectsTests
                     Culture = LanguageCulture.ENG,
                     Value = "body in english"
                 }
-            },
-            TopicAreas = new List<TopicArea>()
-            {
-                new TopicArea()
-                {
-                    Id = Guid.Parse(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID)
-                }
             }
         };
         var client = _factory!.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/Project", data);
+        var response = await client.PostAsJsonAsync("/api/v1/Project", data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
     
     [Test, Order(3)]
     public async Task AddProjects_MissingProjectVolume_ReturnsBadRequest()
     {
-        /*
+        
         var data = new Public.DTO.V1.PostProjectDto()
         {
-            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
             Title = new List<ContentDto>()
             {
                 new ContentDto()
@@ -190,27 +176,20 @@ public class ProjectsTests
                     Culture = LanguageCulture.ENG,
                     Value = "body in english"
                 }
-            },
-            TopicAreas = new List<TopicArea>()
-            {
-                new TopicArea()
-                {
-                    Id = Guid.Parse(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID)
-                }
             }
         };
         var client = _factory!.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/Project", data);
+        var response = await client.PostAsJsonAsync("/api/v1/Project", data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-        */
-        throw new NotImplementedException();
     }
     
+    /*
     [Test, Order(4)]
     public async Task AddProjects_MissingProjectYear_ReturnsBadRequest()
     {
         throw new NotImplementedException();
     }
+    */
     
     [Test, Order(5)]
     public async Task AddProjects_En_ReturnsCorrectBody()
@@ -245,29 +224,23 @@ public class ProjectsTests
                     Culture = LanguageCulture.ENG,
                     Value = bodyMessage
                 }
-            },
-            TopicAreas = new List<TopicArea>()
-            {
-                new TopicArea()
-                {
-                    Id = Guid.Parse(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID)
-                }
             }
         };
         var client = _factory!.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/Project", data);
+        var response = await client.PostAsJsonAsync("/api/v1/Project", data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         
+        // TODO: fix!!
         var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
 
         Assert.NotNull(responseData);
-        var getResponse = await client.GetAsync("/api/projects/" + responseData!.Id);
+        var getResponse = await client.GetAsync("/api/v1/project/et/" + responseData!.Id);
         
         var getResponseData = await getResponse.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
         Assert.NotNull(getResponseData);
         Assert.Equals(getResponseData!.Body, Is.EqualTo(bodyMessage));
     }
-    
+    /*
     [Test, Order(6)]
     public async Task AddProjects_Et_ReturnsCorrectBody()
     {
@@ -285,6 +258,7 @@ public class ProjectsTests
     {
         throw new NotImplementedException();
     }
+    */
 
 
 

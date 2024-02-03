@@ -38,7 +38,6 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
 
     public async Task<IEnumerable<Project>> AllAsync(string? languageCulture)
     {
-        //throw new NotImplementedException();
         return (await Uow.ProjectsRepository.AllAsync(languageCulture)).Select(e => Mapper.Map(e));
     }
 

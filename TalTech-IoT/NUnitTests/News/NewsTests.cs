@@ -50,7 +50,7 @@ namespace NUnitTests.News
             //var jsonNewsDto = JsonSerializer.Serialize(newsDto);
 
             var client = _factory!.CreateClient();
-            var response = await client.PostAsJsonAsync("/api/News", newsDto);
+            var response = await client.PostAsJsonAsync("/api/v1/News", newsDto);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
 
@@ -58,7 +58,7 @@ namespace NUnitTests.News
         public async Task GetAllNews_OneExists_ReturnsOk()
         {
             var client = _factory!.CreateClient();
-            var response = await client.GetAsync("/api/et/News/");
+            var response = await client.GetAsync("/api/v1/News/et");
             var data = await response.Content.ReadFromJsonAsync<List<App.Domain.News>>();
             Assert.That(data!.Count, Is.EqualTo(1));
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -82,7 +82,7 @@ namespace NUnitTests.News
                     { "english body", LanguageCulture.ENG },
                 });
 
-            var response = await client.PostAsJsonAsync("/api/News", payload);
+            var response = await client.PostAsJsonAsync("/api/v1/News", payload);
             //NewsCount++;
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
@@ -108,13 +108,13 @@ namespace NUnitTests.News
                 })
                 .SetTopicAreaId(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID);;
 
-            var response = await client.PostAsJsonAsync("/api/News", payload);
+            var response = await client.PostAsJsonAsync("/api/v1/News", payload);
             var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
             Assert.NotNull(responseData);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
             var newsId = responseData!.Id;
-            var getNewsResponse = await client.GetAsync($"/api/{languageCulture}/news/" + newsId);
+            var getNewsResponse = await client.GetAsync($"/api/v1/news/{languageCulture}/" + newsId);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             
             var getNewsResponseData = await getNewsResponse.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
@@ -142,13 +142,13 @@ namespace NUnitTests.News
                 })
                 .SetTopicAreaId(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID);;
 
-            var response = await client.PostAsJsonAsync("/api/News", payload);
+            var response = await client.PostAsJsonAsync("/api/v1/News", payload);
             var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
             Assert.NotNull(responseData);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
             var newsId = responseData!.Id;
-            var getNewsResponse = await client.GetAsync($"/api/{languageCulture}/news/" + newsId);
+            var getNewsResponse = await client.GetAsync($"/api/v1/news/{languageCulture}/" + newsId);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             
             var getNewsResponseData = await getNewsResponse.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
@@ -176,13 +176,13 @@ namespace NUnitTests.News
                 })
                 .SetTopicAreaId(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID);;
 
-            var response = await client.PostAsJsonAsync("/api/News", payload);
+            var response = await client.PostAsJsonAsync("/api/v1/News", payload);
             var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
             Assert.NotNull(responseData);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
             var newsId = responseData!.Id;
-            var getNewsResponse = await client.GetAsync($"/api/{languageCulture}/news/" + newsId);
+            var getNewsResponse = await client.GetAsync($"/api/v1/news/{languageCulture}/" + newsId);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             
             var getNewsResponseData = await getNewsResponse.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
@@ -210,13 +210,13 @@ namespace NUnitTests.News
                 })
                 .SetTopicAreaId(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID);;
 
-            var response = await client.PostAsJsonAsync("/api/News", payload);
+            var response = await client.PostAsJsonAsync("/api/v1/News", payload);
             var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
             Assert.NotNull(responseData);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
             var newsId = responseData!.Id;
-            var getNewsResponse = await client.GetAsync($"/api/{languageCulture}/news/" + newsId);
+            var getNewsResponse = await client.GetAsync($"/api/v1/news/{languageCulture}/" + newsId);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             
             var getNewsResponseData = await getNewsResponse.Content.ReadFromJsonAsync<Public.DTO.V1.News>();

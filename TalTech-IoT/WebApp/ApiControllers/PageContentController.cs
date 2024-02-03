@@ -29,14 +29,8 @@ public class PageContentController : ControllerBase
     public async Task<PageContent> Add(PageContent entity)
     {
         // TODO: entity.PageIdentifier is the ID!
-        if (!ModelState.IsValid)
-        {
-            Console.WriteLine(entity.Title[0].Culture);
-            Console.WriteLine(entity.Title[1].Culture);
-            Console.WriteLine(entity.Body[0].Culture);
-            Console.WriteLine(entity.Body[1].Culture);   
-        }
         var contentTypes = await _bll.NewsService.GetContentTypes();
+        //var mappedEntity = CreatePageContentMapper.MapHack(entity, contentTypes);
         var mappedEntity = CreatePageContentMapper.Map(entity, contentTypes);
         _bll.PageContentService.Add(mappedEntity);
         await _bll.SaveChangesAsync();
@@ -58,7 +52,7 @@ public class PageContentController : ControllerBase
             });
         }
 
-        var result = GetPageContentMapper.Map(domainObject);
+        var result = GetPageContentMapper.MapBLL(domainObject);
         return Ok(result);
     }
 
@@ -80,7 +74,8 @@ public class PageContentController : ControllerBase
             });
         }
 
-        var result = GetPageContentMapper.MapTemporaryHack(domainObject, languageCulture);
+        //var result = GetPageContentMapper.MapTemporaryHack(domainObject, languageCulture);
+        var result = GetPageContentMapper.MapBLL(domainObject);
         return Ok(result);
         
     }
@@ -96,6 +91,7 @@ public class PageContentController : ControllerBase
     {
         
         var contentTypes = await _bll.NewsService.GetContentTypes();
+        //var mappedEntity = CreatePageContentMapper.MapHack(content, contentTypes);
         var mappedEntity = CreatePageContentMapper.Map(content, contentTypes);
 
         // TODO: HACK!

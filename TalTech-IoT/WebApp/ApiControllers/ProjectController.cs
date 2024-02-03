@@ -36,9 +36,6 @@ public class ProjectController : ControllerBase
     public async Task<ActionResult> Create([FromBody] Public.DTO.V1.PostProjectDto data)
     {
         // TODO - image optionaliks!
-        
-        // TODO: TopicArea must only have Id, other is optional!
-        
         var types = await _bll.NewsService.GetContentTypes(); // TODO - tee eraldi service ehk?
         
         var bllEntity = ProjectMapper.Map(data, types);
@@ -61,7 +58,7 @@ public class ProjectController : ControllerBase
     [HttpGet("{languageCulture}")]
     public async Task<IEnumerable<GetProject>> Get(string languageCulture)
     {
-        return (await _bll.ProjectService.AllAsync(languageCulture)).Select(x => GetProjectMapper.Map(x, true));
+        return (await _bll.ProjectService.AllAsync(languageCulture)).Select(x => GetProjectMapper.Map(x));
     }
 
     /// <summary>

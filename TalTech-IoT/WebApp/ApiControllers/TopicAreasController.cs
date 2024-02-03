@@ -102,11 +102,7 @@ public class TopicAreasController : ControllerBase
     [HttpGet("[action]")]
     public async Task<IEnumerable<TopicAreaWithTranslation>> GetWithTranslation()
     {
-        // TODO - create an object where you store list of languageCultures as method parameter {languageStringList}
-        // overkill?
-        
         var items = (await _bll.TopicAreaService.AllAsync()).ToList();
-
         return TopicAreaWithTranslationMapper.Map(items);
     }
 

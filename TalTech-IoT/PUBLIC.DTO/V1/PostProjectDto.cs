@@ -19,8 +19,6 @@ public class PostProjectDto
     [Required(ErrorMessage = RestApiErrorMessages.MissingProjectVolume)]
     [Range(0, 1000000000)]
     public double ProjectVolume { get; set; }
-
-    public string? Image { get; set; }
     
     [MinLength(2, ErrorMessage = RestApiErrorMessages.GeneralMissingTranslationValue)]
     public List<ContentDto> Title { get; set; } = default!;
@@ -32,44 +30,3 @@ public class PostProjectDto
     // TODO - seda pole ju siin vaja, sest date pannakse alles siis kui db salvestan
     //public DateTime CreatedAt { get; set; } = default!;
 }
-
-/*
-
-{
- "Year" : "2023",
- "ProjectManager" : "Mart Kivi",
- "ProjectVolume" : "1 500 000",
- "Title" : [
-    {
-    "Value" : "Title for project",
-    "Culture" "en" 
-    },
-    {
-    "Value" : "Projekti pealkiri",
-    "Culture" "et" 
-    }
- ],
- "Body": 
- [
-    {
-    "Value" : "Body for project",
-    "Culture" "en" 
-    },
-    {
-    "Value" : "Projekti sisu",
-    "Culture" "et" 
-    }
-  ],
-  "CreatedAt" : "23.01.2023",
-  "TopicAreas" : 
-  [
-    {
-     "Id" : "abcde-ffff-hhhh-gggg"
-    },
-    {
-     "Id" : "gggg-ffff-aaaa-hhhh"
-    },
-  ]
-}
-
-*/

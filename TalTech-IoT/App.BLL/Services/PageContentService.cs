@@ -6,24 +6,28 @@ using Base.Contracts;
 
 namespace App.BLL.Services;
 
-public class PageContentService : BaseEntityService<PageContent, PageContent, IPageContentRepository>, IPageContentService
+public class PageContentService : BaseEntityService<global::BLL.DTO.V1.PageContent, PageContent, IPageContentRepository>, IPageContentService
 {
     
     private IAppUOW Uow { get; set; }
     
-    public PageContentService( IAppUOW uow, IMapper<PageContent, PageContent> mapper) : base(uow.PageContentRepository, mapper)
+    public PageContentService( IAppUOW uow, IMapper<global::BLL.DTO.V1.PageContent, PageContent> mapper) : base(uow.PageContentRepository, mapper)
     {
         Uow = uow;
     }
 
-    public async Task<PageContent?> FindAsyncByIdentifierString(string identifier)
+    public async Task<global::BLL.DTO.V1.PageContent?> FindAsyncByIdentifierString(string identifier)
     {
-        return await Uow.PageContentRepository.FindAsyncByIdentifierString(identifier);
+        var domainEntity = await Uow.PageContentRepository.FindAsyncByIdentifierString(identifier);
+        var result = Mapper.Map(domainEntity);
+        return result;
     }
 
-    public async Task<PageContent?> FindAsyncByIdentifierString(string identifier, string languageCulture)
+    public async Task<global::BLL.DTO.V1.PageContent?> FindAsyncByIdentifierString(string identifier, string languageCulture)
     {
-        return await Uow.PageContentRepository.FindAsyncByIdentifierString(identifier, languageCulture);
+        var domainEntity = await Uow.PageContentRepository.FindAsyncByIdentifierString(identifier, languageCulture);
+        var result = Mapper.Map(domainEntity);
+        return result;
     }
 
     public PageContent Update(PageContent entity)
@@ -33,5 +37,4 @@ public class PageContentService : BaseEntityService<PageContent, PageContent, IP
         Uow.PageContentRepository.Add(entity);
         return entity;
     }
-
 }

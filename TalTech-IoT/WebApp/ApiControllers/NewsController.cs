@@ -117,9 +117,7 @@ public class NewsController : ControllerBase
     public async Task<ActionResult> Update([FromBody] Public.DTO.V1.UpdateNews data)
     {
         // TODO - when updating, should we add the language culture which one we want to update?
-        
         // TODO - updating is with both languages!!!
-        
         // TODO: ei tööta
         var bllEntity = UpdateNewsMapper.Map(data);
         var result = await _bll.NewsService.UpdateNews(bllEntity);

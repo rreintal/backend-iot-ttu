@@ -1,11 +1,39 @@
 using App.Domain;
 using App.Domain.Translations;
+using Public.DTO.Content;
 
 namespace Public.DTO.V1.Mappers;
 
 public class CreatePageContentMapper
 {
-    public static App.Domain.PageContent Map(PageContent entity, List<BLL.DTO.V1.ContentType> contentTypes)
+    public static BLL.DTO.V1.PageContent Map(PageContent entity, List<BLL.DTO.V1.ContentType> contentTypes)
+    {
+        var pageContentId = Guid.NewGuid();
+        var bodyContentType = contentTypes.First(x => x.Name == ContentTypes.BODY);
+        var titleContentType = contentTypes.First(x => x.Name == ContentTypes.TITLE);
+
+        var titleContent = ContentHelper.CreateContent(entity.Title, titleContentType, pageContentId,
+            ContentHelper.EContentHelperEntityType.PageContent);
+
+        var bodyContent = ContentHelper.CreateContent(entity.Body, bodyContentType, pageContentId,
+            ContentHelper.EContentHelperEntityType.PageContent);
+        
+
+        var res = new BLL.DTO.V1.PageContent()
+        {
+            Content = new List<BLL.DTO.V1.Content>()
+            { 
+                titleContent, bodyContent
+            },
+            PageIdentifier = entity.PageIdentifier
+        };
+        return res;
+    }
+    
+    
+    
+    // TODO: eemalda kui PageContent update on korras!
+    public static App.Domain.PageContent MapHack(PageContent entity, List<BLL.DTO.V1.ContentType> contentTypes)
     {
         // title
         var pageContentId = Guid.NewGuid();

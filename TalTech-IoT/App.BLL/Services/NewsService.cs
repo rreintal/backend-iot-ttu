@@ -90,7 +90,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             data = new List<SaveImageDTO>()
         };
         
-        string base64Regex = "<img src=\"data:image/(jpeg|png);base64,([^\"]+)\"";
+        string base64Regex = "<img src=\"data:image/(jpeg|png|jpg|webp);base64,([^\"]+)\"";
 
         foreach (var tag in srcTagsList)
         {

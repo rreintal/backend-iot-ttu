@@ -1,6 +1,7 @@
 using App.Domain;
 using Base.Domain;
-using Helpers.Content;
+using BLL.DTO.ContentHelper;
+using Microsoft.Extensions.Logging;
 using Public.DTO.V1;
 using ContentType = BLL.DTO.V1.ContentType;
 using News = Public.DTO.V1.News;
@@ -12,7 +13,8 @@ public abstract class ContentHelper
     public enum EContentHelperEntityType
     {
         News,
-        Project
+        Project,
+        PageContent
     }
     // tee constid, millega saad teada kas on News, Proejct blabla
 
@@ -28,6 +30,7 @@ public abstract class ContentHelper
     {
         var newsId = entityType == EContentHelperEntityType.News ? entityId : (Guid?)null;
         var projectId = entityType == EContentHelperEntityType.Project ? entityId : (Guid?)null;
+        var pageContentId = entityType == EContentHelperEntityType.PageContent ? entityId : (Guid?)null;
         
         var baseContentDto = contentDtoList.First(x => x.Culture == LanguageCulture.BASE_LANGUAGE);
         var languageStringId = Guid.NewGuid();
@@ -42,7 +45,9 @@ public abstract class ContentHelper
             LanguageStringId = languageStringId,
             LanguageString = languageString,
             NewsId = newsId,
-            ProjectId = projectId
+            ProjectId = projectId,
+            PageContentId = pageContentId,
+            ContentType = contentType
         };
 
         languageString.Content = content;
@@ -66,9 +71,24 @@ public abstract class ContentHelper
             LanguageStringId = languageString.Id,
             LanguageString = languageString,
             NewsId = newsId,
-            ProjectId = projectId
+            ProjectId = projectId,
+            PageContentId = pageContentId,
+            ContentType = contentType
         };
 
+        return result;
+    }
+
+    public static string? GetContentValue(IContentEntity entity, string contentType, string languageCulture)
+    {
+        var result = entity.Content
+            .First(content => content.ContentType?.Name == contentType)
+            .LanguageString?.LanguageStringTranslations
+            .Where(translation => translation.LanguageCulture == languageCulture).First().TranslationValue;
+        if (result == null)
+        {
+            Console.WriteLine($"ContentHelper: for entity with type {entity.GetType()} could not get content value.");
+        }
         return result;
     }
 }

@@ -28,7 +28,6 @@ public class ProjectMapper
         var project = new BLL.DTO.V1.Project()
         {
             Content = projectContent,
-            Image = entity.Image,
             ProjectVolume = entity.ProjectVolume,
             ProjectManager = entity.ProjectManager,
             Year = entity.Year

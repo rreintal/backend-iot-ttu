@@ -13,6 +13,16 @@ public class PageContentRepository : EFBaseRepository<App.Domain.PageContent, Ap
     {
     }
 
+    public override PageContent Add(PageContent entity)
+    {
+        foreach (var content in entity.Content)
+        {
+            DbContext.Attach(content.ContentType);
+        }
+
+        return base.Add(entity);
+    }
+
     public async Task<PageContent?> FindAsyncByIdentifierString(string identifier)
     {
         return await DbSet
