@@ -18,6 +18,6 @@ public class PageContentRepository : EFBaseRepository<App.Domain.PageContent, Ap
         return await DbSet
             .Where(e => e.PageIdentifier == identifier)
             .IncludeContentWithTranslation()
-            .FirstAsync();
+            .FirstOrDefaultAsync();
     }
 }
