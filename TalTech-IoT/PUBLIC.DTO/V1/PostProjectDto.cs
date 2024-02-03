@@ -7,7 +7,7 @@ namespace Public.DTO.V1;
 public class PostProjectDto
 {
     [Required(ErrorMessage = RestApiErrorMessages.MissingProjectYear)]
-    [Range(1000, 3000)] // ??
+    //[Range(1000, 3000)] // ??
     public int Year { get; set; } = default!;
 
     [Required(ErrorMessage = RestApiErrorMessages.MissingProjectManager)]

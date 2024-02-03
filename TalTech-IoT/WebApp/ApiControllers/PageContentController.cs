@@ -92,9 +92,15 @@ public class PageContentController : ControllerBase
     /// <param name="pageIdentifier"></param>
     /// <exception cref="NotImplementedException"></exception>
     [HttpPut("{languageCulture}/{pageIdentifier}")]
-    public async Task<ActionResult> Update(string languageCulture, string pageIdentifier, UpdatePageContent content)
+    public async Task<ActionResult> Update(string languageCulture, string pageIdentifier, PageContent content)
     {
-        //_bll.PageContentService.Update();
+        
+        var contentTypes = await _bll.NewsService.GetContentTypes();
+        var mappedEntity = CreatePageContentMapper.Map(content, contentTypes);
+
+        // TODO: HACK!
+        _bll.PageContentService.Update(mappedEntity);
+        await _bll.SaveChangesAsync();
         return Ok();
     }
     
