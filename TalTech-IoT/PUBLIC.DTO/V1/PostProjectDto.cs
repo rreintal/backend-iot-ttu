@@ -7,8 +7,7 @@ namespace Public.DTO.V1;
 public class PostProjectDto
 {
     [Required(ErrorMessage = RestApiErrorMessages.MissingProjectYear)]
-    [MinLength(0)]
-    [MaxLength(5)] // igaksjuhuks 5
+    [Range(1000, 3000)] // ??
     public int Year { get; set; } = default!;
 
     [Required(ErrorMessage = RestApiErrorMessages.MissingProjectManager)]
@@ -18,9 +17,8 @@ public class PostProjectDto
     
     // In Euros
     [Required(ErrorMessage = RestApiErrorMessages.MissingProjectVolume)]
-    [MinLength(2)]
-    [MaxLength(64)]
-    public double ProjectVolume { get; set; } = default!;
+    [Range(2, 64)]
+    public double ProjectVolume { get; set; }
 
     public string? Image { get; set; }
     

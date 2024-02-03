@@ -534,8 +534,10 @@ public class UsersController : ControllerBase
     /// <returns></returns>
     //[Authorize]
     [HttpGet]
-    public async Task<IEnumerable<Public.DTO.Identity.AppUser>> GetAllUsers()
+    public async Task<IEnumerable<Public.DTO.Identity.AppUser>> GetAllUsers(bool restricted)
     {
+        // TODO: filter based on 'restricted' which users to return. 
+        // restricted == LOCKED account!
         return (await _bll.UsersService.AllAsync()).Select(e => GetUsersMapper.Map(e));
     }
 

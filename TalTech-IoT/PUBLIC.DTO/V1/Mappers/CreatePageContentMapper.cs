@@ -51,7 +51,7 @@ public class CreatePageContentMapper
             Value = estTitle.Value
         };
 
-        var titleContent = new Content()
+        var titleContent = new App.Domain.Content()
         {
             PageContentId = pageContentId,
             ContentTypeId = titleContentType.Id,
@@ -89,7 +89,7 @@ public class CreatePageContentMapper
 
         var res = new App.Domain.PageContent()
         {
-            Content = new List<Content>()
+            Content = new List<App.Domain.Content>()
             { 
                 titleContent, bodyContent
             },
