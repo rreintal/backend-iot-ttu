@@ -63,7 +63,7 @@ public class PageContentController : ControllerBase
     }
 
     /// <summary>
-    /// NOT WORKING
+    /// 
     /// </summary>
     /// <param name="languageCulture"></param>
     /// <param name="pageIdentifier"></param>
@@ -86,7 +86,7 @@ public class PageContentController : ControllerBase
     }
     
     /// <summary>
-    /// NOT WORKING
+    /// WORKING WITH HACK!
     /// </summary>
     /// <param name="languageCulture"></param>
     /// <param name="pageIdentifier"></param>
