@@ -8,11 +8,10 @@ public interface IProjectsRepository : IBaseTranslateableRepository<App.Domain.P
 {
     public Task<Project?> UpdateAsync(UpdateProject entity);
 
-    public Task<Project?> FindByIdAsyncWithAllTranslations(Guid id);
+    public Task<global::DAL.DTO.V1.Project?> FindByIdAsyncWithAllTranslations(Guid id);
 }
 
 public interface IProjectsRepositoryCustom<TEntity>
 {
-    // here methods which are shared between repo and service!
     public Task<int> FindProjectTotalCount();
 }

@@ -40,6 +40,12 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
         return result;
     }
 
+    public async Task<Project?> FindByIdAsyncAllLanguages(Guid id)
+    {
+        var dalObject = await Uow.ProjectsRepository.FindByIdAsyncWithAllTranslations(id);
+        return _mapper.Map<Project>(dalObject);
+    }
+
 
     public async Task<IEnumerable<Project>> AllAsync(string? languageCulture)
     {

@@ -8,7 +8,7 @@ public class Project : DomainEntityIdMetaData, IDomainContentEntity
     public int Year { get; set; } 
     public double PriceVolume { get; set; } 
     public string ProjectManager { get; set; } = default!;
-    
+
     // title, content
     public ICollection<Content> Content { get; set; } = default!;
     

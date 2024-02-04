@@ -99,9 +99,12 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
          return await DbSet.CountAsync();
     }
 
-    public Task<Project?> FindByIdAsyncWithAllTranslations(Guid id)
+    public async Task<global::DAL.DTO.V1.Project?> FindByIdAsyncWithAllTranslations(Guid id)
     {
-        throw new NotImplementedException();
+        var domainEntity = await DbSet.Where(e => e.Id == id)
+            .IncludeContentWithTranslation()
+            .FirstOrDefaultAsync();
+        return _mapper.Map<global::DAL.DTO.V1.Project>(domainEntity);
     }
 
     public async Task<Project?> FindAsyncByIdWithAllTranslations(Guid id)

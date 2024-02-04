@@ -142,5 +142,25 @@ public class ProjectController : ControllerBase
         await _bll.SaveChangesAsync();
         return Ok();
     }
+    
+    /// <summary>
+    /// Returns project with all the language cultures
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("Preview/{id}")]
+    public async Task<ActionResult<Public.DTO.V1.ProjectAllLangs>> GetProjectAllLanguages(Guid id)
+    {
+        var entity = await _bll.ProjectService.FindByIdAsyncAllLanguages(id);
+        if (entity == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
+        return ProjectAllLangsMapper.Map(entity);
+    }
 
 }
