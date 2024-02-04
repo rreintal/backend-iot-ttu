@@ -1,18 +1,16 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Security.Cryptography.X509Certificates;
-using App.DAL.EF.Seeding;
 using App.Domain;
 using Integration;
 using Public.DTO.V1;
-using Xunit.Sdk;
-using TopicArea = Public.DTO.V1.TopicArea;
 
 namespace NUnitTests.Projects;
 
 public class ProjectsTests
 {
-    private CustomWebAppFactory<Program>? _factory;
+    private const string BASE_URL = $"api/{VERSION}/Project";
+    private const string VERSION = "v1";
+        private CustomWebAppFactory<Program>? _factory;
 
     [OneTimeSetUp]
     public void Setup()
@@ -63,7 +61,7 @@ public class ProjectsTests
             }
         };
         var client = _factory!.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/v1/Project", data);
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
     
@@ -102,7 +100,7 @@ public class ProjectsTests
             },
         };
         var client = _factory!.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/v1/Project", data);
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
     
@@ -140,7 +138,7 @@ public class ProjectsTests
             }
         };
         var client = _factory!.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/v1/Project", data);
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
     
@@ -179,7 +177,7 @@ public class ProjectsTests
             }
         };
         var client = _factory!.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/v1/Project", data);
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
 
@@ -220,38 +218,713 @@ public class ProjectsTests
             }
         };
         var client = _factory!.CreateClient();
-        var response = await client.PostAsJsonAsync("/api/v1/Project", data);
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         
-        // TODO: fix!!
         var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.PostProjectSuccessDto>();
         
         Assert.NotNull(responseData);
-        var getResponse = await client.GetAsync($"/api/v1/project/{languageCulture}/" + responseData!.Id);
+        var getResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{responseData!.Id}");
         
         var getResponseData = await getResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetProject>();
         Assert.NotNull(getResponseData);
         Assert.That(getResponseData!.Body, Is.EqualTo(bodyMessage));
     }
-    /*
+    
     [Test, Order(6)]
     public async Task AddProjects_Et_ReturnsCorrectBody()
     {
-        throw new NotImplementedException();
+        var client = _factory!.CreateClient();
+        var languageCulture = LanguageCulture.EST;
+        var titleEt = "pealkiri eesti keeles";
+        var titleEn = "title in english";
+        var bodyEn = "body in english";
+        var bodyEt = "this is body";
+        
+        var data = new Public.DTO.V1.PostProjectDto()
+        {
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = titleEn
+                }
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = bodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        
+        var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.PostProjectSuccessDto>();
+        
+        Assert.NotNull(responseData);
+        var getResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{responseData!.Id}");
+        
+        var getResponseData = await getResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetProject>();
+        Assert.NotNull(getResponseData);
+        Assert.That(getResponseData!.Body, Is.EqualTo(bodyEt));
     }
     
     [Test, Order(7)]
     public async Task AddProjects_En_ReturnsCorrectTitle()
     {
-        throw new NotImplementedException();
+        var client = _factory!.CreateClient();
+        var languageCulture = LanguageCulture.ENG;
+        var titleEt = "pealkiri eesti keeles";
+        var titleEn = "title in english";
+        var bodyEn = "body in english";
+        var bodyEt = "this is body";
+        
+        var data = new Public.DTO.V1.PostProjectDto()
+        {
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEn
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = titleEt
+                }
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = bodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        
+        var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.PostProjectSuccessDto>();
+        
+        Assert.NotNull(responseData);
+        var getResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{responseData!.Id}");
+        
+        var getResponseData = await getResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetProject>();
+        Assert.NotNull(getResponseData);
+        Assert.That(getResponseData!.Title, Is.EqualTo(titleEn));
     }
     
     [Test, Order(8)]
     public async Task AddProjects_Et_ReturnsCorrectTitle()
     {
-        throw new NotImplementedException();
+        var client = _factory!.CreateClient();
+        var languageCulture = LanguageCulture.EST;
+        var titleEt = "pealkiri eesti keeles";
+        var titleEn = "title in english";
+        var bodyEn = "body in english";
+        var bodyEt = "this is body";
+        
+        var data = new Public.DTO.V1.PostProjectDto()
+        {
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEn
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = titleEt
+                }
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = bodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        
+        var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.PostProjectSuccessDto>();
+        
+        Assert.NotNull(responseData);
+        var getResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{responseData!.Id}");
+        
+        var getResponseData = await getResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetProject>();
+        Assert.NotNull(getResponseData);
+        Assert.That(getResponseData!.Title, Is.EqualTo(titleEt));
     }
-    */
+
+    [Test, Order(8)]
+    public async Task UpdateProjects_ValidData_ReturnsOk()
+    {
+        var client = _factory!.CreateClient();
+        var languageCulture = LanguageCulture.EST;
+        var titleEt = "pealkiri eesti keeles";
+        var titleEn = "title in english";
+        var bodyEn = "body in english";
+        var bodyEt = "this is body";
+        
+        var data = new Public.DTO.V1.PostProjectDto()
+        {
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEn
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = titleEt
+                }
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = bodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.PostProjectSuccessDto>();
+        Assert.NotNull(responseData);
+
+        var updatedBodyEt = "abcdef";
+        var projectId = responseData!.Id;
+        var updatedData = new Public.DTO.V1.UpdateProject()
+        {
+            Id = projectId,
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEn
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = titleEt
+                }
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = updatedBodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        var updateResponse = await client.PutAsJsonAsync(BASE_URL, updatedData);
+        Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+    }
+    
+    [Test, Order(9)]
+    public async Task UpdateProjects_InvalidValidData_ReturnsBadRequest()
+    {
+        var client = _factory!.CreateClient();
+        var languageCulture = LanguageCulture.EST;
+        var titleEt = "pealkiri eesti keeles";
+        var titleEn = "title in english";
+        var bodyEn = "body in english";
+        var bodyEt = "this is body";
+        
+        var data = new Public.DTO.V1.PostProjectDto()
+        {
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEn
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = titleEt
+                }
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = bodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.PostProjectSuccessDto>();
+        Assert.NotNull(responseData);
+
+        var projectId = responseData!.Id;
+        var updatedData = new Public.DTO.V1.UpdateProject()
+        {
+            Id = projectId,
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEn
+                },
+                
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = bodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        var updateResponse = await client.PutAsJsonAsync(BASE_URL, updatedData);
+        Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+    }
+    
+    [Test, Order(9)]
+    public async Task UpdateProjects_Et_ReturnsCorrectTitle()
+    {
+        var client = _factory!.CreateClient();
+        var languageCulture = LanguageCulture.EST;
+        var titleEt = "pealkiri eesti keeles";
+        var titleEn = "title in english";
+        var bodyEn = "body in english";
+        var bodyEt = "this is body";
+        
+        var data = new Public.DTO.V1.PostProjectDto()
+        {
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEn
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = titleEt
+                }
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = bodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.PostProjectSuccessDto>();
+        Assert.NotNull(responseData);
+
+        var updatedTitleEt = "see on uus pealkiri!";
+        var projectId = responseData!.Id;
+        var updatedData = new Public.DTO.V1.UpdateProject()
+        {
+            Id = projectId,
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEn
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = updatedTitleEt
+                },
+                
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = bodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        var updateResponse = await client.PutAsJsonAsync(BASE_URL, updatedData);
+        Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+        var getUpdatedNewsResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{projectId}");
+        var updatedProject = await getUpdatedNewsResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetProject>();
+        Assert.NotNull(updatedProject);
+        Assert.That(updatedProject!.Title, Is.EqualTo(updatedTitleEt));
+    }
+    
+    [Test, Order(9)]
+    public async Task UpdateProjects_En_ReturnsCorrectTitle()
+    {
+        var client = _factory!.CreateClient();
+        var languageCulture = LanguageCulture.ENG;
+        var titleEt = "pealkiri eesti keeles";
+        var titleEn = "title in english";
+        var bodyEn = "body in english";
+        var bodyEt = "this is body";
+        
+        var data = new Public.DTO.V1.PostProjectDto()
+        {
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEn
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = titleEt
+                }
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = bodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.PostProjectSuccessDto>();
+        Assert.NotNull(responseData);
+
+        var updatedTitleEn = "new title in english";
+        var projectId = responseData!.Id;
+        var updatedData = new Public.DTO.V1.UpdateProject()
+        {
+            Id = projectId,
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = updatedTitleEn
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = titleEt
+                },
+                
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = bodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        var updateResponse = await client.PutAsJsonAsync(BASE_URL, updatedData);
+        Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+        var getUpdatedNewsResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{projectId}");
+        var updatedProject = await getUpdatedNewsResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetProject>();
+        Assert.NotNull(updatedProject);
+        Assert.That(updatedProject!.Title, Is.EqualTo(updatedTitleEn));
+    }
+    
+    [Test, Order(9)]
+    public async Task UpdateProjects_Et_ReturnsCorrectBody()
+    {
+        var client = _factory!.CreateClient();
+        var languageCulture = LanguageCulture.EST;
+        var titleEt = "pealkiri eesti keeles";
+        var titleEn = "title in english";
+        var bodyEn = "body in english";
+        var bodyEt = "this is body";
+        
+        var data = new Public.DTO.V1.PostProjectDto()
+        {
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEn
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = titleEt
+                }
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = bodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.PostProjectSuccessDto>();
+        Assert.NotNull(responseData);
+
+        var updatedbodyEt = "siin on uus sisu";
+        var projectId = responseData!.Id;
+        var updatedData = new Public.DTO.V1.UpdateProject()
+        {
+            Id = projectId,
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEn
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = titleEt
+                },
+                
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = updatedbodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        var updateResponse = await client.PutAsJsonAsync(BASE_URL, updatedData);
+        Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+        var getUpdatedNewsResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{projectId}");
+        var updatedProject = await getUpdatedNewsResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetProject>();
+        Assert.NotNull(updatedProject);
+        Assert.That(updatedProject!.Body, Is.EqualTo(updatedbodyEt));
+    }
+    
+    [Test, Order(9)]
+    public async Task UpdateProjects_En_ReturnsCorrectBody()
+    {
+        var client = _factory!.CreateClient();
+        var languageCulture = LanguageCulture.ENG;
+        var titleEt = "pealkiri eesti keeles";
+        var titleEn = "title in english";
+        var bodyEn = "body in english";
+        var bodyEt = "this is body";
+        
+        var data = new Public.DTO.V1.PostProjectDto()
+        {
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEn
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = titleEt
+                }
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = bodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = bodyEn
+                }
+            }
+        };
+        
+        var response = await client.PostAsJsonAsync(BASE_URL, data);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.PostProjectSuccessDto>();
+        Assert.NotNull(responseData);
+
+        var updatedbodyEn = "this is new body";
+        var projectId = responseData!.Id;
+        var updatedData = new Public.DTO.V1.UpdateProject()
+        {
+            Id = projectId,
+            ProjectManager = "super manager",
+            ProjectVolume = 2000.0,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = titleEn
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = titleEt
+                },
+                
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.EST,
+                    Value = bodyEt
+                },
+                new ContentDto()
+                {
+                    Culture = LanguageCulture.ENG,
+                    Value = updatedbodyEn
+                }
+            }
+        };
+        var updateResponse = await client.PutAsJsonAsync(BASE_URL, updatedData);
+        Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+        var getUpdatedNewsResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{projectId}");
+        var updatedProject = await getUpdatedNewsResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetProject>();
+        Assert.NotNull(updatedProject);
+        Assert.That(updatedProject!.Body, Is.EqualTo(updatedbodyEn));
+    }
+    
 
 
 

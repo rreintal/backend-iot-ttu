@@ -1,17 +1,17 @@
 using App.Domain;
 using Base.Domain;
-using Contracts;
 
-namespace BLL.DTO.V1;
+namespace DAL.DTO.V1;
 
-public class UpdateNews : DomainEntityId
+public class UpdateProject : DomainEntityId
 {
-    public string Author { get; set; } = default!;
-    public List<BLL.DTO.V1.TopicArea> TopicAreas { get; set; } = default!;
-    public List<BLL.DTO.V1.ContentDto> Title { get; set; } = default!;
-    public List<BLL.DTO.V1.ContentDto> Body { get; set; } = default!;
-    public DateTime CreatedAt { get; set; }
-    public string Image { get; set; } = default!;
+    public int? Year { get; set; }
+    public string? ProjectManager { get; set; }
+    public double? ProjectVolume { get; set; }
+    
+    public List<DAL.DTO.V1.TopicArea>? TopicAreas { get; set; }
+    public List<DAL.DTO.V1.ContentDto> Title { get; set; } = default!;
+    public List<DAL.DTO.V1.ContentDto> Body { get; set; } = default!;
 
     public string GetContentValue(string contentType, string languageCulture)
     {

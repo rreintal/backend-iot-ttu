@@ -1,8 +1,10 @@
 using App.BLL.Contracts;
 using App.DAL.Contracts;
 using App.Domain;
+using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
+using BLL.DTO.V1;
 using Project = BLL.DTO.V1.Project;
 
 namespace App.BLL.Services;
@@ -11,10 +13,12 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
 {
     private IAppUOW Uow { get; }
     private IThumbnailService ThumbnailService { get; }
-    public ProjectService(IAppUOW uow, IMapper<Project, Domain.Project> mapper, IThumbnailService thumbnailService) : base(uow.ProjectsRepository, mapper)
+    private IMapper _mapper { get; set; }
+    public ProjectService(IAppUOW uow, IMapper<Project, Domain.Project> mapper,  IMapper autoMapper, IThumbnailService thumbnailService) : base(uow.ProjectsRepository, mapper)
     {
         Uow = uow;
         ThumbnailService = thumbnailService;
+        _mapper = autoMapper;
     }
 
     public Project Add(Project entity)
@@ -52,5 +56,14 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
     public async Task<int> FindProjectTotalCount()
     {
         return await Uow.ProjectsRepository.FindProjectTotalCount();
+    }
+
+    public async Task<Project?> UpdateAsync(UpdateProject entity)
+    {
+        // TODO: here use the ImageService
+        var dalEntity = _mapper.Map<global::DAL.DTO.V1.UpdateProject>(entity);
+        var updatedDalEntity = await Uow.ProjectsRepository.UpdateAsync(dalEntity);
+        var result = _mapper.Map<Project>(updatedDalEntity);
+        return result;
     }
 }

@@ -14,7 +14,7 @@ public class UpdateNewsMapper
             Body =
                 entity.Body.Select(publicDto =>
                 {
-                    return new BLL.DTO.V1.RawContent()
+                    return new BLL.DTO.V1.ContentDto()
                     {
                         Culture = publicDto.Culture,
                         Value = publicDto.Value
@@ -22,7 +22,7 @@ public class UpdateNewsMapper
                 }).ToList(),
             Title = entity.Title.Select(publicDto =>
             {
-                return new BLL.DTO.V1.RawContent()
+                return new BLL.DTO.V1.ContentDto()
                 {
                     Value = publicDto.Value,
                     Culture = publicDto.Culture

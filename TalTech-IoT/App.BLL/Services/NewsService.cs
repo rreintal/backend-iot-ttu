@@ -145,6 +145,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
     public async Task<News> AddAsync(News entity)
     {
+        // TODO: Do this in DAL!
         var domainObject = _mapper.Map<App.Domain.News>(entity);
         
         

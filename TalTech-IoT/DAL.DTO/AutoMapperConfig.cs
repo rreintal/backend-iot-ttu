@@ -21,6 +21,7 @@ public class AutoMapperConfig : Profile
         CreateMap<App.Domain.News, DAL.DTO.V1.News>().ReverseMap();
         CreateMap<App.Domain.PageContent, DAL.DTO.V1.PageContent>().ReverseMap();
         CreateMap<App.Domain.Project, DAL.DTO.V1.Project>().ReverseMap();
+        CreateMap<App.Domain.Project, DAL.DTO.V1.UpdateProject>().ReverseMap();
 
     }
 }

@@ -8,8 +8,8 @@ public class UpdateNews : DomainEntityId
     public string Author { get; set; } = default!;
     
     public List<DAL.DTO.V1.TopicArea> TopicAreas { get; set; } = default!;
-    public List<DAL.DTO.V1.RawContent> Title { get; set; } = default!;
-    public List<DAL.DTO.V1.RawContent> Body { get; set; } = default!;
+    public List<DAL.DTO.V1.ContentDto> Title { get; set; } = default!;
+    public List<DAL.DTO.V1.ContentDto> Body { get; set; } = default!;
     public DateTime CreatedAt { get; set; }
     public string Image { get; set; } = default!;
     

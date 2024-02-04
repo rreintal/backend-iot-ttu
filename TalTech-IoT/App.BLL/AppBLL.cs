@@ -40,7 +40,7 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
     private IProjectService? _projectService;
 
     public IProjectService ProjectService =>
-        _projectService ??= new ProjectService(Uow, new ProjectsMapper(_mapper), ThumbnailService);
+        _projectService ??= new ProjectService(Uow, new ProjectsMapper(_mapper), _mapper, ThumbnailService);
 
     public IThumbnailService ThumbnailService => _thumbnailService ??= new ThumbnailService();
 

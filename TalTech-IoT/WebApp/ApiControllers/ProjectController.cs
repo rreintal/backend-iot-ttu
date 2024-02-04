@@ -118,4 +118,29 @@ public class ProjectController : ControllerBase
         return result;
     }
 
+    /// <summary>
+    /// Update project
+    /// </summary>
+    /// <param name="languageCulture"></param>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpPut]
+    public async Task<ActionResult> Update([FromBody] UpdateProject data)
+    {
+        var bllEntity = UpdateProjectMapper.Map(data);
+        var result = await _bll.ProjectService.UpdateAsync(bllEntity);
+
+        if (result == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
+
+        await _bll.SaveChangesAsync();
+        return Ok();
+    }
+
 }
