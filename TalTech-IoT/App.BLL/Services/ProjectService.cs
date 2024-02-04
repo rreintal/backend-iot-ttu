@@ -1,6 +1,5 @@
 using App.BLL.Contracts;
 using App.DAL.Contracts;
-using App.Domain;
 using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
@@ -21,22 +20,24 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
         _mapper = autoMapper;
     }
 
-    public Project Add(Project entity)
+    public override Project Add(Project entity)
     {
         var domainEntity = Mapper.Map(entity);
-        
-        // Add Thumbnail
-        // TODO: check if domainEntity is null. probably not but still check
-        // TODO: think through about the mappers structure
-        
-        if (domainEntity!.Image != null)
-        {
-            domainEntity!.ThumbnailImage = ThumbnailService.Compress(domainEntity.Image);   
-        }
 
-        Uow.ProjectsRepository.Add(domainEntity);
-
-        return entity;
+        // CDN stuff
+        
+        
+        var dalResult = Uow.ProjectsRepository.Add(domainEntity);
+        return _mapper.Map<Project>(dalResult);
+    }
+    
+    public async Task<Project?> UpdateAsync(UpdateProject entity)
+    {
+        // TODO: here use the ImageService
+        var dalEntity = _mapper.Map<global::DAL.DTO.V1.UpdateProject>(entity);
+        var updatedDalEntity = await Uow.ProjectsRepository.UpdateAsync(dalEntity);
+        var result = _mapper.Map<Project>(updatedDalEntity);
+        return result;
     }
 
 
@@ -47,7 +48,6 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
 
     public async Task<Project?> FindAsync(Guid id, string? languageCulture)
     {
-        //Uow.ProjectsRepository.FindAsync(languageCulture, id);
         var entity = await Uow.ProjectsRepository.FindAsync(id, languageCulture);
         var result = Mapper.Map(entity);
         return result;
@@ -56,14 +56,5 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
     public async Task<int> FindProjectTotalCount()
     {
         return await Uow.ProjectsRepository.FindProjectTotalCount();
-    }
-
-    public async Task<Project?> UpdateAsync(UpdateProject entity)
-    {
-        // TODO: here use the ImageService
-        var dalEntity = _mapper.Map<global::DAL.DTO.V1.UpdateProject>(entity);
-        var updatedDalEntity = await Uow.ProjectsRepository.UpdateAsync(dalEntity);
-        var result = _mapper.Map<Project>(updatedDalEntity);
-        return result;
     }
 }

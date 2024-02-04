@@ -23,6 +23,7 @@ public class AutoMapperConfig : Profile
         
         CreateMap<App.Domain.Content, BLL.DTO.V1.Content>().ReverseMap();
         CreateMap<App.Domain.TopicArea, BLL.DTO.V1.TopicArea>().ReverseMap();
+        CreateMap<BLL.DTO.V1.TopicArea, DAL.DTO.V1.TopicArea>().ReverseMap();
 
         CreateMap<App.Domain.Project, BLL.DTO.V1.Project>().ReverseMap();
 
@@ -50,9 +51,14 @@ public class AutoMapperConfig : Profile
         
         CreateMap<BLL.DTO.V1.ContentType, DAL.DTO.V1.ContentType>().ReverseMap();
         CreateMap<BLL.DTO.V1.Content, DAL.DTO.V1.Content>().ReverseMap();
-        CreateMap<BLL.DTO.V1.News, DAL.DTO.V1.News>().ReverseMap();
         CreateMap<BLL.DTO.V1.PageContent, DAL.DTO.V1.PageContent>().ReverseMap();
         CreateMap<BLL.DTO.V1.Project, DAL.DTO.V1.Project>().ReverseMap();
         CreateMap<BLL.DTO.V1.UpdateProject, DAL.DTO.V1.UpdateProject>().ReverseMap();
+        
+        CreateMap<BLL.DTO.V1.News, DAL.DTO.V1.News>().ReverseMap();
+        CreateMap<BLL.DTO.V1.LanguageString, DAL.DTO.V1.LanguageString>().ReverseMap();
+        CreateMap<BLL.DTO.V1.Content, DAL.DTO.V1.Content>().ReverseMap();
+        CreateMap<BLL.DTO.V1.LanguageStringTranslation, DAL.DTO.V1.LanguageStringTranslation>().ReverseMap();
+
     }
 }

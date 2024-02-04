@@ -34,6 +34,38 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         var res = DbSet.Add(entity).Entity;
         return res;
     }
+    
+    public News Add(News entity)
+    {
+        var domainEntity = _mapper.Map<App.Domain.News>(entity);
+        
+        foreach (var bllTopicArea in entity.TopicAreas)
+        {
+            var hasTopicAreaId = Guid.NewGuid();
+            var hasTopicArea = new App.Domain.HasTopicArea()
+            {
+                Id = hasTopicAreaId,
+                NewsId = domainEntity.Id,
+                TopicAreaId = bllTopicArea.Id,
+            };
+
+            if (domainEntity.HasTopicAreas == null)
+            {
+                domainEntity.HasTopicAreas = new List<HasTopicArea>()
+                {
+                    hasTopicArea
+                };
+            }
+            else
+            {
+                domainEntity.HasTopicAreas.Add(hasTopicArea);
+            }
+        }
+
+        var dalResult = Add(domainEntity);
+        var result = _mapper.Map<News>(dalResult);
+        return result;
+    }
 
     public async Task<App.Domain.News?> FindByIdWithAllTranslationsAsync(Guid Id)
     {
@@ -145,6 +177,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         var result = Update(existingDomainObject);
         return result;
     }
+    
 
     // see peaks vist DAL objekt olema tegelt?!
     // need HasTopicArea-d oleks mpaitud juba TopicArea
@@ -168,7 +201,8 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             var result = (await query
                 .IncludeHasTopicAreasWithTranslation()
                 .IncludeContentWithTitlesTranslation()
-                .ToListAsync()).Select(e => _mapper.Map<News>(e));
+                .ToListAsync()).Select(e => _mapper.Map<App.Domain.News>(e));
+            return result;
         }
         return await query
             .IncludeHasTopicAreasWithTranslation(languageCulture)

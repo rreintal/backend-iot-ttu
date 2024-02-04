@@ -91,11 +91,11 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .HasIndex(x => x.Value)
             .IsUnique()
             .HasFilter(TopicAreaUniqueNameExpression);
+
+        builder.Entity<PageContent>()
+            .HasIndex(x => x.PageIdentifier)
+            .IsUnique();
         
-        //builder.Entity<LanguageString>()
-        //        .HasIndex(x => new { x.Value, x.TopicAreaId })
-        //      .IsUnique();
-        // private const string TopicAreaUniqueNameExpression = "\"TopicAreaId\" IS NOT NULL";
 
         // disable cascade delete
         foreach (var relationship in builder.Model

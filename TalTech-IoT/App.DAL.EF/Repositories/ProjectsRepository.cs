@@ -15,6 +15,45 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
     public ProjectsRepository(AppDbContext dataContext, IMapper mapper) : base(dataContext, mapper)
     {
     }
+    
+    public async Task<Project?> UpdateAsync(UpdateProject entity)
+    {
+        var existingDomainObject = await FindAsyncByIdWithAllTranslations(entity.Id);
+
+        if (existingDomainObject == null)
+        {
+            return null;
+        }
+        var cults = LanguageCulture.ALL_LANGUAGES;
+        
+        foreach (var lang in cults)
+        {
+            var newBodyValue = entity.GetContentValue(ContentTypes.BODY, lang);
+            var newTitleValue = entity.GetContentValue(ContentTypes.TITLE, lang);
+    
+            var oldBodyValue = existingDomainObject!.GetContentValue(ContentTypes.BODY, lang);
+            var oldTitleValue = existingDomainObject.GetContentValue(ContentTypes.TITLE, lang);
+
+            var isBodyValueChanged = oldBodyValue != newBodyValue;
+            var isTitleContentChanged = oldTitleValue != newTitleValue;
+            
+            if (isBodyValueChanged)
+            {
+                existingDomainObject.SetContentTranslationValue(ContentTypes.BODY, lang, newBodyValue);
+                existingDomainObject.SetBaseLanguage(ContentTypes.BODY, newBodyValue);
+            }
+            
+            if (isTitleContentChanged)
+            {
+                existingDomainObject.SetContentTranslationValue(ContentTypes.TITLE, lang, newTitleValue);
+                existingDomainObject.SetBaseLanguage(ContentTypes.TITLE, newBodyValue);
+            }
+        }
+
+        var updateResult = Update(existingDomainObject);
+        var result = _mapper.Map<Project>(updateResult);
+        return result;
+    }
 
     public override Project Add(Project entity)
     {
@@ -58,45 +97,6 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
     public async Task<int> FindProjectTotalCount()
     {
          return await DbSet.CountAsync();
-    }
-
-    public async Task<Project?> UpdateAsync(UpdateProject entity)
-    {
-        var existingDomainObject = await FindAsyncByIdWithAllTranslations(entity.Id);
-
-        if (existingDomainObject == null)
-        {
-            return null;
-        }
-        var cults = LanguageCulture.ALL_LANGUAGES;
-        
-        foreach (var lang in cults)
-        {
-            var newBodyValue = entity.GetContentValue(ContentTypes.BODY, lang);
-            var newTitleValue = entity.GetContentValue(ContentTypes.TITLE, lang);
-    
-            var oldBodyValue = existingDomainObject!.GetContentValue(ContentTypes.BODY, lang);
-            var oldTitleValue = existingDomainObject.GetContentValue(ContentTypes.TITLE, lang);
-
-            var isBodyValueChanged = oldBodyValue != newBodyValue;
-            var isTitleContentChanged = oldTitleValue != newTitleValue;
-            
-            if (isBodyValueChanged)
-            {
-                existingDomainObject.SetContentTranslationValue(ContentTypes.BODY, lang, newBodyValue);
-                existingDomainObject.SetBaseLanguage(ContentTypes.BODY, newBodyValue);
-            }
-            
-            if (isTitleContentChanged)
-            {
-                existingDomainObject.SetContentTranslationValue(ContentTypes.TITLE, lang, newTitleValue);
-                existingDomainObject.SetBaseLanguage(ContentTypes.TITLE, newBodyValue);
-            }
-        }
-
-        var updateResult = Update(existingDomainObject);
-        var result = _mapper.Map<Project>(updateResult);
-        return result;
     }
 
     public Task<Project?> FindByIdAsyncWithAllTranslations(Guid id)

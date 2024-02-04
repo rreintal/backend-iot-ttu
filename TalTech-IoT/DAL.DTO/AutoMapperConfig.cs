@@ -23,5 +23,27 @@ public class AutoMapperConfig : Profile
         CreateMap<App.Domain.Project, DAL.DTO.V1.Project>().ReverseMap();
         CreateMap<App.Domain.Project, DAL.DTO.V1.UpdateProject>().ReverseMap();
 
+        CreateMap<App.Domain.Translations.LanguageString, DAL.DTO.V1.LanguageString>().ReverseMap();
+        CreateMap<App.Domain.Translations.LanguageStringTranslation, DAL.DTO.V1.LanguageStringTranslation>().ReverseMap();
+
+
+        CreateMap<App.Domain.News, DAL.DTO.V1.News>().ReverseMap();
+        CreateMap<App.Domain.News, DAL.DTO.V1.News>()
+            .ForMember(dest => dest.TopicAreas,
+                src => src.MapFrom(x => x.HasTopicAreas));
+        
+        CreateMap<App.Domain.HasTopicArea, DAL.DTO.V1.TopicArea>()
+            .ForMember(dest => dest.Id,
+                src => src.MapFrom(x => x.TopicAreaId))
+            .ForMember(dest => dest.ParentTopicAreaId, 
+                src => src.MapFrom(x => x.TopicArea!.ParentTopicAreaId))
+            .ForMember(d => d.ParentTopicArea,
+                s => s.MapFrom(x => x.TopicArea!.ParentTopicArea))
+            .ForMember(d => d.LanguageString,
+                s => s.MapFrom(x => x.TopicArea!.LanguageString))
+            .ForMember(d => d.LanguageStringId,
+                s => s.MapFrom(x => x.TopicArea!.LanguageStringId));
+
+
     }
 }

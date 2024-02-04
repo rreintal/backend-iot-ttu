@@ -6,6 +6,8 @@ public static class RestApiErrorMessages
     ///  General
     /// </summary>
     public const string GeneralNotFound = "NOT_FOUND";
+
+    public const string AlreadyExists = "ALREADY_EXISTS";
     public const string GeneralMissingTranslationValue = "MISSING_TRANSLATION_VALUE"; // If translation value is missing
     public const string GeneralInvalidLanguageCulture = "INVALID_TRANSLATION_LANGUAGE_CULTURE"; // if contains invalid language culture
     public const string GeneralMissingAuthor = "MISSING_AUTHOR";

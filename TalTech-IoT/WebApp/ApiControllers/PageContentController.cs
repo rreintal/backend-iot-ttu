@@ -26,11 +26,19 @@ public class PageContentController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<PageContent> Add(PageContent entity)
+    public async Task<ActionResult<PageContent>> Add(PageContent entity)
     {
-        // TODO: entity.PageIdentifier is the ID!
+        var isUnique = await _bll.PageContentService.FindAsyncByIdentifierString(entity.PageIdentifier) == null;
+        if (!isUnique)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.AlreadyExists,
+                Status = HttpStatusCode.BadRequest
+            });
+        }
+        
         var contentTypes = await _bll.NewsService.GetContentTypes();
-        //var mappedEntity = CreatePageContentMapper.MapHack(entity, contentTypes);
         var mappedEntity = CreatePageContentMapper.Map(entity, contentTypes);
         _bll.PageContentService.Add(mappedEntity);
         await _bll.SaveChangesAsync();

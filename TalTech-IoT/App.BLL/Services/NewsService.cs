@@ -68,7 +68,77 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         };
         return types;
     }
+    
 
+    public async Task<IEnumerable<News>> AllAsyncFiltered(NewsFilterSet filterSet, string languageString)
+    {
+        // TODO: add this method to common interface w service/repo
+        return (await Uow.NewsRepository.AllAsyncFiltered(filterSet, languageString)).Select(e => _mapper.Map<News>(e));
+    }
+    
+
+    public async Task<News?> UpdateNews(UpdateNews entity)
+    {
+        var dalEntity = _mapper.Map<global::DAL.DTO.V1.UpdateNews>(entity);
+        var updatedDalEntity =  await Uow.NewsRepository.Update(dalEntity);
+        var bllEntity = _mapper.Map<News?>(updatedDalEntity);
+        return bllEntity;
+        
+    }
+
+    public async Task<News> FindByIdAllTranslationsAsync(Guid id)
+    {
+         var entity = await Uow.NewsRepository.FindByIdWithAllTranslationsAsync(id);
+         return _mapper.Map<News>(entity);
+    }
+
+    public override News Add(News entity)
+    {
+        // Add thumbnail
+        // TODO - check if its valid!
+        try
+        {
+            entity.ThumbnailImage = ThumbnailService.Compress(entity.Image);
+        }
+        catch (Exception e)
+        {
+            entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
+        }
+        /*
+        // Testing CDN
+        var estonianBody = domainObject.GetContentValue(ContentTypes.BODY, LanguageCulture.EST);
+        estonianBody = await HandleImageContent(estonianBody);
+        var englishBody = domainObject.GetContentValue(ContentTypes.BODY, LanguageCulture.ENG);
+        englishBody = await HandleImageContent(englishBody);
+        
+        // Set the modified content!
+        domainObject.SetContentTranslationValue(ContentTypes.BODY, LanguageCulture.EST, estonianBody);
+        domainObject.SetContentTranslationValue(ContentTypes.BODY, LanguageCulture.ENG, englishBody);
+        // -----
+        */
+        var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
+        var dalResult = Uow.NewsRepository.Add(dalEntity);
+        var result = _mapper.Map<News>(dalResult);
+        return result;
+    }
+
+    public async Task<IEnumerable<News>> AllAsync(string? languageCulture)
+    {
+        return (await Uow.NewsRepository.AllAsync(languageCulture)).Select(entity => _mapper.Map<News>(entity));
+    }
+
+    public async Task<News?> FindAsync(Guid id, string? languageCulture)
+    {
+        var item = await Uow.NewsRepository.FindAsync(id, languageCulture);
+        return _mapper.Map<News>(item);
+    }
+
+
+    public async Task<int> FindNewsTotalCount()
+    {
+        return await Uow.NewsRepository.FindNewsTotalCount();
+    }
+    
     // TODO: maybe this inside ImageStorageService as Save?
     private async Task<string> HandleImageContent(string content)
     {
@@ -119,100 +189,5 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             content = content.Replace(itemFromOriginalArray, newItem);
         }
         return content;
-    }
-
-    public async Task<IEnumerable<News>> AllAsyncFiltered(NewsFilterSet filterSet, string languageString)
-    {
-        // TODO: add this method to common interface w service/repo
-        return (await Uow.NewsRepository.AllAsyncFiltered(filterSet, languageString)).Select(e => _mapper.Map<News>(e));
-    }
-    
-
-    public async Task<News?> UpdateNews(UpdateNews entity)
-    {
-        var dalEntity = _mapper.Map<global::DAL.DTO.V1.UpdateNews>(entity);
-        var updatedDalEntity =  await Uow.NewsRepository.Update(dalEntity);
-        var result = _mapper.Map<News?>(updatedDalEntity);
-        return result;
-        
-    }
-
-    public async Task<News> FindByIdAllTranslationsAsync(Guid id)
-    {
-         var entity = await Uow.NewsRepository.FindByIdWithAllTranslationsAsync(id);
-         return _mapper.Map<News>(entity);
-    }
-
-    public async Task<News> AddAsync(News entity)
-    {
-        // TODO: Do this in DAL!
-        var domainObject = _mapper.Map<App.Domain.News>(entity);
-        
-        
-        // Add thumbnail
-        // TODO - check if its valid!
-        try
-        {
-            domainObject.ThumbnailImage = ThumbnailService.Compress(domainObject.Image);
-        }
-        catch (Exception e)
-        {
-            domainObject.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
-        }
-        
-
-        foreach (var bllTopicArea in entity.TopicAreas)
-        {
-            var hasTopicAreaId = Guid.NewGuid();
-            var hasTopicArea = new App.Domain.HasTopicArea()
-            {
-                Id = hasTopicAreaId,
-                NewsId = domainObject.Id,
-                TopicAreaId = bllTopicArea.Id,
-            };
-
-            if (domainObject.HasTopicAreas == null)
-            {
-                domainObject.HasTopicAreas = new List<HasTopicArea>()
-                {
-                    hasTopicArea
-                };
-            }
-            else
-            {
-                domainObject.HasTopicAreas.Add(hasTopicArea);
-            }
-        }
-        /*
-        // Testing CDN
-        var estonianBody = domainObject.GetContentValue(ContentTypes.BODY, LanguageCulture.EST);
-        estonianBody = await HandleImageContent(estonianBody);
-        var englishBody = domainObject.GetContentValue(ContentTypes.BODY, LanguageCulture.ENG);
-        englishBody = await HandleImageContent(englishBody);
-        
-        // Set the modified content!
-        domainObject.SetContentTranslationValue(ContentTypes.BODY, LanguageCulture.EST, estonianBody);
-        domainObject.SetContentTranslationValue(ContentTypes.BODY, LanguageCulture.ENG, englishBody);
-        // -----
-        */
-        Uow.NewsRepository.Add(domainObject);
-        return entity;
-    }
-
-    public async Task<IEnumerable<News>> AllAsync(string? languageCulture)
-    {
-        return (await Uow.NewsRepository.AllAsync(languageCulture)).Select(entity => _mapper.Map<News>(entity));
-    }
-
-    public async Task<News?> FindAsync(Guid id, string? languageCulture)
-    {
-        var item = await Uow.NewsRepository.FindAsync(id, languageCulture);
-        return _mapper.Map<News>(item);
-    }
-
-
-    public async Task<int> FindNewsTotalCount()
-    {
-        return await Uow.NewsRepository.FindNewsTotalCount();
     }
 }

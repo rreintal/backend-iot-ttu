@@ -31,31 +31,31 @@ public class BaseEntityService<TBllEntity, TDalEntity, TRepository, TKey> : IEnt
     }
     
 
-    public async Task<IEnumerable<TBllEntity>> AllAsync()
+    public virtual async Task<IEnumerable<TBllEntity>> AllAsync()
     {
         return (await Repository.AllAsync()).Select(e => Mapper.Map(e));
     }
 
-    public async Task<TBllEntity?> FindAsync(TKey id)
+    public virtual async Task<TBllEntity?> FindAsync(TKey id)
     {
         return Mapper.Map(await Repository.FindAsync(id));
     }
 
-    public TBllEntity Add(TBllEntity entity)
+    public virtual TBllEntity Add(TBllEntity entity)
     {
         return Mapper.Map(Repository.Add(Mapper.Map(entity)))!;
     }
-    public TBllEntity Update(TBllEntity entity)
+    public virtual TBllEntity Update(TBllEntity entity)
     {
         return Mapper.Map(Repository.Update(Mapper.Map(entity)))!;
     }
 
-    public TBllEntity Remove(TBllEntity entity)
+    public virtual TBllEntity Remove(TBllEntity entity)
     {
         return Mapper.Map(Repository.Remove(Mapper.Map(entity)))!;
     }
 
-    public async Task<TBllEntity?> RemoveAsync(TKey id)
+    public virtual async Task<TBllEntity?> RemoveAsync(TKey id)
     {
         return Mapper.Map(await Repository.RemoveAsync(id));
     }
