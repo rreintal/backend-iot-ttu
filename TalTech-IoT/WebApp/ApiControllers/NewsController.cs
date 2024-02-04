@@ -38,15 +38,14 @@ public class NewsController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<News>> Create([FromBody] PostNewsDto payload)
+    public async Task<ActionResult<News>> Add([FromBody] PostNewsDto payload)
     {
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
-        var entity = await _bll.NewsService.AddAsync(bllEntity);
+        var bllResult = _bll.NewsService.Add(bllEntity);
 
         await _bll.SaveChangesAsync();
-        
-        var result = ReturnNewsMapper.Map(entity);
+        var result = ReturnNewsMapper.Map(bllResult);
         return Ok(result) ;
     }
 
@@ -150,6 +149,10 @@ public class NewsController : ControllerBase
         return Ok();
     }
 
+    /// <summary>
+    /// Returns the count of all news
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("Count")]
     public async Task<int> CountAllNews()
     {
@@ -157,6 +160,11 @@ public class NewsController : ControllerBase
     }
     
 
+    /// <summary>
+    /// Returns news with all the language cultures
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet("Preview/{id}")]
     public async Task<Public.DTO.V1.NewsAllLangs> GetNewsAllLanguages(Guid id)
     {
