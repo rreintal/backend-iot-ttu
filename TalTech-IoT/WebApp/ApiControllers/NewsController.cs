@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
+using Public.DTO.V1;
 
 namespace WebApp.ApiControllers;
 
@@ -37,7 +38,7 @@ public class NewsController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Public.DTO.V1.News>> Create([FromBody] PostNewsDto payload)
+    public async Task<ActionResult<News>> Create([FromBody] PostNewsDto payload)
     {
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
@@ -59,14 +60,7 @@ public class NewsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    /*
-     * public int? Size { get; set; }
-    public int? Page { get; set; }
-    public Guid? TopicAreaId { get; set; }
-
-    public bool? IncludeBody { get; set; }
-     */
-    public async Task<IEnumerable<Public.DTO.V1.News>> Get(string languageCulture, int? Size, int? page, Guid? TopicAreaId, bool? IncludeBody)
+    public async Task<IEnumerable<News>> Get(string languageCulture, int? Size, int? page, Guid? TopicAreaId, bool? IncludeBody)
     {
         var filterSet = new NewsFilterSet()
         {
@@ -92,7 +86,7 @@ public class NewsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Public.DTO.V1.News>> GetById(Guid id, string languageCulture)
+    public async Task<ActionResult<News>> GetById(Guid id, string languageCulture)
     {
         var bllEntity = await _bll.NewsService.FindAsync(id, languageCulture);
         if (bllEntity == null)
@@ -105,7 +99,7 @@ public class NewsController : ControllerBase
             
         }
         var res = ReturnNewsMapper.Map(bllEntity);
-        return res;
+        return Ok(res);
     }
 
     /// <summary>
@@ -121,14 +115,17 @@ public class NewsController : ControllerBase
         // TODO: ei tööta
         var bllEntity = UpdateNewsMapper.Map(data);
         var result = await _bll.NewsService.UpdateNews(bllEntity);
+        if (result == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
 
         await _bll.SaveChangesAsync();
-
-        return Ok(new RestApiResponse()
-        {
-            Message = $"Updated news. id={result.Id}",
-            Status = HttpStatusCode.OK
-        });
+        return Ok();
     }
 
     /// <summary>
@@ -150,10 +147,7 @@ public class NewsController : ControllerBase
         }
         var result = _bll.NewsService.Remove(entity);
         await _bll.SaveChangesAsync();
-        return Ok(new
-        {
-            NewsId = result.Id
-        });
+        return Ok();
     }
 
     [HttpGet("Count")]

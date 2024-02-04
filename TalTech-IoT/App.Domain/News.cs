@@ -4,7 +4,7 @@ using Contracts;
 
 namespace App.Domain;
 
-public class News : DomainEntityIdMetaData, IHasTopicAreaEntity, IContentEntity
+public class News : DomainEntityIdMetaData, IHasTopicAreaEntity, IDomainContentEntity
 {
     public ICollection<Content> Content { get; set; } = default!;
     public ICollection<HasTopicArea> HasTopicAreas { get; set; } = default!;

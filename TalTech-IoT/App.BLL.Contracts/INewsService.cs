@@ -12,11 +12,8 @@ public interface INewsService : ITranslateableEntityService<News>, INewsReposito
     public Task<List<ContentType>> GetContentTypes();
     
     public Task<IEnumerable<News>> AllAsyncFiltered(NewsFilterSet filterSet, string languageCulture);
-    public Task<UpdateNews> UpdateNews(UpdateNews entity);
+    public Task<News?> UpdateNews(UpdateNews entity);
 
     public Task<News> FindByIdAllTranslationsAsync(Guid id);
     public Task<News> AddAsync(News entity);
-
-
-
 }

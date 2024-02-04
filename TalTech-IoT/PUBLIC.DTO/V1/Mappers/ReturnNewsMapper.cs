@@ -5,12 +5,12 @@ namespace Public.DTO.V1.Mappers;
 
 public class ReturnNewsMapper
 {
-    public static Public.DTO.V1.News Map(BLL.DTO.V1.News data, bool thumbnail = false)
+    public static News Map(BLL.DTO.V1.News data, bool thumbnail = false)
     {
         
         // TODO: better fix, currently hack 
         var body = data.Content.Count == 1 ? "" : data.GetContentValue(ContentTypes.BODY);
-        var result =  new Public.DTO.V1.News()
+        var result =  new News()
         {
             Body = body,
             CreatedAt = data.CreatedAt,
@@ -30,7 +30,7 @@ public class ReturnNewsMapper
         return result;
     }
 
-    public BLL.DTO.V1.News Map(Public.DTO.V1.News data)
+    public BLL.DTO.V1.News Map(News data)
     {
         // TODO!
         throw new NotImplementedException();

@@ -1,6 +1,8 @@
-﻿namespace App.Domain.Contracts;
+using System.Collections;
 
-public interface IContentEntity
+namespace App.Domain.Contracts;
+
+public interface IDomainContentEntity
 {
     public ICollection<Content> Content { get; set; }
 }

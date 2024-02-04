@@ -6,7 +6,6 @@ public class GetProjectMapper
 {
     public static GetProject Map(BLL.DTO.V1.Project entity)
     {
-        var a = entity;
         var result = new GetProject()
         {
             Id = entity.Id,

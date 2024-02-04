@@ -3,6 +3,8 @@ using App.DAL.Contracts;
 using App.Domain;
 using Base.BLL;
 using Base.Contracts;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace App.BLL.Services;
 
@@ -30,11 +32,15 @@ public class PageContentService : BaseEntityService<global::BLL.DTO.V1.PageConte
         return result;
     }
 
+    public async Task<global::BLL.DTO.V1.PageContent?> UpdateAsync(global::BLL.DTO.V1.PageContent entity)
+    {
+        var domainEntity = Mapper.Map(entity);
+        var updatedDomainEntity = await Uow.PageContentRepository.UpdateAsync(domainEntity);
+        return Mapper.Map(updatedDomainEntity);
+    }
+
     public PageContent Update(PageContent entity)
     {
-        var item = Task.Run( () => Uow.PageContentRepository.FindAsyncByIdentifierString(entity.PageIdentifier)).Result;
-        Uow.PageContentRepository.Remove(item);
-        Uow.PageContentRepository.Add(entity);
-        return entity;
+        throw new NotImplementedException();
     }
 }

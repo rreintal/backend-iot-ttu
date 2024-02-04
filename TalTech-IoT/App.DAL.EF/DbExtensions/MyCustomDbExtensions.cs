@@ -1,4 +1,5 @@
 using App.Domain.Contracts;
+using Contracts;
 using Microsoft.EntityFrameworkCore;
 
 namespace App.DAL.EF.DbExtensions;
@@ -32,7 +33,7 @@ public static class MyCustomDbExtensions
     public static IQueryable<T> IncludeContentWithTranslation<T>(
         this IQueryable<T> queryable, 
         string languageCulture = ALL_LANGUAGE_CULTURES)
-    where T : class, IContentEntity
+    where T : class, IDomainContentEntity
     {
         if (languageCulture == ALL_LANGUAGE_CULTURES)
         {
@@ -57,7 +58,7 @@ public static class MyCustomDbExtensions
 
     public static IQueryable<T> IncludeContentWithTitlesTranslation<T>(
         this IQueryable<T> queryable)
-    where T : class, IContentEntity
+    where T : class, IDomainContentEntity
     {
         var result = queryable.Include(x => 
                 x.Content.Where(y=> y.ContentType!.Name == "TITLE"))

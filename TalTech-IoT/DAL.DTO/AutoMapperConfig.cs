@@ -16,5 +16,11 @@ public class AutoMapperConfig : Profile
         CreateMap<App.Domain.Identity.AppUser, DAL.DTO.Identity.AppUser>()
             .ReverseMap();
 
+        CreateMap<App.Domain.ContentType, DAL.DTO.V1.ContentType>().ReverseMap();
+        CreateMap<App.Domain.Content, DAL.DTO.V1.Content>().ReverseMap();
+        CreateMap<App.Domain.News, DAL.DTO.V1.News>().ReverseMap();
+        CreateMap<App.Domain.PageContent, DAL.DTO.V1.PageContent>().ReverseMap();
+        CreateMap<App.Domain.Project, DAL.DTO.V1.Project>().ReverseMap();
+
     }
 }

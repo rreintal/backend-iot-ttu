@@ -6,6 +6,8 @@ using Base.DAL.EF;
 using DAL.DTO.V1;
 using Microsoft.EntityFrameworkCore;
 using Public.DTO;
+using Public.DTO.Content;
+using News = DAL.DTO.V1.News;
 
 namespace App.DAL.EF.Repositories;
 
@@ -17,9 +19,10 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     
     // TODO - TEE DAL OBJECT; et HasTopicArea -> TopicArea?
     // TODO - mapi juba query ajal ära!!!
-    // TODO - kas on üldse DAL objecte vaja!?
-    public override Domain.News Add(Domain.News entity)
+    // TODO - kas on üldse DAL objecte vaja!? ei ole, kogu mappimine käib BLL -> Public!
+    public override App.Domain.News Add(Domain.News entity)
     {
+        
         foreach (var content in entity.Content)
         {
             // Doing this database does not try to add again types to db.
@@ -27,14 +30,13 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         }
 
         entity.CreatedAt = DateTime.UtcNow;
-
+        
         var res = DbSet.Add(entity).Entity;
         return res;
     }
 
-    public async Task<News?> FindByIdWithAllTranslationsAsync(Guid Id)
+    public async Task<App.Domain.News?> FindByIdWithAllTranslationsAsync(Guid Id)
     {
-        
         var query = await DbSet.Where(x => x.Id == Id)
             .IncludeHasTopicAreasWithTranslation()
             .IncludeContentWithTranslation()
@@ -45,45 +47,49 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         {
             return null;
         }
-
+        
         return query;
     }
 
-    public async Task<News> Update(UpdateNews entity)
+    public async Task<App.Domain.News?> Update(UpdateNews dalEntity)
     {
-        // Maybe should be await?!
         // TODO - error handling
         // TODO - is it neccesary?! optimize?
-        var existingDomainObject = await FindByIdWithAllTranslationsAsync(entity.Id);
+        var existingDomainObject = await FindByIdWithAllTranslationsAsync(dalEntity.Id);
+
+        if (existingDomainObject == null)
+        {
+            return null;
+        }
         
-
-        // TODO - if there is no existing object with that ID!
-        // throw error
-
         // check if content has changed!
         // TODO - helper function for detecting changes, can use for Project!
-        var cults = new List<String>{ "et", "en" };
+        var cults = LanguageCulture.ALL_LANGUAGES;
+        
         foreach (var lang in cults)
         {
-            //var newBodyValue = entity.GetContentValue(ContentTypes.BODY, lang);
-            var newBodyValue = entity.GetContentValue(ContentTypes.BODY, lang);
-            var newTitleValue = entity.GetContentValue(ContentTypes.TITLE, lang);
+            var newBodyValue = dalEntity.GetContentValue(ContentTypes.BODY, lang);
+            var newTitleValue = dalEntity.GetContentValue(ContentTypes.TITLE, lang);
     
             var oldBodyValue = existingDomainObject!.GetContentValue(ContentTypes.BODY, lang);
             var oldTitleValue = existingDomainObject.GetContentValue(ContentTypes.TITLE, lang);
 
-            if (oldBodyValue != newBodyValue)
+            var isBodyValueChanged = oldBodyValue != newBodyValue;
+            var isTitleContentChanged = oldTitleValue != newTitleValue;
+            
+            if (isBodyValueChanged)
             {
                 existingDomainObject.SetContentTranslationValue(ContentTypes.BODY, lang, newBodyValue);
                 existingDomainObject.SetBaseLanguage(ContentTypes.BODY, newBodyValue);
             }
-
-            if (oldTitleValue != newTitleValue)
+            
+            if (isTitleContentChanged)
             {
                 existingDomainObject.SetContentTranslationValue(ContentTypes.TITLE, lang, newTitleValue);
                 existingDomainObject.SetBaseLanguage(ContentTypes.TITLE, newBodyValue);
             }
         }
+        
         // TODO - if it has topicAreas more than 2 levels!?
         // is it relevant? all children are linked with id
         
@@ -137,9 +143,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         existingDomainObject.Author = "a";
         */
         var result = Update(existingDomainObject);
-        Console.WriteLine(entity.Author);
-        Console.WriteLine(result.Author);
-        return existingDomainObject;
+        return result;
     }
 
     // see peaks vist DAL objekt olema tegelt?!
@@ -161,22 +165,21 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         if (filterSet.IncludeBody.HasValue)
         {
             
-            return await query
+            var result = (await query
                 .IncludeHasTopicAreasWithTranslation()
                 .IncludeContentWithTitlesTranslation()
-                .ToListAsync();
+                .ToListAsync()).Select(e => _mapper.Map<News>(e));
         }
-        // TODO - error
         return await query
             .IncludeHasTopicAreasWithTranslation(languageCulture)
             .IncludeContentWithTranslation(languageCulture)
             .OrderByDescending(x => x.CreatedAt)
-                .Skip(filterSet.Page.Value * filterSet.Size.Value)
-                .Take(filterSet.Size.Value)
+            .Skip(filterSet.Page.Value * filterSet.Size.Value)
+            .Take(filterSet.Size.Value)
             .ToListAsync();
     }
     
-    public async Task<News?> FindAsync(Guid id, string? languageCulture)
+    public async Task<App.Domain.News?> FindAsync(Guid id, string? languageCulture)
     {
         var query = await DbSet.Where(x => x.Id == id)
             .IncludeHasTopicAreasWithTranslation(languageCulture)
@@ -191,7 +194,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     }
 
 
-    public async Task<IEnumerable<News>> AllAsync(string? languageString)
+    public async Task<IEnumerable<App.Domain.News>> AllAsync(string? languageString)
     {
         return await DbSet
             .IncludeHasTopicAreasWithTranslation(languageString)

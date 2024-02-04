@@ -10,8 +10,10 @@ namespace NUnitTests.Identity;
 public class Identity
 {
     private CustomWebAppFactory<Program>? _factory;
+    private const string BASE_URL = $"api/{VERSION}/Users";
+    private const string VERSION = "v1";
 
-    [OneTimeSetUp]
+        [OneTimeSetUp]
     public void OneTimeSetup()
     {
         _factory = new CustomWebAppFactory<Program>();
@@ -36,11 +38,12 @@ public class Identity
             Email = "john.doe@example.com",
             Username = "johndoe123",
             Password = "Johndoe123."
-            // Add other required properties
+            
+            // TODO: problem because the registration needs RoleId too!
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/Users/Register", registerModel);
+        var response = await client.PostAsJsonAsync($"{BASE_URL}/Register", registerModel);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -68,7 +71,7 @@ public class Identity
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/Users/Register", registerModel);
+        var response = await client.PostAsJsonAsync($"{BASE_URL}/Register", registerModel);
 
         // Assert
         
@@ -87,7 +90,7 @@ public class Identity
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/Users/Login", loginModel);
+        var response = await client.PostAsJsonAsync($"{BASE_URL}/Login", loginModel);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -139,7 +142,7 @@ public class Identity
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/api/Users/Login", loginModel);
+        var response = await client.PostAsJsonAsync($"{BASE_URL}/Login", loginModel);
 
         // Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));

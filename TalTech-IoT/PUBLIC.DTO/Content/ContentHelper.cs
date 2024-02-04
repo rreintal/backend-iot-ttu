@@ -1,10 +1,7 @@
 using App.Domain;
-using Base.Domain;
 using BLL.DTO.ContentHelper;
-using Microsoft.Extensions.Logging;
 using Public.DTO.V1;
 using ContentType = BLL.DTO.V1.ContentType;
-using News = Public.DTO.V1.News;
 
 namespace Public.DTO.Content;
 
@@ -16,8 +13,6 @@ public abstract class ContentHelper
         Project,
         PageContent
     }
-    // tee constid, millega saad teada kas on News, Proejct blabla
-
     /// <summary>
     /// Helper to create content based on type (Title, Body)
     /// </summary>
@@ -87,8 +82,9 @@ public abstract class ContentHelper
             .Where(translation => translation.LanguageCulture == languageCulture).First().TranslationValue;
         if (result == null)
         {
-            Console.WriteLine($"ContentHelper: for entity with type {entity.GetType()} could not get content value.");
+            Console.WriteLine($"ContentHelper (BLL): for entity with type {entity.GetType()} could not get content value.");
         }
         return result;
     }
+    
 }

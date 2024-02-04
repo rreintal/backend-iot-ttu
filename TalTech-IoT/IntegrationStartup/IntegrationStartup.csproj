@@ -6,6 +6,8 @@
         <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
+
+        <RootNamespace>Integration</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,7 +25,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Factory\Factory.csproj" />
       <ProjectReference Include="..\WebApp\WebApp.csproj" />
     </ItemGroup>
 

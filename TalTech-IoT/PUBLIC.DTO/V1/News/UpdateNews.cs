@@ -14,10 +14,8 @@ public class UpdateNews : DomainEntityId
     [MinLength(2, ErrorMessage = RestApiErrorMessages.GeneralMissingTranslationValue)]
     public List<ContentDto> Title { get; set; } = default!;
     
-    public string Image { get; set; } = default!;
+    public string? Image { get; set; }
     
-    [Required]
-    [MinLength(1, ErrorMessage = RestApiErrorMessages.GeneralMissingTopicArea)]
     public List<TopicArea> TopicAreas { get; set; } = default!;
     // public DateTime? CreatedAt { get; set; } kas on vaja??
 }

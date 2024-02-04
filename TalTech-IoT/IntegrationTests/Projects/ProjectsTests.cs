@@ -182,18 +182,11 @@ public class ProjectsTests
         var response = await client.PostAsJsonAsync("/api/v1/Project", data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
-    
-    /*
-    [Test, Order(4)]
-    public async Task AddProjects_MissingProjectYear_ReturnsBadRequest()
-    {
-        throw new NotImplementedException();
-    }
-    */
-    
+
     [Test, Order(5)]
     public async Task AddProjects_En_ReturnsCorrectBody()
     {
+        var languageCulture = LanguageCulture.ENG;
         var bodyMessage = "this is body";
         var data = new Public.DTO.V1.PostProjectDto()
         {
@@ -231,14 +224,14 @@ public class ProjectsTests
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         
         // TODO: fix!!
-        var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
-
-        Assert.NotNull(responseData);
-        var getResponse = await client.GetAsync("/api/v1/project/et/" + responseData!.Id);
+        var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.PostProjectSuccessDto>();
         
-        var getResponseData = await getResponse.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
+        Assert.NotNull(responseData);
+        var getResponse = await client.GetAsync($"/api/v1/project/{languageCulture}/" + responseData!.Id);
+        
+        var getResponseData = await getResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetProject>();
         Assert.NotNull(getResponseData);
-        Assert.Equals(getResponseData!.Body, Is.EqualTo(bodyMessage));
+        Assert.That(getResponseData!.Body, Is.EqualTo(bodyMessage));
     }
     /*
     [Test, Order(6)]

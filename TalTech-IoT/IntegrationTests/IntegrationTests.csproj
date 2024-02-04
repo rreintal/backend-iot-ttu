@@ -6,6 +6,8 @@
         <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
+
+        <RootNamespace>NUnitTests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,7 +19,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Integration\Integration.csproj" />
+      <ProjectReference Include="..\IntegrationStartup\IntegrationStartup.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="ValidationTests" />
     </ItemGroup>
 
 </Project>

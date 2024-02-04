@@ -46,5 +46,12 @@ public class AutoMapperConfig : Profile
         CreateMap<BLL.DTO.Identity.AppUser, DAL.DTO.Identity.AppUser>().ReverseMap();
         CreateMap<BLL.DTO.Identity.AppRole, DAL.DTO.Identity.AppRole>().ReverseMap();
         CreateMap<App.Domain.PageContent, BLL.DTO.V1.PageContent>().ReverseMap();
+        
+        
+        CreateMap<BLL.DTO.V1.ContentType, DAL.DTO.V1.ContentType>().ReverseMap();
+        CreateMap<BLL.DTO.V1.Content, DAL.DTO.V1.Content>().ReverseMap();
+        CreateMap<BLL.DTO.V1.News, DAL.DTO.V1.News>().ReverseMap();
+        CreateMap<BLL.DTO.V1.PageContent, DAL.DTO.V1.PageContent>().ReverseMap();
+        CreateMap<BLL.DTO.V1.Project, DAL.DTO.V1.Project>().ReverseMap();
     }
 }

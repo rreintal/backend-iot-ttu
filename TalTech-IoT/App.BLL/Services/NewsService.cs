@@ -128,12 +128,13 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     }
     
 
-    public async Task<UpdateNews> UpdateNews(UpdateNews entity)
+    public async Task<News?> UpdateNews(UpdateNews entity)
     {
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.UpdateNews>(entity);
-        await Uow.NewsRepository.Update(dalEntity);
-        await Uow.SaveChangesAsync();
-        return entity;
+        var updatedDalEntity =  await Uow.NewsRepository.Update(dalEntity);
+        var result = _mapper.Map<News?>(updatedDalEntity);
+        return result;
+        
     }
 
     public async Task<News> FindByIdAllTranslationsAsync(Guid id)

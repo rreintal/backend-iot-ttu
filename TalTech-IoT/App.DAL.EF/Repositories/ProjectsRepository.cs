@@ -18,6 +18,7 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
         {
             DbContext.ContentTypes.Attach(content.ContentType);
         }
+        
         return base.Add(entity);
     }
 

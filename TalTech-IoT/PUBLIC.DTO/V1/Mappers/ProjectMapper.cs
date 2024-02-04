@@ -36,8 +36,36 @@ public class ProjectMapper
         return project;
     }
 
-    public PostProjectDto? Map(Project? entity)
+    public static Public.DTO.V1.PostProjectSuccessDto? Map(Project? entity)
     {
-        throw new NotImplementedException();
+        if (entity == null)
+        {
+            return null;
+        }
+
+        return new Public.DTO.V1.PostProjectSuccessDto()
+        {
+            Id = entity.Id,
+            ProjectVolume = entity.ProjectVolume,
+            ProjectManager = entity.ProjectManager,
+            Year = entity.Year,
+            Body = LanguageCulture.ALL_LANGUAGES.Select(languageCulture =>
+            {
+                return new ContentDto()
+                {
+                    Culture = languageCulture,
+                    Value = entity.GetContentValue(ContentTypes.BODY, languageCulture)
+                };
+            }).ToList(),
+            Title = LanguageCulture.ALL_LANGUAGES.Select(languageCulture =>
+            {
+                return new ContentDto()
+                {
+                    Culture = languageCulture,
+                    Value = entity.GetContentValue(ContentTypes.TITLE, languageCulture)
+                };
+            }).ToList()
+
+        };
     }
 }
