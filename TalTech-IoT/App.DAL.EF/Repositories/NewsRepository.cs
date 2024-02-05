@@ -38,7 +38,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     public News Add(News entity)
     {
         var domainEntity = _mapper.Map<App.Domain.News>(entity);
-        
+
         foreach (var bllTopicArea in entity.TopicAreas)
         {
             var hasTopicAreaId = Guid.NewGuid();

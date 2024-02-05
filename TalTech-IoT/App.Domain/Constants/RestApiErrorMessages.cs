@@ -30,6 +30,11 @@ public static class RestApiErrorMessages
     /// Users
     /// </summary>
     public const string UserAlreadyExists = "USER_ALREADY_EXISTS";
+    public const string UserUsernameAlreadyExists = "USERNAME_ALREADY_EXISTS";
+    public const string UserEmailAlreadyExists = "EMAIL_ALREADY_EXISTS";
+    public const string UserAlreadyUnlocked = "USER_ALREADY_UNLOCKED";
+    public const string UserAlreadyLocked = "USER_ALREADY_LOCKED";
+    public const string UserGeneralError = "USERNAME_PASSWORD_PROBLEM"; // this is general, as if password/email is wrong. not saying which because of security
 
     /// <summary>
     /// Roles

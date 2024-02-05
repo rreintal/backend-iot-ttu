@@ -9,6 +9,7 @@ public class Project : DomainEntityId, IContainsContent
     public string ProjectManager { get; set; } = default!;
     public double ProjectVolume { get; set; } = default!;
     public DateTime CreatedAt { get; set; }
+    public bool IsOngoing { get; set; }
     
     // body + title
     public List<Content> Content { get; set; } = default!;

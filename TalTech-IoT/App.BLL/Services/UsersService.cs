@@ -13,4 +13,9 @@ public class UsersService : BaseEntityService<global::BLL.DTO.Identity.AppUser, 
     {
         Uow = uow;
     }
+
+    public async Task<IEnumerable<global::BLL.DTO.Identity.AppUser>> AllAsyncFiltered(bool isDeleted)
+    {
+        return (await Uow.UsersRepository.AllAsyncFiltered(isDeleted)).Select(entity => Mapper.Map(entity));
+    }
 }

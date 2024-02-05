@@ -95,7 +95,6 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     public override News Add(News entity)
     {
         // Add thumbnail
-        // TODO - check if its valid!
         try
         {
             entity.ThumbnailImage = ThumbnailService.Compress(entity.Image);
@@ -104,6 +103,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
+        
         /*
         // Testing CDN
         var estonianBody = domainObject.GetContentValue(ContentTypes.BODY, LanguageCulture.EST);
@@ -116,6 +116,8 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         domainObject.SetContentTranslationValue(ContentTypes.BODY, LanguageCulture.ENG, englishBody);
         // -----
         */
+        
+        
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var dalResult = Uow.NewsRepository.Add(dalEntity);
         var result = _mapper.Map<News>(dalResult);

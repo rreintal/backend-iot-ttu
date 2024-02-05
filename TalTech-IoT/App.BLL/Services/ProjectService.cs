@@ -63,4 +63,9 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
     {
         return await Uow.ProjectsRepository.FindProjectTotalCount();
     }
+
+    public async Task<bool> ChangeProjectStatus(Guid id, bool isOngoing)
+    {
+        return await Uow.ProjectsRepository.ChangeProjectStatus(id, isOngoing);
+    }
 }

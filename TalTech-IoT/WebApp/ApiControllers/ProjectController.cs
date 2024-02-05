@@ -163,4 +163,16 @@ public class ProjectController : ControllerBase
         return ProjectAllLangsMapper.Map(entity);
     }
 
+    [HttpPost("Ongoing")]
+    public async Task<ActionResult> ToggleProjectStatus(Guid id, bool isOngoing)
+    {
+        var result = await _bll.ProjectService.ChangeProjectStatus(id, isOngoing);
+        if (!result)
+        {
+            return BadRequest();
+        }
+
+        return Ok();
+    }
+
 }

@@ -81,7 +81,7 @@ public class UsersController : ControllerBase
                     new RestApiResponse()
                     {
                         Status = HttpStatusCode.Conflict,
-                        Message = "Email already registered!"
+                        Message = RestApiErrorMessages.UserEmailAlreadyExists
                     });
             }
             if (user.NormalizedUserName == register.Username.ToUpper())
@@ -89,8 +89,8 @@ public class UsersController : ControllerBase
                 return BadRequest(
                     new RestApiResponse()
                     {
-                        Status = HttpStatusCode.Conflict,
-                        Message = "Username already registered!"
+                        Status = HttpStatusCode.BadRequest,
+                        Message =  RestApiErrorMessages.UserUsernameAlreadyExists// "Username already registered!"
                     });
             }
         }
@@ -112,7 +112,7 @@ public class UsersController : ControllerBase
         {
             return BadRequest(new RestApiResponse()
             {
-                Message = "PROBLEM WITH PASSWORD", // TODO: for testing!
+                Message = RestApiErrorMessages.UserGeneralError,
                 Status = HttpStatusCode.BadRequest
             });
         }
@@ -140,7 +140,7 @@ public class UsersController : ControllerBase
                 return BadRequest(
                     new RestApiResponse()
                     {
-                        Status = HttpStatusCode.MethodNotAllowed,
+                        Status = HttpStatusCode.BadRequest,
                         Message = "registration failed!"
                     });
             }
@@ -185,7 +185,7 @@ public class UsersController : ControllerBase
             return NotFound(new RestApiResponse()
             {
                 Status = HttpStatusCode.NotFound,
-                Message = "Login failed!"
+                Message = RestApiErrorMessages.UserGeneralError
             });
         }
         
@@ -198,7 +198,7 @@ public class UsersController : ControllerBase
             return NotFound(new RestApiResponse()
             {
                 Status = HttpStatusCode.NotFound,
-                Message = "WRONG PASSWORD" // TODO: for testing!
+                Message = RestApiErrorMessages.UserGeneralError // TODO: for testing!
             });
         }
         
@@ -252,7 +252,7 @@ public class UsersController : ControllerBase
             RefreshToken = refreshToken.RefreshToken,
             AppUserId = appUser.Id.ToString(),
             Username = appUser.UserName,
-            RoleIds = userRoles.Select(e => e.Id)
+            RoleIds = userRoles.Select(e => e.Id).ToList()
         };
 
         
@@ -380,13 +380,26 @@ public class UsersController : ControllerBase
         
         await _context.SaveChangesAsync();
 
+        // TODO: HACK!!!
+        var userRoles = await _userManager.GetRolesAsync(appUser);
+        if (userRoles.Count != 1)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Message = "Failed to get user roles. because of a hack, sry boss",
+                Status = HttpStatusCode.BadRequest
+            });
+        }
+        var rolename = userRoles[0];
+        var userRole = await _roleManager.FindByNameAsync(rolename);
         
         // Idk kas siia on appUserId ka vaja v ei
         var res = new JWTResponse()
         {
             JWT = jwt,
             RefreshToken = newRefreshToken.RefreshToken,
-            Username = appUser.UserName
+            Username = appUser.UserName,
+            RoleIds =  new List<Guid>() {userRole!.Id}
         };
 
         return Ok(res);
@@ -411,7 +424,7 @@ public class UsersController : ControllerBase
             return BadRequest(new RestApiResponse()
             {
                 Status = HttpStatusCode.BadRequest,
-                Message = "Username/password error"
+                Message = RestApiErrorMessages.UserGeneralError
             });
         }
         
@@ -444,9 +457,20 @@ public class UsersController : ControllerBase
             return BadRequest(
                 new RestApiResponse
                 {
-                    Message = "User not found.",
+                    Message = RestApiErrorMessages.UserGeneralError,
                     Status = HttpStatusCode.BadRequest
                 });
+        }
+
+        var isCorrectPassword = await _userManager.CheckPasswordAsync(user, model.OldPassword);
+
+        if (!isCorrectPassword)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.UserGeneralError,
+                Status = HttpStatusCode.BadRequest
+            });
         }
 
         // Change the user's password
@@ -463,11 +487,11 @@ public class UsersController : ControllerBase
             return Ok(jwt);
         }
         
-        // Password change failed
+        // Should not get to this point!
         return BadRequest(
             new RestApiResponse
             {
-                Message = "CHANGE_PASSWORD_FAILED",
+                Message = RestApiErrorMessages.UserGeneralError,
                 Status = HttpStatusCode.BadRequest
             });
         }
@@ -534,11 +558,9 @@ public class UsersController : ControllerBase
     /// <returns></returns>
     //[Authorize]
     [HttpGet]
-    public async Task<IEnumerable<Public.DTO.Identity.AppUser>> GetAllUsers(bool restricted)
+    public async Task<IEnumerable<Public.DTO.Identity.AppUser>> GetAllUsers(bool deleted)
     {
-        // TODO: filter based on 'restricted' which users to return. 
-        // restricted == LOCKED account!
-        return (await _bll.UsersService.AllAsync()).Select(e => GetUsersMapper.Map(e));
+        return (await _bll.UsersService.AllAsyncFiltered(deleted)).Select(e => GetUsersMapper.Map(e));
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "ADMIN")]
@@ -575,9 +597,98 @@ public class UsersController : ControllerBase
     }
     
     
-    // TODO: register method for admin, where he puts in the FN, LN, Email, and then register account
-    // and generate random pw (UUID), send this user details to recipent on email!
+    
+    /// <summary>
+    /// Register user for unknown person. User details will be sent on email. (mail server not functioning yet)
+    /// </summary>
+    /// <param name="register"></param>
+    /// <returns></returns>
+    [HttpPost("RegisterUnknown")]
+    public async Task<ActionResult> AdminRegister([FromBody] RegisterUnknown register)
+    {
+        var RandomUserPassword = Guid.NewGuid().ToString();
+        var user = await _context.Users.Where(x => x.UserName == register.Username || x.Email == register.Email)
+            .FirstOrDefaultAsync();
 
+        if (user != null)
+        {
+            if (user.NormalizedEmail == register.Email.ToUpper())
+            {
+                return BadRequest(
+                    new RestApiResponse()
+                    {
+                        Status = HttpStatusCode.Conflict,
+                        Message = RestApiErrorMessages.UserEmailAlreadyExists
+                    });
+            }
+            if (user.NormalizedUserName == register.Username.ToUpper())
+            {
+                return BadRequest(
+                    new RestApiResponse()
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message =  RestApiErrorMessages.UserUsernameAlreadyExists// "Username already registered!"
+                    });
+            }
+        }
+        // Register account
+        var refreshToken = new AppRefreshToken();
+        var appUser = new AppUser()
+        {
+            Firstname = register.Firstname,
+            Lastname = register.Lastname,
+            Email = register.Email,
+            UserName = register.Username,
+            AppRefreshTokens = new List<AppRefreshToken>() {refreshToken}
+        };
+        refreshToken.AppUser = appUser;
+        
+        
+        var result = await _userManager.CreateAsync(appUser, RandomUserPassword);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.UserGeneralError,
+                Status = HttpStatusCode.BadRequest
+            });
+        }
+
+        var role = await _roleManager.FindByIdAsync(register.RoleId.ToString());
+        if (role == null)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.RoleNotFound,
+                Status = HttpStatusCode.BadRequest
+            });
+        }
+        await _userManager.AddToRoleAsync(appUser, role.Name);
+        
+        result = await _userManager.AddClaimsAsync(appUser, new List<Claim>()
+            {
+                new Claim(ClaimTypes.GivenName, appUser.Firstname),
+                new Claim(ClaimTypes.Surname, appUser.Lastname),
+                new Claim(ClaimTypes.Role, IdentityRolesConstants.ROLE_USER)
+            });
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(
+                    new RestApiResponse()
+                    {
+                        Status = HttpStatusCode.BadRequest,
+                        Message = "registration failed!"
+                    });
+            }
+
+            // TODO: send email, if email is valid then saveChanges!!
+            // TODO: does it save user even before saving changes?
+            
+            await _context.SaveChangesAsync();
+            Console.WriteLine($"user random password = {RandomUserPassword}");
+            return Ok();
+    }
     
     
     /// <summary>
@@ -589,7 +700,9 @@ public class UsersController : ControllerBase
     //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = IdentityRolesConstants.ROLE_ADMIN)]
     public async Task<ActionResult> LockAccount([FromBody] UserIdDto data)
     {
-        var user = await _userManager.Users.Where(user => user.Id == data.UserId).FirstOrDefaultAsync();
+        var user = await _userManager.Users
+            .Where(user => user.Id == data.UserId)
+            .FirstOrDefaultAsync();
         if (user == null)
         {
             return NotFound(new RestApiResponse()
@@ -599,12 +712,25 @@ public class UsersController : ControllerBase
             });
         }
 
-        // TODO: add Deleted field for user!
-        
+        if (user.Deleted)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.UserAlreadyLocked,
+                Status = HttpStatusCode.BadRequest
+            });
+        }
+
+        user.Deleted = true;
         await _bll.SaveChangesAsync();
         return Ok();
     }
-
+    
+    /// <summary>
+    /// Unlock account (set 'Deleted' to true) 
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
     [HttpPost("Unlock")]
     public async Task<ActionResult> UnlockAccount([FromBody] UserIdDto data)
     {
@@ -617,9 +743,18 @@ public class UsersController : ControllerBase
                 Status = HttpStatusCode.NotFound
             });
         }
+        if (user.Deleted == false)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Status = HttpStatusCode.BadRequest,
+                Message = RestApiErrorMessages.UserAlreadyLocked
+            });
+        }
+        
+        user.Deleted = false;
 
-        // TODO: add Deleted field for user!
-
+        
         await _bll.SaveChangesAsync();
         return Ok();
     }

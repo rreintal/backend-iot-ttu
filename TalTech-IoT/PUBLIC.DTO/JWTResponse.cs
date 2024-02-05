@@ -8,5 +8,6 @@ public class JWTResponse
 
     public string? Username { get; set; }
 
-    public IEnumerable<Guid> RoleIds { get; set; } = default!;
+    // TODO: remove this into 'RoleId'
+    public List<Guid> RoleIds { get; set; } = default!;
 }

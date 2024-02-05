@@ -8,5 +8,8 @@ public class ChangePasswordModel
     public string Password { get; set; } = default!;
 
     [Required] 
+    public string OldPassword { get; set; } = default!;
+
+    [Required] 
     public Guid UserId { get; set; } = default!;
 }

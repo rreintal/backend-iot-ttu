@@ -110,7 +110,18 @@ public static class AppDataSeeding
 
                 await userManager.CreateAsync(adminUser, "admin");
                 await userManager.AddToRoleAsync(adminUser, IdentityRolesConstants.ROLE_ADMIN);
+
+                var userUser = new AppUser()
+                {
+                    Firstname = "UserFN",
+                    Lastname = "UserLN",
+                    Email = "user@email.ee",
+                    UserName = "user"
+                };
+                
+                await userManager.CreateAsync(userUser, "user");
                 await userManager.AddToRoleAsync(adminUser, IdentityRolesConstants.ROLE_USER);
+                
             }
 
             await context.SaveChangesAsync();

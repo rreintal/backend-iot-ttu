@@ -49,6 +49,14 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
                 existingDomainObject.SetBaseLanguage(ContentTypes.TITLE, newBodyValue);
             }
         }
+        // TODO: map to domain object and then add or smth!
+
+        existingDomainObject.ProjectManager = entity.ProjectManager;
+        if (entity.ProjectVolume != null)
+        {
+            existingDomainObject.ProjectVolume = (double) entity.ProjectVolume;    
+        }
+        
 
         var updateResult = Update(existingDomainObject);
         var result = _mapper.Map<Project>(updateResult);
@@ -97,6 +105,17 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
     public async Task<int> FindProjectTotalCount()
     {
          return await DbSet.CountAsync();
+    }
+
+    public async Task<bool> ChangeProjectStatus(Guid id, bool isOngoing)
+    {
+        // TODO: better approach but how to check if save is successful?
+         // TODO: concurrency issues, if something is saved at the same time, then it will be > 0??
+        var entity = new Project() { Id = id, IsOngoing = isOngoing};
+        DbSet.Attach(entity);
+        DbSet.Entry(entity).Property(x => x.IsOngoing).IsModified = true;
+        var result = await DbContext.SaveChangesAsync();
+        return result > 0;
     }
 
     public async Task<global::DAL.DTO.V1.Project?> FindByIdAsyncWithAllTranslations(Guid id)

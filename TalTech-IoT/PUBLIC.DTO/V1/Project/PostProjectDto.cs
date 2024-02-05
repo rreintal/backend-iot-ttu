@@ -25,7 +25,10 @@ public class PostProjectDto
     
     [MinLength(2, ErrorMessage = RestApiErrorMessages.GeneralMissingTranslationValue)]
     public List<ContentDto> Body { get; set; } = default!;
-    
+
+    [Required]
+    public bool IsOngoing { get; set; } = default!;
+
 
     // TODO - seda pole ju siin vaja, sest date pannakse alles siis kui db salvestan
     //public DateTime CreatedAt { get; set; } = default!;

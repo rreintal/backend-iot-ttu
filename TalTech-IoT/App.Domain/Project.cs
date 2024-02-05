@@ -9,6 +9,8 @@ public class Project : DomainEntityIdMetaData, IDomainContentEntity
     public double ProjectVolume { get; set; } 
     public string ProjectManager { get; set; } = default!;
 
+    public bool IsOngoing { get; set; }
+
     // title, content
     public ICollection<Content> Content { get; set; } = default!;
     

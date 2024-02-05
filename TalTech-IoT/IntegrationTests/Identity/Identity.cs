@@ -2,8 +2,10 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Integration;
+using Microsoft.AspNetCore.Identity;
 using Public.DTO;
 using Public.DTO.Identity;
+using AppRole = DAL.DTO.Identity.AppRole;
 
 namespace NUnitTests.Identity;
 
@@ -17,6 +19,7 @@ public class Identity
     public void OneTimeSetup()
     {
         _factory = new CustomWebAppFactory<Program>();
+        _factory.Services.GetService < RoleManager<App.Domain.Identity.AppRole>();
     }
     
     [OneTimeTearDown]

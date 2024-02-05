@@ -30,7 +30,8 @@ public class ProjectMapper
             Content = projectContent,
             ProjectVolume = entity.ProjectVolume,
             ProjectManager = entity.ProjectManager,
-            Year = entity.Year
+            Year = entity.Year,
+            IsOngoing = entity.IsOngoing
         };
 
         return project;
@@ -49,6 +50,7 @@ public class ProjectMapper
             ProjectVolume = entity.ProjectVolume,
             ProjectManager = entity.ProjectManager,
             Year = entity.Year,
+            IsOngoing = entity.IsOngoing,
             Body = LanguageCulture.ALL_LANGUAGES.Select(languageCulture =>
             {
                 return new ContentDto()

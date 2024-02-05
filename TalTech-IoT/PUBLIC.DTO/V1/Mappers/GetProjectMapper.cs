@@ -13,6 +13,7 @@ public class GetProjectMapper
             Title = entity.GetContentValue(ContentTypes.TITLE),
             ProjectManager = entity.ProjectManager,
             ProjectVolume = entity.ProjectVolume,
+            IsOngoing = entity.IsOngoing,
             Year = entity.Year,
             CreatedAt = entity.CreatedAt
         };

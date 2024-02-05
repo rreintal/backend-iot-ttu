@@ -14,4 +14,5 @@ public interface IProjectsRepository : IBaseTranslateableRepository<App.Domain.P
 public interface IProjectsRepositoryCustom<TEntity>
 {
     public Task<int> FindProjectTotalCount();
+    public Task<bool> ChangeProjectStatus(Guid id, bool isOngoing);
 }

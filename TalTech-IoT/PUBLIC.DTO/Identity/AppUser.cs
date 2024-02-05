@@ -9,5 +9,6 @@ public class AppUser
     public string UserName { get; set; } = default!;
     public bool EmailConfirmed { get; set; } = default!;
     public bool LockoutEnabled { get; set; } = default!;
+    public bool Deleted { get; set; }
     public List<AppRole> Roles { get; set; } = default!;
 }

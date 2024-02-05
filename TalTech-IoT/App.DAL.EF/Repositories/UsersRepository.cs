@@ -42,5 +42,9 @@ public class UsersRepository : EFBaseRepository<AppUser, AppDbContext>, IUsersRe
         return result;
     }
 
-    
+    public async Task<IEnumerable<AppUser>> AllAsyncFiltered(bool isDeleted)
+    {
+        var items = await DbContext.Users.Where(user => user.Deleted == isDeleted).ToListAsync();
+        return items.Select(entity => _mapper.Map<AppUser>(entity));
+    }
 }

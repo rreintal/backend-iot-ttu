@@ -10,5 +10,6 @@ public class AppUser : DomainEntityId
     public string Email { get; set; } = default!;
     public bool EmailConfirmed { get; set; } = default!;
     public bool LockoutEnabled { get; set; } = default!;
+    public bool Deleted { get; set; }
     public List<BLL.DTO.Identity.AppRole> UserRoles { get; set; } = default!;
 }

@@ -10,7 +10,7 @@ public class News : DomainEntityIdMetaData, IHasTopicAreaEntity, IDomainContentE
     public ICollection<HasTopicArea> HasTopicAreas { get; set; } = default!;
 
     public string? Image { get; set; }
-    public string? ThumbnailImage;
+    public string ThumbnailImage { get; set; } = default!;
     public string Author { get; set; } = default!;
 
     public string GetContentValue(string contentType, string languageCulture)
