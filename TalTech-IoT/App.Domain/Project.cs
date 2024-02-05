@@ -6,7 +6,7 @@ namespace App.Domain;
 public class Project : DomainEntityIdMetaData, IDomainContentEntity
 {
     public int Year { get; set; } 
-    public double PriceVolume { get; set; } 
+    public double ProjectVolume { get; set; } 
     public string ProjectManager { get; set; } = default!;
 
     // title, content
