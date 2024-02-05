@@ -1,13 +1,15 @@
 using App.BLL;
 using App.BLL.Contracts;
 using App.Domain;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO.V1;
-using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace WebApp.ApiControllers;
 
+[ApiVersion("1")]
 [Route("api/{languageCulture}/[controller]/[action]")]
+[ApiController]
 public class MailController : ControllerBase
 {
     private IAppBLL _Bll { get; set; }
