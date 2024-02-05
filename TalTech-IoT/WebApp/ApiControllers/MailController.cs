@@ -8,7 +8,7 @@ using Public.DTO.V1;
 namespace WebApp.ApiControllers;
 
 [ApiVersion("1")]
-[Route("api/{languageCulture}/[controller]/[action]")]
+[Route("api/v{version:apiVersion}/{languageCulture}/[controller]/[action]")]
 [ApiController]
 public class MailController : ControllerBase
 {
