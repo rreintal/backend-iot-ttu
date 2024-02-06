@@ -18,4 +18,6 @@ public interface IAppBLL : IBaseUOW
     
     IPageContentService PageContentService { get; }
     
+    IPartnerImageService PartnerImageService { get; }
+    
 }

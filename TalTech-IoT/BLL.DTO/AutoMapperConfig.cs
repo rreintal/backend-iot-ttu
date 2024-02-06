@@ -60,5 +60,7 @@ public class AutoMapperConfig : Profile
         CreateMap<BLL.DTO.V1.Content, DAL.DTO.V1.Content>().ReverseMap();
         CreateMap<BLL.DTO.V1.LanguageStringTranslation, DAL.DTO.V1.LanguageStringTranslation>().ReverseMap();
 
+        CreateMap<App.Domain.PartnerImage, BLL.DTO.V1.PartnerImage>().ReverseMap();
+
     }
 }

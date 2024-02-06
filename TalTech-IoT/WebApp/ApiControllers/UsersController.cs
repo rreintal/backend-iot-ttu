@@ -28,6 +28,7 @@ namespace WebApp.ApiControllers;
 /// </summary>
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[ApiVersion("1")]
 public class UsersController : ControllerBase
 {
     
@@ -39,7 +40,6 @@ public class UsersController : ControllerBase
     private readonly RoleManager<AppRole> _roleManager;
 
 
-    // TODO: how to remove this yellow line and make it with private documentation?
     /// <summary>
     /// Controller for users
     /// </summary>
@@ -170,8 +170,6 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Login
     /// </summary>
-    /// <param name="payload"></param>
-    /// <returns></returns>
     [HttpPost("Login")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(JWTResponse), StatusCodes.Status200OK)]
@@ -238,11 +236,10 @@ public class UsersController : ControllerBase
             _Configuration.GetValue<int>(StartupConfigConstants.JWT_EXPIRATION_TIME)
         );
 
-        //var userRoles = await _userManager.GetRolesAsync(appUser);
         var userRoles = await _roleManager.Roles
-            .Include(x => x.UserRoles)
+            .Include(x => x.UserRoles)!
             .ThenInclude(x => x.AppUser)
-            .Where(x => x.UserRoles.Any(ur => ur.AppUser!.Id == appUser.Id))
+            .Where(x => x.UserRoles!.Any(ur => ur.AppUser!.Id == appUser.Id))
             .ToListAsync();
         
         
@@ -262,8 +259,6 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Refresh JWT
     /// </summary>
-    /// <param name="payload"></param>
-    /// <returns></returns>
     [HttpPost("RefreshToken")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(JWTResponse), StatusCodes.Status200OK)]
@@ -409,6 +404,7 @@ public class UsersController : ControllerBase
     /// Log out
     /// </summary>
     /// <param name="payload"></param>
+    /// <param name="logoutModel"></param>
     /// <returns></returns>
     [HttpPost("Logout")]
     [Produces(MediaTypeNames.Application.Json)]
@@ -563,6 +559,11 @@ public class UsersController : ControllerBase
         return (await _bll.UsersService.AllAsyncFiltered(deleted)).Select(e => GetUsersMapper.Map(e));
     }
 
+    /// <summary>
+    /// Add role to user
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "ADMIN")]
     [HttpPost("role")]
     public async Task<ActionResult<RestApiResponse>> AddRole([FromBody] AddRole data)
@@ -689,12 +690,13 @@ public class UsersController : ControllerBase
             Console.WriteLine($"user random password = {RandomUserPassword}");
             return Ok();
     }
-    
-    
+
+
     /// <summary>
-    /// Suspend an User
+    /// Unlock account (set 'Deleted' to false) 
     /// </summary>
     /// <param name="userId"></param>
+    /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost("Lock")]
     //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = IdentityRolesConstants.ROLE_ADMIN)]
@@ -727,7 +729,7 @@ public class UsersController : ControllerBase
     }
     
     /// <summary>
-    /// Unlock account (set 'Deleted' to true) 
+    /// Unlock account (set 'Deleted' to false) 
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>

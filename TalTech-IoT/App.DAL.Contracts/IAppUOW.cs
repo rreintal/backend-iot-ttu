@@ -18,4 +18,6 @@ public interface IAppUOW : IBaseUOW
     IUsersRepository UsersRepository { get; }
     
     IPageContentRepository PageContentRepository { get; }
+    
+    IPartnerImageRepository PartnerImageRepository { get; }
 }

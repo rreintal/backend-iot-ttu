@@ -4,6 +4,8 @@ using App.BLL.Services;
 using App.DAL.Contracts;
 using AutoMapper;
 using Base.BLL;
+using Base.DAL;
+using BLL.DTO.V1;
 
 
 namespace App.BLL;
@@ -54,5 +56,10 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
     private IPageContentService? _pageContentService;
     public IPageContentService PageContentService =>
         _pageContentService ??= new PageContentService(Uow, new PageContentMapper(_mapper));
-        
+
+    public IPartnerImageService PartnerImageService =>
+        _partnerImageService ??=
+            new PartnerImageService(Uow, new BaseMapper<PartnerImage, Domain.PartnerImage>(_mapper));
+
+    private IPartnerImageService? _partnerImageService;
 }

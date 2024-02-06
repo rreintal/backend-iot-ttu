@@ -41,4 +41,9 @@ public class AppUOW : EFBaseUOW<AppDbContext>, IAppUOW
 
     public IPageContentRepository PageContentRepository =>
         _pageContentRepository ??= new PageContentRepository(UowDbContext, _mapper);
+
+    public IPartnerImageRepository PartnerImageRepository => 
+        _partnerImageRepository ??= new PartnerImageRepository(UowDbContext, _mapper);
+
+    private IPartnerImageRepository? _partnerImageRepository;
 }

@@ -26,6 +26,8 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
     
     public DbSet<PageContent> PageContents { get; set; } = default!;
 
+    public DbSet<PartnerImage> PartnerImages { get; set; } = default!;
+
     private const string TopicAreaUniqueNameExpression = "\"TopicAreaId\" IS NOT NULL";
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
