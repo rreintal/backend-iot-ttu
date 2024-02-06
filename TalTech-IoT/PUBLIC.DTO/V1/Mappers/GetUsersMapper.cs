@@ -1,6 +1,3 @@
-using BLL.DTO.Identity;
-using Public.DTO.Identity;
-
 namespace Public.DTO.V1.Mappers;
 
 public static class GetUsersMapper

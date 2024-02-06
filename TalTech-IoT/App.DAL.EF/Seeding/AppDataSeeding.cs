@@ -120,7 +120,7 @@ public static class AppDataSeeding
                 };
                 
                 await userManager.CreateAsync(userUser, "user");
-                await userManager.AddToRoleAsync(adminUser, IdentityRolesConstants.ROLE_USER);
+                await userManager.AddToRoleAsync(userUser, IdentityRolesConstants.ROLE_USER);
                 
             }
 

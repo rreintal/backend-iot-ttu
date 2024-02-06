@@ -44,7 +44,31 @@ public class UsersRepository : EFBaseRepository<AppUser, AppDbContext>, IUsersRe
 
     public async Task<IEnumerable<AppUser>> AllAsyncFiltered(bool isDeleted)
     {
-        var items = await DbContext.Users.Where(user => user.Deleted == isDeleted).ToListAsync();
-        return items.Select(entity => _mapper.Map<AppUser>(entity));
+        var res = (await DbContext.Users
+            .Where(u => u.Deleted == isDeleted)
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.AppRole)
+            .Select(user => new Domain.Identity.AppUser()
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Firstname = user.Firstname,
+                Lastname = user.Lastname,
+                Email = user.Email,
+                EmailConfirmed = user.EmailConfirmed,
+                LockoutEnabled = user.LockoutEnabled,
+                Deleted = user.Deleted,
+                UserRoles = user.UserRoles.Select(ur => new AppUserRole
+                {
+                    AppRole = new AppRole
+                    {
+                        Id = ur.RoleId,
+                        Name = ur.AppRole!.Name,
+                    }
+                }).ToList()
+            })
+            .ToListAsync());
+        var result = res.Select(e => _mapper.Map<global::DAL.DTO.Identity.AppUser>(e));
+        return result;
     }
 }
