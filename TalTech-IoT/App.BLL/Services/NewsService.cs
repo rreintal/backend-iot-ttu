@@ -86,7 +86,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         
     }
 
-    public async Task<News> FindByIdAllTranslationsAsync(Guid id)
+    public async Task<News?> FindByIdAllTranslationsAsync(Guid id)
     {
          var entity = await Uow.NewsRepository.FindByIdWithAllTranslationsAsync(id);
          return _mapper.Map<News>(entity);
@@ -136,9 +136,9 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     }
 
 
-    public async Task<int> FindNewsTotalCount()
+    public async Task<int> FindNewsTotalCount(Guid? TopicAreaId)
     {
-        return await Uow.NewsRepository.FindNewsTotalCount();
+        return await Uow.NewsRepository.FindNewsTotalCount(TopicAreaId);
     }
     
     // TODO: maybe this inside ImageStorageService as Save?
@@ -192,4 +192,6 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         }
         return content;
     }
+
+    
 }

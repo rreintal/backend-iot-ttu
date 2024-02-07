@@ -149,13 +149,23 @@ public class NewsController : ControllerBase
     }
 
     /// <summary>
+    /// Returns the count of all news by TopicArea
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("Count/{TopicAreaId}")]
+    public async Task<int> CountAllNews(Guid? TopicAreaId)
+    {
+        return await _bll.NewsService.FindNewsTotalCount(TopicAreaId);
+    }
+    
+    /// <summary>
     /// Returns the count of all news
     /// </summary>
     /// <returns></returns>
     [HttpGet("Count")]
     public async Task<int> CountAllNews()
     {
-        return await _bll.NewsService.FindNewsTotalCount();
+        return await _bll.NewsService.FindNewsTotalCount(null);
     }
     
 
@@ -168,6 +178,10 @@ public class NewsController : ControllerBase
     public async Task<Public.DTO.V1.NewsAllLangs> GetNewsAllLanguages(Guid id)
     {
         var entity = await _bll.NewsService.FindByIdAllTranslationsAsync(id);
+        if (entity == null)
+        {
+            
+        }
         return NewsAllLangMapper.Map(entity);
     }
 

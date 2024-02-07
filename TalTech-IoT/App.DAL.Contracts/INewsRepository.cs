@@ -20,5 +20,5 @@ public interface INewsRepository :IBaseTranslateableRepository<App.Domain.News>,
 public interface INewsRepositoryCustom<TEntity>
 {
     // here methods which are shared between repo and service!
-    public Task<int> FindNewsTotalCount();
+    public Task<int> FindNewsTotalCount(Guid? TopicAreaId);
 }

@@ -97,7 +97,6 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         // check if content has changed!
         // TODO - helper function for detecting changes, can use for Project!
         var cults = LanguageCulture.ALL_LANGUAGES;
-        
         foreach (var lang in cults)
         {
             var newBodyValue = dalEntity.GetContentValue(ContentTypes.BODY, lang);
@@ -240,5 +239,18 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     public async Task<int> FindNewsTotalCount()
     {
         return await DbSet.CountAsync();
+    }
+
+    public async Task<int> FindNewsTotalCount(Guid? TopicAreaId)
+    {
+        if (TopicAreaId == null)
+        {
+            return await DbSet.CountAsync();
+        }
+
+        return await DbSet
+            .Where(x => x.HasTopicAreas.Any(hta => hta.TopicAreaId == TopicAreaId))
+            .CountAsync();
+
     }
 }
