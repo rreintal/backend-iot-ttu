@@ -62,4 +62,15 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
             new PartnerImageService(Uow, new BaseMapper<PartnerImage, Domain.PartnerImage>(_mapper));
 
     private IPartnerImageService? _partnerImageService;
+
+    public IHomePageBannerService HomePageBannerService =>
+        _homePageBannerService ??=
+            new HomePageBannerService(Uow, new BaseMapper<HomePageBanner, Domain.HomePageBanner>(_mapper), _mapper);
+    
+    private IHomePageBannerService? _homePageBannerService;
+
+    public IContactPersonService ContactPersonService => _contactPersonService ??=
+        new ContactPersonService(Uow, new BaseMapper<ContactPerson, Domain.ContactPerson>(_mapper));
+
+    private IContactPersonService? _contactPersonService;
 }

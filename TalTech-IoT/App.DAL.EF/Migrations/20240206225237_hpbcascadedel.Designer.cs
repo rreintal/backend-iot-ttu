@@ -3,6 +3,7 @@ using System;
 using App.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240206225237_hpbcascadedel")]
+    partial class hpbcascadedel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,28 +25,10 @@ namespace App.DAL.EF.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("App.Domain.ContactPerson", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ContactPersons");
-                });
-
             modelBuilder.Entity("App.Domain.Content", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ContactPersonId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ContentTypeId")
@@ -65,8 +50,6 @@ namespace App.DAL.EF.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ContactPersonId");
 
                     b.HasIndex("ContentTypeId");
 
@@ -531,11 +514,6 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("App.Domain.Content", b =>
                 {
-                    b.HasOne("App.Domain.ContactPerson", "ContactPerson")
-                        .WithMany("Content")
-                        .HasForeignKey("ContactPersonId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("App.Domain.ContentType", "ContentType")
                         .WithMany()
                         .HasForeignKey("ContentTypeId")
@@ -566,8 +544,6 @@ namespace App.DAL.EF.Migrations
                         .WithMany("Content")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("ContactPerson");
 
                     b.Navigation("ContentType");
 
@@ -699,11 +675,6 @@ namespace App.DAL.EF.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("App.Domain.ContactPerson", b =>
-                {
-                    b.Navigation("Content");
                 });
 
             modelBuilder.Entity("App.Domain.HomePageBanner", b =>

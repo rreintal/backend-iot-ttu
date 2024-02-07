@@ -17,6 +17,12 @@ public class Content : DomainEntityId
     public Guid? PageContentId { get; set; }
     public PageContent? PageContent { get; set; }
 
+    public Guid? HomePageBannerId { get; set; }
+    public HomePageBanner? HomePageBanner { get; set; }
+
+    public Guid? ContactPersonId { get; set; }
+    public ContactPerson? ContactPerson { get; set; }
+
     
     public Guid LanguageStringId { get; set; }
     public LanguageString LanguageString { get; set; } = default!;

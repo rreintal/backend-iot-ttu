@@ -46,4 +46,14 @@ public class AppUOW : EFBaseUOW<AppDbContext>, IAppUOW
         _partnerImageRepository ??= new PartnerImageRepository(UowDbContext, _mapper);
 
     private IPartnerImageRepository? _partnerImageRepository;
+
+    public IHomePageBannerRepository HomePageBannerRepository =>
+        _homePageBannerRepository ??= new HomePageBannerRepository(UowDbContext, _mapper);
+
+    private IHomePageBannerRepository? _homePageBannerRepository;
+
+    public IContactPersonRepository ContactPersonRepository => _contactPersonRepository ??=
+        new ContactPersonRepository(UowDbContext, _mapper);
+
+    private IContactPersonRepository? _contactPersonRepository;
 }

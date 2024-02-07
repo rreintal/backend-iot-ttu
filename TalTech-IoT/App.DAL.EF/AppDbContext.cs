@@ -28,6 +28,10 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
 
     public DbSet<PartnerImage> PartnerImages { get; set; } = default!;
 
+    public DbSet<HomePageBanner> HomePageBanners { get; set; } = default!;
+
+    public DbSet<ContactPerson> ContactPersons { get; set; } = default!;
+
     private const string TopicAreaUniqueNameExpression = "\"TopicAreaId\" IS NOT NULL";
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -106,7 +110,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
         
-        // adding cascade delete for News
+        // adding cascade delete 
         builder.Entity<News>()
             .HasMany(x => x.Content)
             .WithOne(x => x.News)
@@ -136,6 +140,16 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
         builder.Entity<Project>()
             .HasMany(x => x.Content)
             .WithOne(x => x.Project)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Entity<HomePageBanner>()
+            .HasMany(x => x.Content)
+            .WithOne(x => x.HomePageBanner)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Entity<ContactPerson>()
+            .HasMany(x => x.Content)
+            .WithOne(x => x.ContactPerson)
             .OnDelete(DeleteBehavior.Cascade);
 
     }

@@ -20,4 +20,10 @@ public class Content : DomainEntityId, IContent
  
     public Guid? PageContentId { get; set; }
     public BLL.DTO.V1.PageContent? PageContent { get; set; }
+
+    public Guid? HomePageBannerId { get; set; }
+    public BLL.DTO.V1.HomePageBanner? HomePageBanner { get; set; }
+    
+    public Guid? ContactPersonId { get; set; }
+    public BLL.DTO.V1.ContactPerson? ContactPerson { get; set; }
 }

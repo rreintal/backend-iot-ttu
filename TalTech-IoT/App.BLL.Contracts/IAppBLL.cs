@@ -20,4 +20,8 @@ public interface IAppBLL : IBaseUOW
     
     IPartnerImageService PartnerImageService { get; }
     
+    IHomePageBannerService HomePageBannerService { get; }
+    
+    IContactPersonService ContactPersonService { get; }
+    
 }

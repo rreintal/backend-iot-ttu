@@ -43,7 +43,8 @@ public class AutoMapperConfig : Profile
                 s => s.MapFrom(x => x.TopicArea!.LanguageString))
             .ForMember(d => d.LanguageStringId,
                 s => s.MapFrom(x => x.TopicArea!.LanguageStringId));
-        
+
+        CreateMap<App.Domain.HomePageBanner, DAL.DTO.V1.UpdateHomePageBanner>().ReverseMap();
 
     }
 }

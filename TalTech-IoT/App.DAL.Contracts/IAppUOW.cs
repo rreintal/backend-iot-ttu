@@ -20,4 +20,8 @@ public interface IAppUOW : IBaseUOW
     IPageContentRepository PageContentRepository { get; }
     
     IPartnerImageRepository PartnerImageRepository { get; }
+    
+    IHomePageBannerRepository HomePageBannerRepository { get; }
+    
+    IContactPersonRepository ContactPersonRepository { get; }
 }

@@ -1,6 +1,10 @@
-using App.Domain;
-using App.Domain.Translations;
 using AutoMapper;
+using BLL.DTO.V1;
+using Content = App.Domain.Content;
+using ContentType = App.Domain.ContentType;
+using LanguageString = App.Domain.Translations.LanguageString;
+using LanguageStringTranslation = App.Domain.Translations.LanguageStringTranslation;
+using News = App.Domain.News;
 
 namespace BLL.DTO;
 
@@ -62,5 +66,11 @@ public class AutoMapperConfig : Profile
 
         CreateMap<App.Domain.PartnerImage, BLL.DTO.V1.PartnerImage>().ReverseMap();
 
+        CreateMap<App.Domain.HomePageBanner, BLL.DTO.V1.HomePageBanner>().ReverseMap();
+
+        CreateMap<UpdateHomePageBanner, DAL.DTO.V1.UpdateHomePageBanner>().ReverseMap();
+
+        CreateMap<App.Domain.HomePageBanner, BLL.DTO.V1.UpdateHomePageBanner>().ReverseMap();
+        CreateMap<App.Domain.ContactPerson, BLL.DTO.V1.ContactPerson>().ReverseMap();
     }
 }

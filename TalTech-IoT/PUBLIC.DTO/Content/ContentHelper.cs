@@ -11,7 +11,9 @@ public abstract class ContentHelper
     {
         News,
         Project,
-        PageContent
+        PageContent,
+        HomePageBanner,
+        ContactPerson
     }
     /// <summary>
     /// Helper to create content based on type (Title, Body)
@@ -26,6 +28,8 @@ public abstract class ContentHelper
         var newsId = entityType == EContentHelperEntityType.News ? entityId : (Guid?)null;
         var projectId = entityType == EContentHelperEntityType.Project ? entityId : (Guid?)null;
         var pageContentId = entityType == EContentHelperEntityType.PageContent ? entityId : (Guid?)null;
+        var homePageBannerId = entityType == EContentHelperEntityType.HomePageBanner ? entityId : (Guid?)null;
+        var contactPersonId = entityType == EContentHelperEntityType.HomePageBanner ? entityId : (Guid?)null;
         
         var baseContentDto = contentDtoList.First(x => x.Culture == LanguageCulture.BASE_LANGUAGE);
         var languageStringId = Guid.NewGuid();
@@ -42,7 +46,10 @@ public abstract class ContentHelper
             NewsId = newsId,
             ProjectId = projectId,
             PageContentId = pageContentId,
-            ContentType = contentType
+            ContentType = contentType,
+            HomePageBannerId = homePageBannerId,
+            ContactPersonId = contactPersonId
+            
         };
 
         languageString.Content = content;
@@ -68,7 +75,9 @@ public abstract class ContentHelper
             NewsId = newsId,
             ProjectId = projectId,
             PageContentId = pageContentId,
-            ContentType = contentType
+            HomePageBannerId = homePageBannerId,
+            ContentType = contentType,
+            ContactPersonId = contactPersonId
         };
 
         return result;
