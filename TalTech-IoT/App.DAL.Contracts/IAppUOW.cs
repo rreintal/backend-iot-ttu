@@ -24,4 +24,10 @@ public interface IAppUOW : IBaseUOW
     IHomePageBannerRepository HomePageBannerRepository { get; }
     
     IContactPersonRepository ContactPersonRepository { get; }
+    
+    IFeedPageCategoryRepository FeedPageCategoryRepository { get; }
+    
+    IFeedPageRepository FeedPageRepository { get; }
+    
+    IFeedPagePostRepository FeedPagePostRepository { get; }
 }

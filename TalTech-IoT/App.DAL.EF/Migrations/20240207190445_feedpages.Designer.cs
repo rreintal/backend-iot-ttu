@@ -3,6 +3,7 @@ using System;
 using App.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240207190445_feedpages")]
+    partial class feedpages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -602,12 +605,12 @@ namespace App.DAL.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("App.Domain.FeedPageCategory", "FeedPageCategory")
+                    b.HasOne("App.Domain.FeedPageCategory", null)
                         .WithMany("Content")
                         .HasForeignKey("FeedPageCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("App.Domain.FeedPagePost", "FeedPagePost")
+                    b.HasOne("App.Domain.FeedPagePost", null)
                         .WithMany("Content")
                         .HasForeignKey("FeedPagePostId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -640,10 +643,6 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("ContactPerson");
 
                     b.Navigation("ContentType");
-
-                    b.Navigation("FeedPageCategory");
-
-                    b.Navigation("FeedPagePost");
 
                     b.Navigation("HomePageBanner");
 

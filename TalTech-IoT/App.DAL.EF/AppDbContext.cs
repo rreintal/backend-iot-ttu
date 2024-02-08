@@ -16,6 +16,10 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
     public DbSet<LanguageString> LanguageStrings { get; set; } = default!;
     public DbSet<LanguageStringTranslation> LanguageStringTranslations { get; set; } = default!;
 
+    public DbSet<FeedPagePost> FeedPagePosts { get; set; } = default!;
+    public DbSet<FeedPage> FeedPages { get; set; } = default!;
+    public DbSet<FeedPageCategory> FeedPageCategories { get; set; } = default!;
+
     public DbSet<News> News { get; set; } = default!;
     public DbSet<Content> Contents { get; set; } = default!;
     public DbSet<Project> Projects { get; set; } = default!;
@@ -86,6 +90,10 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
         builder.Entity<ContentType>()
             .HasIndex(x => x.Name).IsUnique();
         
+        builder.Entity<FeedPage>()
+            .HasIndex(x => x.FeedPageName)
+            .IsUnique();
+        
         // Set index that when TopicAreaId is present, then the value must be unique
         // Explanation: 
         // Migrations generates code for SQL Server, in SQL server where clause is with [], but in Postgres its with " ".
@@ -97,10 +105,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .HasIndex(x => x.Value)
             .IsUnique()
             .HasFilter(TopicAreaUniqueNameExpression);
-
-        builder.Entity<PageContent>()
-            .HasIndex(x => x.PageIdentifier)
-            .IsUnique();
+        
         
 
         // disable cascade delete
@@ -153,6 +158,32 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .OnDelete(DeleteBehavior.Cascade);
 
     }
-    
+
+    /*
+     *
+     * {
+
+  "title": [
+    {
+      "value": "est",
+      "culture": "et"
+    },
+{
+      "value": "eng",
+      "culture": "en"
+    }
+  ],
+  "body": [
+    {
+      "value": "est",
+      "culture": "et"
+    },
+{
+      "value": "eng",
+      "culture": "en"
+    }  ],
+  "image": "string"
+}
+     */
     
 }

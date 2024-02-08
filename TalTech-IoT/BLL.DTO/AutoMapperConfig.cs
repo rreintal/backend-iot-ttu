@@ -72,5 +72,9 @@ public class AutoMapperConfig : Profile
 
         CreateMap<App.Domain.HomePageBanner, BLL.DTO.V1.UpdateHomePageBanner>().ReverseMap();
         CreateMap<App.Domain.ContactPerson, BLL.DTO.V1.ContactPerson>().ReverseMap();
+
+        CreateMap<App.Domain.FeedPage, BLL.DTO.V1.FeedPage>().ReverseMap();
+        CreateMap<App.Domain.FeedPageCategory, BLL.DTO.V1.FeedPageCategory>().ReverseMap();
+        CreateMap<App.Domain.FeedPagePost, BLL.DTO.V1.FeedPagePost>().ReverseMap();
     }
 }

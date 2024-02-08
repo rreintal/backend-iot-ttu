@@ -24,4 +24,10 @@ public interface IAppBLL : IBaseUOW
     
     IContactPersonService ContactPersonService { get; }
     
+    IFeedPageCategoryService FeedPageCategoryService { get; }
+    
+    IFeedPagePostService FeedPagePostService { get; }
+    
+    IFeedPageService FeedPageService { get; }
+    
 }

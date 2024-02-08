@@ -88,14 +88,17 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         // TODO - error handling
         // TODO - is it neccesary?! optimize?
         var existingDomainObject = await FindByIdWithAllTranslationsAsync(dalEntity.Id);
-
+        
+        // imagine its updated  
         if (existingDomainObject == null)
         {
             return null;
         }
         
+        
         // check if content has changed!
         // TODO - helper function for detecting changes, can use for Project!
+        
         var cults = LanguageCulture.ALL_LANGUAGES;
         foreach (var lang in cults)
         {
@@ -120,6 +123,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
                 existingDomainObject.SetBaseLanguage(ContentTypes.TITLE, newBodyValue);
             }
         }
+        
         
         // TODO - if it has topicAreas more than 2 levels!?
         // is it relevant? all children are linked with id

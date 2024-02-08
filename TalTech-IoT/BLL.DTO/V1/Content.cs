@@ -23,6 +23,12 @@ public class Content : DomainEntityId, IContent
 
     public Guid? HomePageBannerId { get; set; }
     public BLL.DTO.V1.HomePageBanner? HomePageBanner { get; set; }
+
+    public Guid? FeedPageCategoryId { get; set; }
+    public FeedPageCategory? FeedPageCategory { get; set; }
+    
+    public Guid? FeedPagePostId { get; set; }
+    public FeedPagePost? FeedPagePost { get; set; }
     
     public Guid? ContactPersonId { get; set; }
     public BLL.DTO.V1.ContactPerson? ContactPerson { get; set; }

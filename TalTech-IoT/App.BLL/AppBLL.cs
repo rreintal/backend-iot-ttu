@@ -73,4 +73,20 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
         new ContactPersonService(Uow, new BaseMapper<ContactPerson, Domain.ContactPerson>(_mapper));
 
     private IContactPersonService? _contactPersonService;
+    
+    public IFeedPageCategoryService FeedPageCategoryService => _feedPageCategoryService ??=
+        new FeedPageCategoryService(Uow, new BaseMapper<FeedPageCategory, Domain.FeedPageCategory>(_mapper));
+
+    private IFeedPageCategoryService? _feedPageCategoryService;
+
+    public IFeedPagePostService FeedPagePostService => _feedPagePostService ??=
+        new FeedPagePostService(Uow, new BaseMapper<FeedPagePost, Domain.FeedPagePost>(_mapper));
+
+    private IFeedPagePostService? _feedPagePostService;
+
+    public IFeedPageService FeedPageService => _feedPageService ??=
+        new FeedPageService(Uow, new BaseMapper<FeedPage, Domain.FeedPage>(_mapper));
+
+    private IFeedPageService? _feedPageService;
+
 }

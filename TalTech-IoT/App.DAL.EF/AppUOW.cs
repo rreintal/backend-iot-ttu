@@ -56,4 +56,18 @@ public class AppUOW : EFBaseUOW<AppDbContext>, IAppUOW
         new ContactPersonRepository(UowDbContext, _mapper);
 
     private IContactPersonRepository? _contactPersonRepository;
+
+    public IFeedPageCategoryRepository FeedPageCategoryRepository =>
+        _feedPageCategoryRepository ??= new FeedPageCategoryRepository(UowDbContext, _mapper);
+    
+    private IFeedPageCategoryRepository? _feedPageCategoryRepository;
+    public IFeedPageRepository FeedPageRepository =>
+        _feedPageRepository ??= new FeedPageRepository(UowDbContext, _mapper);
+    
+    private IFeedPageRepository? _feedPageRepository;
+    public IFeedPagePostRepository FeedPagePostRepository =>
+        _feedPagePostRepository ??= new FeedPagePostRepository(UowDbContext, _mapper);
+
+    private IFeedPagePostRepository? _feedPagePostRepository;
+    
 }

@@ -23,6 +23,11 @@ public class Content : DomainEntityId
     public Guid? ContactPersonId { get; set; }
     public ContactPerson? ContactPerson { get; set; }
 
+    public Guid? FeedPageCategoryId { get; set; }
+    public FeedPageCategory? FeedPageCategory { get; set; }
+
+    public Guid? FeedPagePostId { get; set; }
+    public FeedPagePost? FeedPagePost { get; set; }
     
     public Guid LanguageStringId { get; set; }
     public LanguageString LanguageString { get; set; } = default!;

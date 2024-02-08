@@ -59,8 +59,3 @@ public class RestApiResponse
     public string Message { get; set; } = default!;
     public HttpStatusCode Status { get; set; }
 }
-
-public struct RestApiResponseError
-{
-    // General
-}

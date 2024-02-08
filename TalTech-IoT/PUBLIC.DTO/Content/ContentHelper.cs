@@ -13,7 +13,9 @@ public abstract class ContentHelper
         Project,
         PageContent,
         HomePageBanner,
-        ContactPerson
+        ContactPerson,
+        FeedPageCategory,
+        FeedPagePost
     }
     /// <summary>
     /// Helper to create content based on type (Title, Body)
@@ -29,7 +31,9 @@ public abstract class ContentHelper
         var projectId = entityType == EContentHelperEntityType.Project ? entityId : (Guid?)null;
         var pageContentId = entityType == EContentHelperEntityType.PageContent ? entityId : (Guid?)null;
         var homePageBannerId = entityType == EContentHelperEntityType.HomePageBanner ? entityId : (Guid?)null;
-        var contactPersonId = entityType == EContentHelperEntityType.HomePageBanner ? entityId : (Guid?)null;
+        var contactPersonId = entityType == EContentHelperEntityType.ContactPerson ? entityId : (Guid?)null;
+        var feedPageCategoryId = entityType == EContentHelperEntityType.FeedPageCategory ? entityId : (Guid?)null;
+        var feedPagePostId = entityType == EContentHelperEntityType.FeedPagePost ? entityId : (Guid?)null;
         
         var baseContentDto = contentDtoList.First(x => x.Culture == LanguageCulture.BASE_LANGUAGE);
         var languageStringId = Guid.NewGuid();
@@ -48,7 +52,9 @@ public abstract class ContentHelper
             PageContentId = pageContentId,
             ContentType = contentType,
             HomePageBannerId = homePageBannerId,
-            ContactPersonId = contactPersonId
+            ContactPersonId = contactPersonId,
+            FeedPageCategoryId = feedPageCategoryId,
+            FeedPagePostId = feedPagePostId
             
         };
 
@@ -77,7 +83,9 @@ public abstract class ContentHelper
             PageContentId = pageContentId,
             HomePageBannerId = homePageBannerId,
             ContentType = contentType,
-            ContactPersonId = contactPersonId
+            ContactPersonId = contactPersonId,
+            FeedPageCategoryId = feedPageCategoryId,
+            FeedPagePostId = feedPagePostId
         };
 
         return result;

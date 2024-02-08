@@ -1,0 +1,26 @@
+using App.BLL.Contracts;
+using App.DAL.Contracts;
+using App.Domain;
+using Base.BLL;
+using Base.Contracts;
+
+namespace App.BLL.Services;
+
+public class FeedPagePostService : BaseEntityService<global::BLL.DTO.V1.FeedPagePost,FeedPagePost, IFeedPagePostRepository>, IFeedPagePostService
+{
+    private IAppUOW _uow;
+    public FeedPagePostService(IAppUOW uow, IMapper<global::BLL.DTO.V1.FeedPagePost, FeedPagePost> mapper) : base(uow.FeedPagePostRepository, mapper)
+    {
+        _uow = uow;
+    }
+
+    public async Task<IEnumerable<global::BLL.DTO.V1.FeedPagePost>> AllAsync(string? languageCulture)
+    {
+        return (await _uow.FeedPagePostRepository.AllAsync(languageCulture)).Select(e => Mapper.Map(e));
+    }
+
+    public async Task<global::BLL.DTO.V1.FeedPagePost?> FindAsync(Guid id, string? languageCulture)
+    {
+        return Mapper.Map(await _uow.FeedPagePostRepository.FindAsync(id, languageCulture));
+    }
+}
