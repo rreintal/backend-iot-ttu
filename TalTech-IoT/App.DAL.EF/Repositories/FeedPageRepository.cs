@@ -24,6 +24,45 @@ public class FeedPageRepository : EFBaseRepository<FeedPage, AppDbContext>, IFee
 
     public async Task<FeedPage?> FindAsyncByName(string identifier)
     {
-        return await DbSet.Where(e => e.FeedPageName == identifier).FirstOrDefaultAsync();
+        return await DbSet
+            .Include(x => x.FeedPageCategories)
+                .ThenInclude(x => x.Content)
+                .ThenInclude(x => x.ContentType)
+            .Include(x => x.FeedPageCategories)
+                .ThenInclude(x => x.Content)
+                .ThenInclude(x => x.LanguageString)
+                .ThenInclude(x => x.LanguageStringTranslations)
+            .Include(x => x.FeedPageCategories)
+                .ThenInclude(x => x.FeedPagePosts)
+                .ThenInclude(x => x.Content)
+                .ThenInclude(x => x.ContentType)
+            .Include(x => x.FeedPageCategories)
+                .ThenInclude(x => x.FeedPagePosts)
+                .ThenInclude(x => x.Content)
+                .ThenInclude(x => x.LanguageString)
+                .ThenInclude(x => x.LanguageStringTranslations)
+            .Where(e => e.FeedPageName == identifier).FirstOrDefaultAsync();
+    }
+
+    public async Task<FeedPage?> FindAsyncByNameTranslated(string identifier, string languageCulture)
+    {
+        return await DbSet
+            .Include(x => x.FeedPageCategories)
+            .ThenInclude(x => x.Content)
+            .ThenInclude(x => x.ContentType)
+            .Include(x => x.FeedPageCategories)
+            .ThenInclude(x => x.Content)
+            .ThenInclude(x => x.LanguageString)
+            .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
+            .Include(x => x.FeedPageCategories)
+            .ThenInclude(x => x.FeedPagePosts)
+            .ThenInclude(x => x.Content)
+            .ThenInclude(x => x.ContentType)
+            .Include(x => x.FeedPageCategories)
+            .ThenInclude(x => x.FeedPagePosts)
+            .ThenInclude(x => x.Content)
+            .ThenInclude(x => x.LanguageString)
+            .ThenInclude(x => x.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
+            .Where(e => e.FeedPageName == identifier).FirstOrDefaultAsync();
     }
 }

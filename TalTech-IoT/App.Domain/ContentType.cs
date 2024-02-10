@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Base.Domain;
 using Microsoft.EntityFrameworkCore;
 

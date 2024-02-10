@@ -1,13 +1,43 @@
+using System.ComponentModel.DataAnnotations;
+using App.Domain.Constants;
 using App.Domain.Contracts;
 using Base.Domain;
 
 namespace App.Domain;
 
-public class HomePageBanner : DomainEntityId, IDomainContentEntity
+public class HomePageBanner : DomainEntityId, IContentEntity
 {
+    [MinLength(2, ErrorMessage = RestApiErrorMessages.GeneralMissingTranslationValue)]
     public ICollection<Content> Content { get; set; } = default!;
     public string Image { get; set; } = default!;
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public string GetContentValue(string contentType, string languageCulture)
     {
         var result = Content.First(c => c.ContentType!.Name == contentType)

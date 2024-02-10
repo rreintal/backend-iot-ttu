@@ -8,8 +8,9 @@ public class FeedPageMapper
 {
     public static BLL.DTO.V1.FeedPage Map(Public.DTO.V1.FeedPage.FeedPage entity)
     {
+        // TODO: mapper for categories!!, if categories present!
         return new BLL.DTO.V1.FeedPage() {
-            FeedPageName = entity.FeedPageName, // TODO: mapper for categories!!, if categories present!
+            FeedPageName = entity.FeedPageName,
         };
     }
 
@@ -20,6 +21,10 @@ public class FeedPageMapper
         {
             Id = entity.Id,
             FeedPageName = entity.FeedPageName, // TODO: feedPage mapper
+            FeedPageCategories = entity.FeedPageCategories.Select(e =>
+            {
+                return FeedPageCategoryMapper.Map(e);
+            }).ToList()
         };
     }
     

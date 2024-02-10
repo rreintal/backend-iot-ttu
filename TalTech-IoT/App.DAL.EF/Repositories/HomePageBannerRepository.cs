@@ -1,6 +1,7 @@
 using App.DAL.Contracts;
 using App.DAL.EF.DbExtensions;
 using App.Domain;
+using App.Domain.Helpers;
 using AutoMapper;
 using Base.DAL.EF;
 using DAL.DTO.V1;
@@ -49,8 +50,16 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
             .IncludeContentWithTranslation(languageCulture)
             .FirstOrDefaultAsync();
     }
-    
-    
+
+    public async Task<HomePageBanner> UpdateAsync(HomePageBanner entity)
+    {
+        var existingObject = await FindAsync(entity.Id);
+
+        UpdateContentHelper.UpdateContent(existingObject, entity);
+        var result = Update(existingObject);
+        return result;
+    }
+
 
     public async Task<HomePageBanner> Update(UpdateHomePageBanner entity)
     {

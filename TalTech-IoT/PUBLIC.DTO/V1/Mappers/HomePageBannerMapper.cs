@@ -1,5 +1,6 @@
 using App.Domain;
 using Public.DTO.Content;
+using ContentType = BLL.DTO.V1.ContentType;
 
 namespace Public.DTO.V1.Mappers;
 
@@ -109,6 +110,27 @@ public class HomePageBannerMapper
                     Culture = lang
                 };
             }).ToList(),
+        };
+    }
+
+    public static BLL.DTO.V1.HomePageBanner MapUpdate(Public.DTO.V1.HomePageBanner entity, List<ContentType> contentTypes)
+    {
+        var bodyContentType = contentTypes.First(x => x.Name == ContentTypes.BODY);
+        var titleContentType = contentTypes.First(x => x.Name == ContentTypes.TITLE);
+
+        var titleContent = ContentHelper.CreateContent(entity.Title, titleContentType, entity.Id,
+            ContentHelper.EContentHelperEntityType.HomePageBanner);
+        
+        var bodyContent = ContentHelper.CreateContent(entity.Body, bodyContentType, entity.Id,
+            ContentHelper.EContentHelperEntityType.HomePageBanner);
+        return new BLL.DTO.V1.HomePageBanner()
+        {
+            Id = entity.Id,
+            Image = entity.Image,
+            Content = new List<BLL.DTO.V1.Content>()
+            {
+                titleContent, bodyContent
+            }
         };
     }
 }

@@ -16,15 +16,34 @@ namespace WebApp.ApiControllers.FeedPage;
 public class FeedPageCategoryController : ControllerBase
 {
     private IAppBLL _bll;
-    
+
+    /// <inheritdoc />
     public FeedPageCategoryController(IAppBLL bll)
     {
         _bll = bll;
     }
 
 
+    /// <summary>
+    /// Get Feed Page Category with all of its Posts (all langs)
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpGet]
     public async Task<ActionResult<FeedPageCategory>> Get(Guid id)
+    {
+        var bllEntity = await _bll.FeedPageCategoryService.FindAsync(id);
+        var result = FeedPageCategoryMapper.Map(bllEntity);
+        return result;
+    }
+
+    /// <summary>
+    /// Delete FeedPageCategory (NOT IMPLEMENTO)
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpDelete]
+    public async Task<ActionResult> Delete(Guid id)
     {
         throw new NotImplementedException();
     }
@@ -35,13 +54,13 @@ public class FeedPageCategoryController : ControllerBase
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<ActionResult> Post(FeedPageCategory entity)
+    public async Task<ActionResult<FeedPageCategory>> Post(FeedPageCategory entity)
     {
         var contentTypes = await _bll.NewsService.GetContentTypes();
         var bllEntity = FeedPageCategoryMapper.Map(entity, contentTypes);
-        _bll.FeedPageCategoryService.Add(bllEntity);
-
+        var bllResult = _bll.FeedPageCategoryService.Add(bllEntity);
         await _bll.SaveChangesAsync();
-        return Ok();
+        var result = FeedPageCategoryMapper.Map(bllResult);
+        return Ok(result);
     }
 }

@@ -9,6 +9,32 @@ public class HomePageBanner : DomainEntityId
     
     public string Image { get; set; } = default!;
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public string GetContentValue(string contentType)
     {
         var result = Content.First(c => c.ContentType!.Name == contentType)

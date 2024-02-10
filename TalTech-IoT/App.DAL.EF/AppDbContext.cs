@@ -46,6 +46,12 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
     {
         base.OnModelCreating(builder);
         
+        
+        // Concurrency tokens
+        builder.Entity<Content>()
+            .Property(e => e.Version)
+            .IsRowVersion();
+
         // Identity
         // do not allow EF to create multiple FK-s, use existing RoleId and UserId
         builder.Entity<AppUserRole>()
@@ -155,6 +161,11 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
         builder.Entity<ContactPerson>()
             .HasMany(x => x.Content)
             .WithOne(x => x.ContactPerson)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Entity<FeedPagePost>()
+            .HasMany(x => x.Content)
+            .WithOne(x => x.FeedPagePost)
             .OnDelete(DeleteBehavior.Cascade);
 
     }

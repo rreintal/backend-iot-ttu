@@ -28,4 +28,9 @@ public class FeedPageService : BaseEntityService<FeedPage, Domain.FeedPage, IFee
     {
         return Mapper.Map(await _uow.FeedPageRepository.FindAsyncByName(identifier));
     }
+
+    public async Task<FeedPage?> FindAsyncByNameTranslated(string identifier, string languageCulture)
+    {
+        return Mapper.Map(await _uow.FeedPageRepository.FindAsyncByNameTranslated(identifier, languageCulture));
+    }
 }

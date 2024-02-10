@@ -33,7 +33,7 @@ public static class MyCustomDbExtensions
     public static IQueryable<T> IncludeContentWithTranslation<T>(
         this IQueryable<T> queryable, 
         string languageCulture = ALL_LANGUAGE_CULTURES)
-    where T : class, IDomainContentEntity
+    where T : class, IContentEntity
     {
         if (languageCulture == ALL_LANGUAGE_CULTURES)
         {
@@ -58,7 +58,7 @@ public static class MyCustomDbExtensions
 
     public static IQueryable<T> IncludeContentWithTitlesTranslation<T>(
         this IQueryable<T> queryable)
-    where T : class, IDomainContentEntity
+    where T : class, IContentEntity
     {
         var result = queryable.Include(x => 
                 x.Content.Where(y=> y.ContentType!.Name == "TITLE"))

@@ -1,9 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using App.Domain.Contracts;
 using Base.Domain;
 
 namespace App.Domain;
 
-public class PageContent : DomainEntityId, IDomainContentEntity
+public class PageContent : DomainEntityId, IContentEntity
 {
     public string PageIdentifier { get; set; } = default!;
     

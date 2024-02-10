@@ -5,6 +5,7 @@ namespace Public.DTO.V1;
 public class HomePageBanner : DomainEntityId
 {
     // 1- 45 char
+    
     public List<ContentDto> Title { get; set; } = default!;
     public List<ContentDto> Body { get; set; } = default!;
     

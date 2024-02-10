@@ -73,12 +73,12 @@ else
 
 builder.Services
     .AddDbContext<AppDbContext>(options =>
-{
-    options.UseNpgsql(connectionString, options =>
     {
-        options.CommandTimeout(60);
+        options.UseNpgsql(connectionString, options =>
+        {
+            options.CommandTimeout(60);
+        }).EnableSensitiveDataLogging(true);
     });
-});
 
 builder.Services.AddIdentity<AppUser, AppRole>(
         options =>

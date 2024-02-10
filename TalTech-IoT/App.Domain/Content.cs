@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using App.Domain.Translations;
 using Base.Domain;
 
@@ -5,6 +6,8 @@ namespace App.Domain;
 
 public class Content : DomainEntityId
 {
+    [Timestamp]
+    public uint Version { get; set; }
     public Guid ContentTypeId { get; set; }
     public ContentType? ContentType { get; set; }
 

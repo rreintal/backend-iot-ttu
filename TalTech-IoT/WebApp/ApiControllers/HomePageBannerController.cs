@@ -1,11 +1,15 @@
 using System.Net;
 using App.BLL.Contracts;
+using App.DAL.EF;
+using App.Domain;
 using App.Domain.Constants;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Public.DTO;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
+using HomePageBanner = Public.DTO.V1.HomePageBanner;
 
 namespace WebApp.ApiControllers;
 
@@ -19,12 +23,14 @@ namespace WebApp.ApiControllers;
 public class HomePageBannerController : ControllerBase
 {
 
+    private readonly AppDbContext _context;
     private readonly IAppBLL _bll;
 
     /// <inheritdoc />
-    public HomePageBannerController(IAppBLL bll)
+    public HomePageBannerController(IAppBLL bll, AppDbContext context)
     {
         _bll = bll;
+        _context = context;
     }
 
     /// <summary>
@@ -77,17 +83,15 @@ public class HomePageBannerController : ControllerBase
     }
 
     /// <summary>
-    /// NOT WORKING, ISSUES WITH ALL OF UPDATE- needs refactoring!
+    /// Update HomePageBanner
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpPut]
-    public async Task<ActionResult<HomePageBanner>> Update([FromBody] UpdateHomePageBanner entity)
+    public async Task<ActionResult> Update([FromBody] HomePageBanner entity)
     {
-        var bllEntity = HomePageBannerMapper.Map(entity);
-        var bllResult = await _bll.HomePageBannerService.Update(bllEntity);
-        // TODO: actually not null?
-        if (bllResult == null)
+        var existingEntity = await _bll.HomePageBannerService.FindAsync(entity.Id);
+        if (existingEntity == null)
         {
             return NotFound(new RestApiResponse()
             {
@@ -95,9 +99,11 @@ public class HomePageBannerController : ControllerBase
                 Status = HttpStatusCode.NotFound
             });
         }
-
-        var result = HomePageBannerMapper.Map(bllResult);
-        return Ok(result);
+        var contentTypes = await _bll.NewsService.GetContentTypes();
+        var bllEntity = HomePageBannerMapper.MapUpdate(entity, contentTypes);
+        await _bll.HomePageBannerService.UpdateAsync(bllEntity);
+        await _bll.SaveChangesAsync();
+        return Ok();
     }
 
     /// <summary>

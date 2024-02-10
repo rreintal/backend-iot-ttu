@@ -25,6 +25,11 @@ public class FeedPageController : ControllerBase
         _bll = bll;
     }
 
+    /// <summary>
+    /// Post FeedPage (dto shows Id blablabla, not needed!)
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPage>> Post(Public.DTO.V1.FeedPage.FeedPage entity)
     {
@@ -34,6 +39,11 @@ public class FeedPageController : ControllerBase
         return Ok(result);
     }
     
+    /// <summary>
+    /// Get FeedPage with categories/posts by identifier (all langs)
+    /// </summary>
+    /// <param name="identifier"></param>
+    /// <returns></returns>
     [HttpGet]
     public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPage>> Get(string identifier)
     {
@@ -49,4 +59,22 @@ public class FeedPageController : ControllerBase
 
         return Ok(FeedPageMapper.Map(bllEntity));
     }
+    
+    /*
+    [HttpGet("{languageCulture}/{identifier}")]
+    public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPage>> Get(string identifier, string languageCulture)
+    {
+        var bllEntity = await _bll.FeedPageService.FindAsyncByNameTranslated(identifier, languageCulture);
+        if (bllEntity == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
+
+        return Ok(FeedPageMapper.Map(bllEntity));
+    }
+    */
 }

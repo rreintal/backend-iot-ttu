@@ -1,10 +1,11 @@
+using System.ComponentModel.DataAnnotations;
 using App.Domain.Contracts;
 using Base.Domain;
 using Contracts;
 
 namespace App.Domain;
 
-public class News : DomainEntityIdMetaData, IHasTopicAreaEntity, IDomainContentEntity
+public class News : DomainEntityIdMetaData, IHasTopicAreaEntity, IContentEntity
 {
     public ICollection<Content> Content { get; set; } = default!;
     public ICollection<HasTopicArea> HasTopicAreas { get; set; } = default!;

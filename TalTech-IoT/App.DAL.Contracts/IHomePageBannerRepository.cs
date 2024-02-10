@@ -7,4 +7,5 @@ namespace App.DAL.Contracts;
 public interface IHomePageBannerRepository : IBaseTranslateableRepository<HomePageBanner>
 {
     public Task<HomePageBanner> Update(UpdateHomePageBanner entity);
+    public Task<HomePageBanner> UpdateAsync(HomePageBanner entity);
 }
