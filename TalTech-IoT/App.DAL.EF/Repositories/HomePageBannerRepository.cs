@@ -52,7 +52,7 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
     {
         return await DbSet
             .IncludeContentWithTranslation(languageCulture)
-            .OrderByDescending(x => x.SequenceNumber)
+            .OrderBy(x => x.SequenceNumber)
             .ToListAsync();
     }
 
