@@ -1,6 +1,7 @@
 using App.DAL.Contracts;
 using App.DAL.EF.DbExtensions;
 using App.Domain;
+using App.Domain.Helpers;
 using AutoMapper;
 using Base.DAL.EF;
 using DAL.DTO.V1;
@@ -72,7 +73,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         var query = await DbSet.Where(x => x.Id == Id)
             .IncludeHasTopicAreasWithTranslation()
             .IncludeContentWithTranslation()
-            .AsNoTracking()
+            .AsTracking()
             .FirstOrDefaultAsync();
 
         if (query == null)
@@ -85,9 +86,8 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
 
     public async Task<App.Domain.News?> Update(UpdateNews dalEntity)
     {
-        // TODO - error handling
-        // TODO - is it neccesary?! optimize?
         var existingDomainObject = await FindByIdWithAllTranslationsAsync(dalEntity.Id);
+        var newDomainObject = _mapper.Map<Domain.News>(dalEntity);
         
         // imagine its updated  
         if (existingDomainObject == null)
@@ -95,36 +95,12 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             return null;
         }
         
-        
-        // check if content has changed!
-        // TODO - helper function for detecting changes, can use for Project!
-        
-        var cults = LanguageCulture.ALL_LANGUAGES;
-        foreach (var lang in cults)
-        {
-            var newBodyValue = dalEntity.GetContentValue(ContentTypes.BODY, lang);
-            var newTitleValue = dalEntity.GetContentValue(ContentTypes.TITLE, lang);
-    
-            var oldBodyValue = existingDomainObject!.GetContentValue(ContentTypes.BODY, lang);
-            var oldTitleValue = existingDomainObject.GetContentValue(ContentTypes.TITLE, lang);
+        existingDomainObject!.Image = newDomainObject.Image;
+        UpdateContentHelper.UpdateContent(existingDomainObject, newDomainObject);
+        var result = Update(existingDomainObject);
+        return result;
 
-            var isBodyValueChanged = oldBodyValue != newBodyValue;
-            var isTitleContentChanged = oldTitleValue != newTitleValue;
-            
-            if (isBodyValueChanged)
-            {
-                existingDomainObject.SetContentTranslationValue(ContentTypes.BODY, lang, newBodyValue);
-                existingDomainObject.SetBaseLanguage(ContentTypes.BODY, newBodyValue);
-            }
-            
-            if (isTitleContentChanged)
-            {
-                existingDomainObject.SetContentTranslationValue(ContentTypes.TITLE, lang, newTitleValue);
-                existingDomainObject.SetBaseLanguage(ContentTypes.TITLE, newBodyValue);
-            }
-        }
-        
-        
+
         // TODO - if it has topicAreas more than 2 levels!?
         // is it relevant? all children are linked with id
         
@@ -177,8 +153,8 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         DbContext.HasTopicAreas.AddRange(existingDomainObject.HasTopicAreas);
         existingDomainObject.Author = "a";
         */
-        var result = Update(existingDomainObject);
-        return result;
+        //var result = Update(existingDomainObject);
+        //return result;
     }
     
 

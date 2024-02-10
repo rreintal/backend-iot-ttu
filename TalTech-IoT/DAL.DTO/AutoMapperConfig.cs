@@ -46,5 +46,7 @@ public class AutoMapperConfig : Profile
 
         CreateMap<App.Domain.HomePageBanner, DAL.DTO.V1.UpdateHomePageBanner>().ReverseMap();
 
+        CreateMap<App.Domain.News, DAL.DTO.V1.UpdateNews>().ReverseMap();
+
     }
 }

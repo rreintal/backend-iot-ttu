@@ -31,66 +31,6 @@ public class HomePageBannerMapper
         return res;
     }
 
-    // TODO: can be removed?
-    public static BLL.DTO.V1.UpdateHomePageBanner Map(Public.DTO.V1.UpdateHomePageBanner entity)
-    {
-        var bllEntity =  new BLL.DTO.V1.UpdateHomePageBanner()
-        {
-          Id  = entity.Id,
-          Body =
-              entity.Body.Select(publicDto =>
-              {
-                  return new BLL.DTO.V1.ContentDto()
-                  {
-                      Culture = publicDto.Culture,
-                      Value = publicDto.Value
-                  };
-              }).ToList(),
-          Title = entity.Title.Select(publicDto =>
-          {
-              return new BLL.DTO.V1.ContentDto()
-              {
-                  Value = publicDto.Value,
-                  Culture = publicDto.Culture
-              };
-          }).ToList(),
-        };
-
-        if (entity.Image != null)
-        {
-            bllEntity.Image = entity.Image;
-        }
-
-        return bllEntity;
-    }
-
-    // TODO: can be removed?
-    public static Public.DTO.V1.UpdateHomePageBanner Map(BLL.DTO.V1.UpdateHomePageBanner entity)
-    {
-        return new UpdateHomePageBanner()
-        {
-            Id = entity.Id,
-            Image = entity.Image,
-            Body = entity.Body.Select(publicDto =>
-            {
-                return new Public.DTO.V1.ContentDto()
-                {
-                    Culture = publicDto.Culture,
-                    Value = publicDto.Value
-                };
-            }).ToList(),
-            Title = entity.Title.Select(publicDto =>
-            {
-                return new Public.DTO.V1.ContentDto()
-                {
-                    Culture = publicDto.Culture,
-                    Value = publicDto.Value
-                };
-            }).ToList(),
-            
-        };
-    }
-
     public static DAL.DTO.V1.HomePageBannerSequence Map(Public.DTO.V1.HomePageBannerSequence data)
     {
         return new DAL.DTO.V1.HomePageBannerSequence()

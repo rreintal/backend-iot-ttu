@@ -1,33 +1,30 @@
-using BLL.DTO.V1;
+using App.Domain;
+using Public.DTO.Content;
 
 namespace Public.DTO.V1.Mappers;
 
 public class UpdateNewsMapper
 {
-    public static BLL.DTO.V1.UpdateNews Map(Public.DTO.V1.UpdateNews entity)
+    public static BLL.DTO.V1.UpdateNews Map(Public.DTO.V1.UpdateNews entity, List<BLL.DTO.V1.ContentType> contentTypes)
     {
+        var entityId = Guid.NewGuid();
+        var bodyContentType = contentTypes.First(x => x.Name == ContentTypes.BODY);
+        var titleContentType = contentTypes.First(x => x.Name == ContentTypes.TITLE);
+
+        var titleContent = ContentHelper.CreateContent(entity.Title, titleContentType, entityId,
+            ContentHelper.EContentHelperEntityType.HomePageBanner);
+        
+        var bodyContent = ContentHelper.CreateContent(entity.Body, bodyContentType, entityId,
+            ContentHelper.EContentHelperEntityType.HomePageBanner);
         return new BLL.DTO.V1.UpdateNews()
         {
             Id = entity.Id,
             Author = entity.Author,
             Image = entity.Image,
-            Body =
-                entity.Body.Select(publicDto =>
-                {
-                    return new BLL.DTO.V1.ContentDto()
-                    {
-                        Culture = publicDto.Culture,
-                        Value = publicDto.Value
-                    };
-                }).ToList(),
-            Title = entity.Title.Select(publicDto =>
+            Content = new List<BLL.DTO.V1.Content>()
             {
-                return new BLL.DTO.V1.ContentDto()
-                {
-                    Value = publicDto.Value,
-                    Culture = publicDto.Culture
-                };
-            }).ToList(),
+                titleContent, bodyContent
+            },
             TopicAreas = entity.TopicAreas.Select(ta =>
             {
                 return new BLL.DTO.V1.TopicArea()

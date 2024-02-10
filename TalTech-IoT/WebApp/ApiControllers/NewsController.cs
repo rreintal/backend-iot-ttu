@@ -111,7 +111,8 @@ public class NewsController : ControllerBase
         // TODO - when updating, should we add the language culture which one we want to update?
         // TODO - updating is with both languages!!!
         // TODO: ei tööta
-        var bllEntity = UpdateNewsMapper.Map(data);
+        var contentTypes = await _bll.NewsService.GetContentTypes();
+        var bllEntity = UpdateNewsMapper.Map(data, contentTypes);
         var result = await _bll.NewsService.UpdateNews(bllEntity);
         if (result == null)
         {

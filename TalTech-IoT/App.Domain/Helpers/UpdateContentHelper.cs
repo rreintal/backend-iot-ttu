@@ -26,7 +26,7 @@ public static class UpdateContentHelper
             
             if (isTitleContentChanged)
             {
-                SetContentTranslationValue(existingEntity, ContentTypes.TITLE, lang, newBodyValue);
+                SetContentTranslationValue(existingEntity, ContentTypes.TITLE, lang, newTitleValue);
                 SetBaseLanguage(existingEntity, ContentTypes.TITLE, newBodyValue);
             }
         }
