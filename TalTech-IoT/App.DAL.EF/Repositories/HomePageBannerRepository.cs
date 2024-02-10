@@ -43,6 +43,7 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
     {
         return await DbSet
             .IncludeContentWithTranslation(languageCulture)
+            .OrderByDescending(x => x.SequenceNumber)
             .ToListAsync();
     }
 
@@ -102,7 +103,10 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
     public async Task UpdateSequenceBulkAsync(List<HomePageBannerSequence> data)
     {
         var ids = data.Select(item => item.HomePageBannerId).ToList();
-        var banners = await DbContext.HomePageBanners.Where(banner => ids.Contains(banner.Id)).ToListAsync();
+        var banners = await DbContext
+            .HomePageBanners
+            .AsTracking()
+            .Where(banner => ids.Contains(banner.Id)).ToListAsync();
 
         foreach (var item in data)
         {
@@ -110,7 +114,6 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
             if (banner != null)
             {
                 banner.SequenceNumber = item.SequenceNumber;
-                Update(banner);
             }
             else
             {
