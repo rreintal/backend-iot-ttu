@@ -4,8 +4,13 @@ using DAL.DTO.V1;
 
 namespace App.DAL.Contracts;
 
-public interface IHomePageBannerRepository : IBaseTranslateableRepository<HomePageBanner>
+public interface IHomePageBannerRepository : IBaseTranslateableRepository<HomePageBanner>, IHomePageBannerRepositoryCustom
 {
     public Task<HomePageBanner> Update(UpdateHomePageBanner entity);
     public Task<HomePageBanner> UpdateAsync(HomePageBanner entity);
+}
+
+public interface IHomePageBannerRepositoryCustom
+{
+    public Task UpdateSequenceBulkAsync(List<HomePageBannerSequence> data);
 }

@@ -10,4 +10,5 @@ public class HomePageBanner : DomainEntityId
     public List<ContentDto> Body { get; set; } = default!;
     
     public string Image { get; set; } = default!;
+    public int? SequenceNumber { get; set; }
 }

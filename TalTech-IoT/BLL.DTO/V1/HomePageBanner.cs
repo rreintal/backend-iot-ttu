@@ -8,6 +8,7 @@ public class HomePageBanner : DomainEntityId
     public List<Content> Content { get; set; } = default!;
     
     public string Image { get; set; } = default!;
+    public int? SequenceNumber { get; set; }
     
     
     

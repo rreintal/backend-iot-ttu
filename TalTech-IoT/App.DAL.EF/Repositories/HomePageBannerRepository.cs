@@ -17,12 +17,15 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
 
     public override HomePageBanner Add(HomePageBanner entity)
     {
+        var maxSequenceNumber = DbContext.HomePageBanners.Max(banner => (int?)banner.SequenceNumber) ?? 0;
+
+        entity.SequenceNumber = maxSequenceNumber + 1;
+
         foreach (var content in entity.Content)
         {
             // Doing this database does not try to add again types to db.
             DbContext.Attach(content.ContentType);
         }
-        
         return base.Add(entity);
     }
 
@@ -50,6 +53,8 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
             .IncludeContentWithTranslation(languageCulture)
             .FirstOrDefaultAsync();
     }
+
+    
 
     public async Task<HomePageBanner> UpdateAsync(HomePageBanner entity)
     {
@@ -92,5 +97,27 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
         }
         var result = Update(existingDomainObject);
         return result;
+    }
+
+    public async Task UpdateSequenceBulkAsync(List<HomePageBannerSequence> data)
+    {
+        var ids = data.Select(item => item.HomePageBannerId).ToList();
+        var banners = await DbContext.HomePageBanners.Where(banner => ids.Contains(banner.Id)).ToListAsync();
+
+        foreach (var item in data)
+        {
+            var banner = banners.FirstOrDefault(b => b.Id == item.HomePageBannerId);
+            if (banner != null)
+            {
+                banner.SequenceNumber = item.SequenceNumber;
+                Update(banner);
+            }
+            else
+            {
+                
+                // TODO: handle case when banner with this ID was not found, return error
+            }
+        }
+        
     }
 }

@@ -1,3 +1,4 @@
+using System.Reflection.Emit;
 using App.Domain;
 using Public.DTO.Content;
 using ContentType = BLL.DTO.V1.ContentType;
@@ -30,6 +31,7 @@ public class HomePageBannerMapper
         return res;
     }
 
+    // TODO: can be removed?
     public static BLL.DTO.V1.UpdateHomePageBanner Map(Public.DTO.V1.UpdateHomePageBanner entity)
     {
         var bllEntity =  new BLL.DTO.V1.UpdateHomePageBanner()
@@ -62,6 +64,7 @@ public class HomePageBannerMapper
         return bllEntity;
     }
 
+    // TODO: can be removed?
     public static Public.DTO.V1.UpdateHomePageBanner Map(BLL.DTO.V1.UpdateHomePageBanner entity)
     {
         return new UpdateHomePageBanner()
@@ -88,6 +91,15 @@ public class HomePageBannerMapper
         };
     }
 
+    public static DAL.DTO.V1.HomePageBannerSequence Map(Public.DTO.V1.HomePageBannerSequence data)
+    {
+        return new DAL.DTO.V1.HomePageBannerSequence()
+        {
+            HomePageBannerId = data.HomePageBannerId,
+            SequenceNumber = data.SequenceNumber
+        };
+    }
+
     public static Public.DTO.V1.HomePageBanner Map(BLL.DTO.V1.HomePageBanner entity)
     {
         return new HomePageBanner()
@@ -110,6 +122,7 @@ public class HomePageBannerMapper
                     Culture = lang
                 };
             }).ToList(),
+            SequenceNumber = entity.SequenceNumber
         };
     }
 

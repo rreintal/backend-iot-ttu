@@ -7,9 +7,10 @@ namespace App.Domain;
 
 public class HomePageBanner : DomainEntityId, IContentEntity
 {
-    [MinLength(2, ErrorMessage = RestApiErrorMessages.GeneralMissingTranslationValue)]
     public ICollection<Content> Content { get; set; } = default!;
     public string Image { get; set; } = default!;
+
+    public int SequenceNumber { get; set; } = default!;
 
 
 

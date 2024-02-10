@@ -4,6 +4,8 @@ using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
 using BLL.DTO.V1;
+using DAL.DTO.V1;
+using UpdateHomePageBanner = BLL.DTO.V1.UpdateHomePageBanner;
 
 namespace App.BLL.Services;
 
@@ -42,5 +44,11 @@ public class HomePageBannerService : BaseEntityService<HomePageBanner, Domain.Ho
         var domainObject = _mapper.Map<Domain.HomePageBanner>(entity);
         var result = await _uow.HomePageBannerRepository.UpdateAsync(domainObject);
         return _mapper.Map<HomePageBanner>(result);
+    }
+    
+
+    public async Task UpdateSequenceBulkAsync(List<HomePageBannerSequence> data)
+    {
+        await _uow.HomePageBannerRepository.UpdateSequenceBulkAsync(data);
     }
 }

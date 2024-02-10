@@ -83,6 +83,19 @@ public class HomePageBannerController : ControllerBase
     }
 
     /// <summary>
+    /// Send bulk request to update banner sequence
+    /// </summary>
+    /// <returns></returns>
+    [HttpPut("bulk/sequence")]
+    public async Task<ActionResult> UpdateBannerSequenceNumberBulk([FromBody] List<HomePageBannerSequence> data)
+    {
+        var bllData = data.Select(e => HomePageBannerMapper.Map(e)).ToList();
+        await _bll.HomePageBannerService.UpdateSequenceBulkAsync(bllData);
+        await _bll.SaveChangesAsync();
+        return Ok();
+    }
+
+    /// <summary>
     /// Update HomePageBanner
     /// </summary>
     /// <param name="entity"></param>

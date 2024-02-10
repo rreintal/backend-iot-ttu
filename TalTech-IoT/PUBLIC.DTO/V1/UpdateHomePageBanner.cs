@@ -8,4 +8,6 @@ public class UpdateHomePageBanner : DomainEntityId
     public List<ContentDto> Body { get; set; } = default!;
     
     public string? Image { get; set; }
+
+    public int? SequenceNumber { get; set; }
 }
