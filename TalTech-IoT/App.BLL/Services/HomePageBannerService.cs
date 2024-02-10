@@ -30,15 +30,6 @@ public class HomePageBannerService : BaseEntityService<HomePageBanner, Domain.Ho
         return Mapper.Map(await _uow.HomePageBannerRepository.FindAsync(id, languageCulture));
     }
 
-    public async Task<UpdateHomePageBanner?> Update(UpdateHomePageBanner entity)
-    {
-        // Here do image stuff!
-        var dalEntity = _mapper.Map<global::DAL.DTO.V1.UpdateHomePageBanner>(entity);
-        var dalResult = await _uow.HomePageBannerRepository.Update(dalEntity);
-        var bllResult = _mapper.Map<UpdateHomePageBanner>(dalResult);
-        return bllResult;
-    }
-
     public async Task<HomePageBanner> UpdateAsync(HomePageBanner entity)
     {
         var domainObject = _mapper.Map<Domain.HomePageBanner>(entity);

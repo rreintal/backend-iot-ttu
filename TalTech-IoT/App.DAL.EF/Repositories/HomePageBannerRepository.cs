@@ -29,9 +29,18 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
         return base.Add(entity);
     }
 
+    public override HomePageBanner Remove(HomePageBanner entity)
+    {
+        DbSet.Entry(entity).State = EntityState.Deleted;
+        return base.Remove(entity);
+    }
+
     public override async Task<IEnumerable<HomePageBanner>> AllAsync()
     {
-        return await DbSet.IncludeContentWithTranslation().ToListAsync();
+        return await DbSet
+            .IncludeContentWithTranslation()
+            .OrderBy(x => x.SequenceNumber)
+            .ToListAsync();
     }
 
     public override Task<HomePageBanner?> FindAsync(Guid id)
@@ -65,40 +74,7 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
         var result = Update(existingObject);
         return result;
     }
-
-
-    public async Task<HomePageBanner> Update(UpdateHomePageBanner entity)
-    {
-        var existingDomainObject = await FindAsync(entity.Id);
-
-        var cults = LanguageCulture.ALL_LANGUAGES;
-        
-        foreach (var lang in cults)
-        {
-            var newBodyValue = entity.GetContentValue(ContentTypes.BODY, lang);
-            var newTitleValue = entity.GetContentValue(ContentTypes.TITLE, lang);
     
-            var oldBodyValue = existingDomainObject!.GetContentValue(ContentTypes.BODY, lang);
-            var oldTitleValue = existingDomainObject.GetContentValue(ContentTypes.TITLE, lang);
-
-            var isBodyValueChanged = oldBodyValue != newBodyValue;
-            var isTitleContentChanged = oldTitleValue != newTitleValue;
-            
-            if (isBodyValueChanged)
-            {
-                existingDomainObject.SetContentTranslationValue(ContentTypes.BODY, lang, newBodyValue);
-                existingDomainObject.SetBaseLanguage(ContentTypes.BODY, newBodyValue);
-            }
-            
-            if (isTitleContentChanged)
-            {
-                existingDomainObject.SetContentTranslationValue(ContentTypes.TITLE, lang, newTitleValue);
-                existingDomainObject.SetBaseLanguage(ContentTypes.TITLE, newBodyValue);
-            }
-        }
-        var result = Update(existingDomainObject);
-        return result;
-    }
 
     public async Task UpdateSequenceBulkAsync(List<HomePageBannerSequence> data)
     {
