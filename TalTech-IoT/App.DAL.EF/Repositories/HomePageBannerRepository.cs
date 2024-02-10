@@ -54,7 +54,7 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
     public async Task<HomePageBanner> UpdateAsync(HomePageBanner entity)
     {
         var existingObject = await FindAsync(entity.Id);
-
+        existingObject!.Image = entity.Image;
         UpdateContentHelper.UpdateContent(existingObject, entity);
         var result = Update(existingObject);
         return result;

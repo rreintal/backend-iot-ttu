@@ -6,7 +6,8 @@ public class PartnerImageMapper
     {
         return new BLL.DTO.V1.PartnerImage()
         {
-            Image = data.Image
+            Image = data.Image,
+            Link = data.Link
         };
     }
 
@@ -15,7 +16,8 @@ public class PartnerImageMapper
         return new PartnerImage()
         {
             Id = data.Id,
-            Image = data.Image
+            Image = data.Image,
+            Link = data.Link
         };
     }
 }
