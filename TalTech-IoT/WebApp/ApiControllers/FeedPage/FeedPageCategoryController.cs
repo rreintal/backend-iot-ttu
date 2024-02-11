@@ -18,7 +18,7 @@ namespace WebApp.ApiControllers.FeedPage;
 [ApiVersion("1")]
 public class FeedPageCategoryController : ControllerBase
 {
-    private IAppBLL _bll;
+    private readonly IAppBLL _bll;
 
     /// <inheritdoc />
     public FeedPageCategoryController(IAppBLL bll)
@@ -36,6 +36,14 @@ public class FeedPageCategoryController : ControllerBase
     public async Task<ActionResult<FeedPageCategory>> Get(Guid id)
     {
         var bllEntity = await _bll.FeedPageCategoryService.FindAsync(id);
+        if (bllEntity == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
         var result = FeedPageCategoryMapper.Map(bllEntity);
         return result;
     }

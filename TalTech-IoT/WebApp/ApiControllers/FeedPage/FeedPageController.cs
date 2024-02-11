@@ -17,7 +17,7 @@ namespace WebApp.ApiControllers.FeedPage;
 [ApiVersion("1")]
 public class FeedPageController : ControllerBase
 {
-    private IAppBLL _bll;
+    private readonly IAppBLL _bll;
     
     /// <inheritdoc />
     public FeedPageController(IAppBLL bll)
@@ -87,4 +87,5 @@ public class FeedPageController : ControllerBase
         return Ok(FeedPageMapper.Map(bllEntity));
     }
     */
+    
 }

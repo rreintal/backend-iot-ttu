@@ -17,7 +17,7 @@ namespace WebApp.ApiControllers.FeedPage;
 [ApiVersion("1")]
 public class FeedPagePostController : ControllerBase
 {
-    private IAppBLL _bll;
+    private readonly IAppBLL _bll;
 
     /// <inheritdoc />
     public FeedPagePostController(IAppBLL bll)
@@ -31,9 +31,17 @@ public class FeedPagePostController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<FeedPagePost> GetAllLanguages(Guid id)
+    public async Task<ActionResult<FeedPagePost>> GetAllLanguages(Guid id)
     {
         var bllEntity = await _bll.FeedPagePostService.FindAsync(id);
+        if (bllEntity == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
         var result = FeedPagePostMapper.Map(bllEntity);
         return result;
     }
@@ -62,6 +70,15 @@ public class FeedPagePostController : ControllerBase
     [HttpPut]
     public async Task<ActionResult<FeedPagePost>> Update(FeedPagePost entity)
     {
+        var isEntityFound = await _bll.FeedPagePostService.FindAsync(entity.Id) != null;
+        if (!isEntityFound)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
         var contentTypes = await _bll.NewsService.GetContentTypes();
         var bllEntity = FeedPagePostMapper.MapForUpdate(entity, contentTypes, entity.Id);
         var bllResult = await _bll.FeedPagePostService.UpdateAsync(bllEntity);
