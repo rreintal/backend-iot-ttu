@@ -54,7 +54,7 @@ public class FeedPageController : ControllerBase
     /// </summary>
     /// <param name="identifier"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet("{identifier}")]
     public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPage>> Get(string identifier)
     {
         var bllEntity = await _bll.FeedPageService.FindAsyncByName(identifier);
@@ -71,6 +71,7 @@ public class FeedPageController : ControllerBase
     }
     
     /*
+    
     [HttpGet("{languageCulture}/{identifier}")]
     public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPage>> Get(string identifier, string languageCulture)
     {
@@ -87,5 +88,6 @@ public class FeedPageController : ControllerBase
         return Ok(FeedPageMapper.Map(bllEntity));
     }
     */
+    
     
 }

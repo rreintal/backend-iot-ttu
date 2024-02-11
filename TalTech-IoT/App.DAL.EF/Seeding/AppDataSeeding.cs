@@ -74,6 +74,21 @@ public static class AppDataSeeding
                 context.TopicAreas.AddRangeAsync(new List<TopicArea>() { t1, t2, t3, t3child2, t3Child });
             }
 
+            var feedpageCount = context.FeedPages.ToList().Count();
+            if (feedpageCount == 0)
+            {
+                var hardware = new FeedPage()
+                {
+                    FeedPageName = "HARDWARE"
+                };
+                var research = new FeedPage()
+                {
+                    FeedPageName = "RESEARCH"
+                };
+
+                context.AddRange(new List<FeedPage>() { hardware, research });
+            }
+
             using var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<AppRole>>();
             
             var roles = new List<AppRole>()

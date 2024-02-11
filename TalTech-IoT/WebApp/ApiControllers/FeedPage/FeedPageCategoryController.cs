@@ -32,7 +32,7 @@ public class FeedPageCategoryController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet("{id}")]
     public async Task<ActionResult<FeedPageCategory>> Get(Guid id)
     {
         var bllEntity = await _bll.FeedPageCategoryService.FindAsync(id);
@@ -53,7 +53,7 @@ public class FeedPageCategoryController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
         var categoryHasPosts = await _bll.FeedPageCategoryService.DoesCategoryHavePostsAsync(id);
