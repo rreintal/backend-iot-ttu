@@ -30,7 +30,7 @@ public class FeedPagePostController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet("{id}")]
     public async Task<ActionResult<FeedPagePost>> GetAllLanguages(Guid id)
     {
         var bllEntity = await _bll.FeedPagePostService.FindAsync(id);
@@ -92,7 +92,7 @@ public class FeedPagePostController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
         var result = await _bll.FeedPagePostService.RemoveAsync(id);
