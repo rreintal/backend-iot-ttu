@@ -122,4 +122,27 @@ public class FeedPageCategoryController : ControllerBase
         await _bll.SaveChangesAsync();
         return Ok(result);
     }
+    
+    /// <summary>
+    /// Get Feed Page Post by id translated
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="languageCulture"></param>
+    /// <returns></returns>
+    [HttpGet("{languageCulture}/{id}")]
+    public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPageCategory>> Get(Guid id, string languageCulture)
+    {
+        var bllEntity = await _bll.FeedPageCategoryService.FindAsync(id, languageCulture);
+        if (bllEntity == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
+
+        var result = FeedPageCategoryMapper.Map(bllEntity, languageCulture); 
+        return Ok(result);
+    }
 }

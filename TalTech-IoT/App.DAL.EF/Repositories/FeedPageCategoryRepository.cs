@@ -44,9 +44,24 @@ public class FeedPageCategoryRepository : EFBaseRepository<FeedPageCategory, App
         throw new NotImplementedException();
     }
 
-    public Task<FeedPageCategory?> FindAsync(Guid id, string? languageCulture)
+    public async Task<FeedPageCategory?> FindAsync(Guid id, string? languageCulture)
     {
-        throw new NotImplementedException();
+        return await DbSet
+            .AsTracking()
+            .Include(x => x.FeedPagePosts)
+                .ThenInclude(x => x.Content)
+                .ThenInclude(x => x.ContentType)
+            .Include(x => x.FeedPagePosts)
+                .ThenInclude(x => x.Content)
+                .ThenInclude(x => x.LanguageString)
+                .ThenInclude(x => x.LanguageStringTranslations.Where(e => e.LanguageCulture == languageCulture))
+            .Include(x => x.Content)
+                .ThenInclude(x => x.ContentType)
+            .Include(x => x.Content)
+                .ThenInclude(x => x.LanguageString)
+                .ThenInclude(x => x.LanguageStringTranslations.Where(e => e.LanguageCulture == languageCulture))
+            .Where(e => e.Id == id)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<bool> DoesCategoryHavePostsAsync(Guid id)
