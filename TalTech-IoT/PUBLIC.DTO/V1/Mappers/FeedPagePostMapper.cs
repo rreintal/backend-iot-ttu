@@ -75,4 +75,32 @@ public class FeedPagePostMapper
             }).ToList()
         };
     }
+    
+    public static Public.DTO.V1.FeedPage.FeedPagePost Map(BLL.DTO.V1.FeedPagePost entity, string language)
+    {
+        // ALL LANGS
+        
+        return new Public.DTO.V1.FeedPage.FeedPagePost()
+        {
+            Id = entity.Id,
+            FeedPageCategoryId = entity.FeedPageCategoryId,
+            CreatedAt = entity.CreatedAt,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = language,
+                    Value = ContentHelper.GetContentValue(entity, ContentTypes.TITLE, language)
+                }
+            },
+            Body = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = language,
+                    Value = ContentHelper.GetContentValue(entity, ContentTypes.BODY, language)
+                }
+            }
+        };
+    }
 }

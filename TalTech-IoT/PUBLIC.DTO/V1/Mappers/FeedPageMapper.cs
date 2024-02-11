@@ -20,7 +20,7 @@ public class FeedPageMapper
         return new Public.DTO.V1.FeedPage.FeedPage()
         {
             Id = entity.Id,
-            FeedPageName = entity.FeedPageName, // TODO: feedPage mapper
+            FeedPageName = entity.FeedPageName, 
             FeedPageCategories = entity.FeedPageCategories.Select(e =>
             {
                 return FeedPageCategoryMapper.Map(e);
@@ -28,12 +28,16 @@ public class FeedPageMapper
         };
     }
     
-    /*
-     *
-     * public Guid FeedPageId { get; set; }
-    public FeedPage? FeedPage { get; set; }
-    
-    public List<Content> Content { get; set; } = default!;
-    public List<FeedPagePost>? FeedPagePosts { get; set; }
-     */
+    public static Public.DTO.V1.FeedPage.FeedPage Map(BLL.DTO.V1.FeedPage entity, string language)
+    {
+        return new Public.DTO.V1.FeedPage.FeedPage()
+        {
+            Id = entity.Id,
+            FeedPageName = entity.FeedPageName, 
+            FeedPageCategories = entity.FeedPageCategories.Select(e =>
+            {
+                return FeedPageCategoryMapper.Map(e, language);
+            }).ToList()
+        };
+    }
 }

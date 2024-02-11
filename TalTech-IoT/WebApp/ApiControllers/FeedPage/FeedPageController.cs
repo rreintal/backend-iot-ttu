@@ -70,8 +70,14 @@ public class FeedPageController : ControllerBase
         return Ok(FeedPageMapper.Map(bllEntity));
     }
     
-    /*
     
+    
+    /// <summary>
+    /// Get Feed Page with Posts and Categories translated
+    /// </summary>
+    /// <param name="identifier"></param>
+    /// <param name="languageCulture"></param>
+    /// <returns></returns>
     [HttpGet("{languageCulture}/{identifier}")]
     public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPage>> Get(string identifier, string languageCulture)
     {
@@ -85,9 +91,10 @@ public class FeedPageController : ControllerBase
             });
         }
 
-        return Ok(FeedPageMapper.Map(bllEntity));
+        var result = FeedPageMapper.Map(bllEntity, languageCulture); 
+        return Ok(result);
     }
-    */
+    
     
     
 }

@@ -53,4 +53,23 @@ public class FeedPageCategoryMapper
             FeedPageCategoryPosts = entity.FeedPagePosts.Select(e => FeedPagePostMapper.Map(e)).ToList()
         };
     }
+    
+    public static Public.DTO.V1.FeedPage.FeedPageCategory Map(BLL.DTO.V1.FeedPageCategory entity, string language)
+    {
+        return new Public.DTO.V1.FeedPage.FeedPageCategory()
+        {
+            // TODO: add post
+            Id = entity.Id,
+            FeedPageId = entity.FeedPageId,
+            Title = new List<ContentDto>()
+            {
+                new ContentDto()
+                {
+                    Culture = language,
+                    Value = ContentHelper.GetContentValue(entity, ContentTypes.TITLE, language)
+                }
+            },
+            FeedPageCategoryPosts = entity.FeedPagePosts.Select(e => FeedPagePostMapper.Map(e, language)).ToList()
+        };
+    }
 }

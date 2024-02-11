@@ -87,6 +87,11 @@ public class FeedPagePostController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Delete FeedPagePost by id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete]
     public async Task<ActionResult> Delete(Guid id)
     {
@@ -102,5 +107,28 @@ public class FeedPagePostController : ControllerBase
 
         await _bll.SaveChangesAsync();
         return Ok();
+    }
+    
+    /// <summary>
+    /// Get Feed Page Post by id translated
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="languageCulture"></param>
+    /// <returns></returns>
+    [HttpGet("{languageCulture}/{id}")]
+    public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPagePost>> Get(Guid id, string languageCulture)
+    {
+        var bllEntity = await _bll.FeedPagePostService.FindAsync(id, languageCulture);
+        if (bllEntity == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
+
+        var result = FeedPagePostMapper.Map(bllEntity, languageCulture); 
+        return Ok(result);
     }
 }
