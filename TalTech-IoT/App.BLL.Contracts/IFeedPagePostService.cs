@@ -5,5 +5,5 @@ namespace App.BLL.Contracts;
 
 public interface IFeedPagePostService : ITranslateableEntityService<FeedPagePost>
 {
-    
+    public Task<FeedPagePost> UpdateAsync(FeedPagePost entity);
 }

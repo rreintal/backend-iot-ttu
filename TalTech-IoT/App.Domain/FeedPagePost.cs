@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using App.Domain.Contracts;
 using Base.Domain;
 
 namespace App.Domain;
 
-public class FeedPagePost : DomainEntityId
+public class FeedPagePost : DomainEntityId, IContentEntity
 {
     public ICollection<Content> Content { get; set; } = default!;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

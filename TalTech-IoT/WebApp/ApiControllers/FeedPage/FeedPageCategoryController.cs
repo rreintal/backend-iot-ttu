@@ -1,7 +1,10 @@
+using System.Net;
 using App.BLL.Contracts;
+using App.Domain.Constants;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Public.DTO;
 using Public.DTO.V1.FeedPage;
 using Public.DTO.V1.Mappers;
 
@@ -38,14 +41,36 @@ public class FeedPageCategoryController : ControllerBase
     }
 
     /// <summary>
-    /// Delete FeedPageCategory (NOT IMPLEMENTO)
+    /// Delete FeedPageCategory (fails if Feed Page Category has Feed Page Posts) 
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete]
     public async Task<ActionResult> Delete(Guid id)
     {
-        throw new NotImplementedException();
+        var categoryHasPosts = await _bll.FeedPageCategoryService.DoesCategoryHavePostsAsync(id);
+        if (categoryHasPosts)
+        {
+            return Conflict(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.FeedPageCategoryHasPosts,
+                Status = HttpStatusCode.Conflict
+            });
+        }
+
+        var isCategoryExist = await _bll.FeedPageCategoryService.FindAsync(id);
+        if (isCategoryExist == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
+
+        await _bll.FeedPageCategoryService.RemoveAsync(id);
+        await _bll.SaveChangesAsync();
+        return Ok();
     }
 
     /// <summary>
@@ -61,6 +86,32 @@ public class FeedPageCategoryController : ControllerBase
         var bllResult = _bll.FeedPageCategoryService.Add(bllEntity);
         await _bll.SaveChangesAsync();
         var result = FeedPageCategoryMapper.Map(bllResult);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Update Feed Page Category (PS. only Title!)
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    [HttpPut]
+    public async Task<ActionResult> Update(FeedPageCategory entity)
+    {
+        
+        var isEntityNotExists = await _bll.FeedPageCategoryService.FindAsync(entity.Id) == null;
+        if (isEntityNotExists)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.Conflict
+            });
+        }
+        var contentTypes = await _bll.NewsService.GetContentTypes();
+        var bllEntity = FeedPageCategoryMapper.MapToUpdate(entity, contentTypes, entity.Id);
+        var bllResult = await _bll.FeedPageCategoryService.UpdateAsync(bllEntity);
+        var result = FeedPageCategoryMapper.Map(bllResult);
+        await _bll.SaveChangesAsync();
         return Ok(result);
     }
 }

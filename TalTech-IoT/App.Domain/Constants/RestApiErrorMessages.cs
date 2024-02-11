@@ -25,6 +25,11 @@ public static class RestApiErrorMessages
     public const string MissingProjectVolume = "MISSING_PROJECT_VOLUME"; // TODO: kas vajalik?
     public const string MissingProjectYear = "MISSING_PROJECT_YEAR";
 
+    /// <summary>
+    /// FeedPageCategory
+    /// </summary>
+    public const string FeedPageCategoryHasPosts = "CATEGORY_HAS_POSTS";
+
 
     /// <summary>
     /// Users

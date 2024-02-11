@@ -167,6 +167,11 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .HasMany(x => x.Content)
             .WithOne(x => x.FeedPagePost)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Entity<FeedPageCategory>()
+            .HasMany(x => x.Content)
+            .WithOne(x => x.FeedPageCategory)
+            .OnDelete(DeleteBehavior.Cascade);
 
     }
 

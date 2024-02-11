@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240207190445_feedpages")]
-    partial class feedpages
+    [Migration("20240210234143_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,6 +73,12 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid?>("ProjectId")
                         .HasColumnType("uuid");
 
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ContactPersonId");
@@ -126,6 +132,9 @@ namespace App.DAL.EF.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FeedPageName")
+                        .IsUnique();
 
                     b.ToTable("FeedPages");
                 });
@@ -200,6 +209,9 @@ namespace App.DAL.EF.Migrations
                     b.Property<string>("Image")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("SequenceNumber")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -385,9 +397,6 @@ namespace App.DAL.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PageIdentifier")
-                        .IsUnique();
-
                     b.ToTable("PageContents");
                 });
 
@@ -399,6 +408,9 @@ namespace App.DAL.EF.Migrations
 
                     b.Property<string>("Image")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Link")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -605,15 +617,15 @@ namespace App.DAL.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("App.Domain.FeedPageCategory", null)
+                    b.HasOne("App.Domain.FeedPageCategory", "FeedPageCategory")
                         .WithMany("Content")
                         .HasForeignKey("FeedPageCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("App.Domain.FeedPagePost", null)
+                    b.HasOne("App.Domain.FeedPagePost", "FeedPagePost")
                         .WithMany("Content")
                         .HasForeignKey("FeedPagePostId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("App.Domain.HomePageBanner", "HomePageBanner")
                         .WithMany("Content")
@@ -643,6 +655,10 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("ContactPerson");
 
                     b.Navigation("ContentType");
+
+                    b.Navigation("FeedPageCategory");
+
+                    b.Navigation("FeedPagePost");
 
                     b.Navigation("HomePageBanner");
 

@@ -4,30 +4,30 @@ namespace App.Domain.Helpers;
 
 public static class UpdateContentHelper
 {
-    public static void UpdateContent(IContentEntity existingEntity, IContentEntity newEntity)
+    public static void UpdateContent(IContentEntity existingEntity, IContentEntity newEntity, bool isOnlyTitleEntity = false)
     {
         var cults = LanguageCulture.ALL_LANGUAGES;
         foreach (var lang in cults)
         {
-            var newBodyValue = GetContentValue(newEntity, ContentTypes.BODY, lang);
-            var newTitleValue = GetContentValue(newEntity, ContentTypes.TITLE, lang);
-    
-            var oldBodyValue = GetContentValue(existingEntity, ContentTypes.BODY, lang);
-            var oldTitleValue = GetContentValue(existingEntity, ContentTypes.TITLE, lang);
-
-            var isBodyValueChanged = oldBodyValue != newBodyValue;
-            var isTitleContentChanged = oldTitleValue != newTitleValue;
-            
-            if (isBodyValueChanged)
+            if (!isOnlyTitleEntity)
             {
-                SetContentTranslationValue(existingEntity, ContentTypes.BODY, lang, newBodyValue);
-                SetBaseLanguage(existingEntity, ContentTypes.BODY, newBodyValue);
+                var oldBodyValue = GetContentValue(existingEntity, ContentTypes.BODY, lang);
+                var newBodyValue = GetContentValue(newEntity, ContentTypes.BODY, lang);
+                var isBodyValueChanged = oldBodyValue != newBodyValue;
+                if (isBodyValueChanged)
+                {
+                    SetContentTranslationValue(existingEntity, ContentTypes.BODY, lang, newBodyValue);
+                    SetBaseLanguage(existingEntity, ContentTypes.BODY, newBodyValue);
+                }   
             }
-            
+
+            var newTitleValue = GetContentValue(newEntity, ContentTypes.TITLE, lang);
+            var oldTitleValue = GetContentValue(existingEntity, ContentTypes.TITLE, lang);
+            var isTitleContentChanged = oldTitleValue != newTitleValue;
             if (isTitleContentChanged)
             {
                 SetContentTranslationValue(existingEntity, ContentTypes.TITLE, lang, newTitleValue);
-                SetBaseLanguage(existingEntity, ContentTypes.TITLE, newBodyValue);
+                SetBaseLanguage(existingEntity, ContentTypes.TITLE, newTitleValue);
             }
         }
     }

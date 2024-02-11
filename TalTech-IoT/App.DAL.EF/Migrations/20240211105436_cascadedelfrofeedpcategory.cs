@@ -5,20 +5,20 @@
 namespace App.DAL.EF.Migrations
 {
     /// <inheritdoc />
-    public partial class hpbcascadedel : Migration
+    public partial class cascadedelfrofeedpcategory : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Contents_HomePageBanners_HomePageBannerId",
+                name: "FK_Contents_FeedPageCategories_FeedPageCategoryId",
                 table: "Contents");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Contents_HomePageBanners_HomePageBannerId",
+                name: "FK_Contents_FeedPageCategories_FeedPageCategoryId",
                 table: "Contents",
-                column: "HomePageBannerId",
-                principalTable: "HomePageBanners",
+                column: "FeedPageCategoryId",
+                principalTable: "FeedPageCategories",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
@@ -27,14 +27,14 @@ namespace App.DAL.EF.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Contents_HomePageBanners_HomePageBannerId",
+                name: "FK_Contents_FeedPageCategories_FeedPageCategoryId",
                 table: "Contents");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Contents_HomePageBanners_HomePageBannerId",
+                name: "FK_Contents_FeedPageCategories_FeedPageCategoryId",
                 table: "Contents",
-                column: "HomePageBannerId",
-                principalTable: "HomePageBanners",
+                column: "FeedPageCategoryId",
+                principalTable: "FeedPageCategories",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }

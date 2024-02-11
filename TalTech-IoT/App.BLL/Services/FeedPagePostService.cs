@@ -23,4 +23,11 @@ public class FeedPagePostService : BaseEntityService<global::BLL.DTO.V1.FeedPage
     {
         return Mapper.Map(await _uow.FeedPagePostRepository.FindAsync(id, languageCulture));
     }
+
+    public async Task<global::BLL.DTO.V1.FeedPagePost> UpdateAsync(global::BLL.DTO.V1.FeedPagePost entity)
+    {
+        var domainObject = Mapper.Map(entity);
+        var domainResult = await _uow.FeedPagePostRepository.UpdateAsync(domainObject);
+        return Mapper.Map(domainResult)!;
+    }
 }

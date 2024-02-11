@@ -7,3 +7,8 @@ public interface IContactPersonRepository : IBaseTranslateableRepository<Contact
 {
     
 }
+
+public interface IContactPersonRepositoryCustom
+{
+    
+}

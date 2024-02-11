@@ -19,6 +19,7 @@ public class FeedPagePostController : ControllerBase
 {
     private IAppBLL _bll;
 
+    /// <inheritdoc />
     public FeedPagePostController(IAppBLL bll)
     {
         _bll = bll;
@@ -54,7 +55,7 @@ public class FeedPagePostController : ControllerBase
     }
 
     /// <summary>
-    /// NOT IMPLEMENTO
+    /// Update FeedPagePost content
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
@@ -63,7 +64,9 @@ public class FeedPagePostController : ControllerBase
     {
         var contentTypes = await _bll.NewsService.GetContentTypes();
         var bllEntity = FeedPagePostMapper.MapForUpdate(entity, contentTypes, entity.Id);
-        var result = _bll.FeedPagePostService.Update(bllEntity);
+        var bllResult = await _bll.FeedPagePostService.UpdateAsync(bllEntity);
+        var result = FeedPagePostMapper.Map(bllResult);
+        await _bll.SaveChangesAsync();
         return Ok(result);
     }
 

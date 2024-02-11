@@ -33,6 +33,16 @@ public class FeedPageController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPage>> Post(Public.DTO.V1.FeedPage.FeedPage entity)
     {
+        var isEntityExists = await _bll.FeedPageService.FindAsyncByName(entity.FeedPageName) != null;
+        if (isEntityExists)
+        {
+            return Conflict(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.AlreadyExists,
+                Status = HttpStatusCode.Conflict
+            });
+        }
+        
         var bllEntity = FeedPageMapper.Map(entity);
         var result  = _bll.FeedPageService.Add(bllEntity);
         await _bll.SaveChangesAsync();

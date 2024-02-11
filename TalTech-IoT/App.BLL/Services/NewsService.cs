@@ -8,6 +8,7 @@ using Base.BLL;
 using Base.Contracts;
 using BLL.DTO.V1;
 using Public.DTO;
+using Public.DTO.Content;
 using ContentType = BLL.DTO.V1.ContentType;
 using News = BLL.DTO.V1.News;
 
@@ -48,8 +49,8 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
     public async Task<List<ContentType>> GetContentTypes()
     {
-        var titleContentType = Uow.ContentTypesRepository.FindByName("TITLE");
-        var bodyContentType = Uow.ContentTypesRepository.FindByName("BODY");
+        var titleContentType = Uow.ContentTypesRepository.FindByName(ContentTypes.TITLE);
+        var bodyContentType = Uow.ContentTypesRepository.FindByName(ContentTypes.BODY);
         
         var body = new ContentType()
         {
@@ -103,7 +104,6 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
-        
         /*
         // Testing CDN
         var estonianBody = domainObject.GetContentValue(ContentTypes.BODY, LanguageCulture.EST);
@@ -142,6 +142,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     }
     
     // TODO: maybe this inside ImageStorageService as Save?
+    /*
     private async Task<string> HandleImageContent(string content)
     {
         var srcElementRegex = "<img[^>]*>";
@@ -192,6 +193,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         }
         return content;
     }
+    */
 
     
 }

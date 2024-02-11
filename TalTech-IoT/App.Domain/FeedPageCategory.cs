@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using App.Domain.Contracts;
 using Base.Domain;
 
 namespace App.Domain;
 
-public class FeedPageCategory : DomainEntityId
+public class FeedPageCategory : DomainEntityId, IContentEntity
 {
     // Only title!
     public Guid FeedPageId { get; set; }

@@ -617,7 +617,7 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.FeedPageCategory", "FeedPageCategory")
                         .WithMany("Content")
                         .HasForeignKey("FeedPageCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("App.Domain.FeedPagePost", "FeedPagePost")
                         .WithMany("Content")

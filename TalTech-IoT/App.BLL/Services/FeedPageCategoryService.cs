@@ -23,4 +23,17 @@ public class FeedPageCategoryService : BaseEntityService<global::BLL.DTO.V1.Feed
     {
         return Mapper.Map(await _uow.FeedPageCategoryRepository.FindAsync(id, languageCulture));
     }
+
+    public async Task<bool> DoesCategoryHavePostsAsync(Guid id)
+    {
+        return await _uow.FeedPageCategoryRepository.DoesCategoryHavePostsAsync(id);
+    }
+
+    public async Task<global::BLL.DTO.V1.FeedPageCategory> UpdateAsync(global::BLL.DTO.V1.FeedPageCategory entity)
+    {
+        
+        var domainObject = Mapper.Map(entity);
+        var domainResult = await _uow.FeedPageCategoryRepository.UpdateAsync(domainObject);
+        return Mapper.Map(domainResult)!;
+    }
 }

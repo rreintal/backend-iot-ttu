@@ -1,5 +1,6 @@
 using App.DAL.Contracts;
 using App.Domain;
+using App.Domain.Helpers;
 using AutoMapper;
 using Base.DAL.EF;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,18 @@ public class FeedPagePostRepository : EFBaseRepository<FeedPagePost, AppDbContex
         throw new NotImplementedException();
     }
 
+    public async override Task<FeedPagePost?> FindAsync(Guid id)
+    {
+        return await DbSet
+            .Include(x => x.Content)
+            .ThenInclude(x => x.ContentType)
+            .Include(x => x.Content)
+            .ThenInclude(x => x.LanguageString)
+            .ThenInclude(x => x.LanguageStringTranslations)
+            .Where(e => e.Id == id)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<FeedPagePost?> FindAsync(Guid id, string? languageCulture)
     {
         return await DbSet
@@ -37,5 +50,15 @@ public class FeedPagePostRepository : EFBaseRepository<FeedPagePost, AppDbContex
                 .ThenInclude(x => x.LanguageStringTranslations)
             .Where(e => e.Id == id)
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<FeedPagePost> UpdateAsync(FeedPagePost entity)
+    {
+        // TODO: is it possible to set a post to new category?
+        
+        var existingObject = await FindAsync(entity.Id);
+        UpdateContentHelper.UpdateContent(existingObject, entity);
+        var result = Update(existingObject);
+        return result;
     }
 }

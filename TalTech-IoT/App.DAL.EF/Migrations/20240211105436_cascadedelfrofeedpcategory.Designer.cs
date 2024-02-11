@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240128113231_testABC")]
-    partial class testABC
+    [Migration("20240211105436_cascadedelfrofeedpcategory")]
+    partial class cascadedelfrofeedpcategory
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,13 +25,40 @@ namespace App.DAL.EF.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("App.Domain.ContactPerson", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContactPersons");
+                });
+
             modelBuilder.Entity("App.Domain.Content", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ContactPersonId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("ContentTypeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("FeedPageCategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("FeedPagePostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("HomePageBannerId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("LanguageStringId")
@@ -40,17 +67,36 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid?>("NewsId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("PageContentId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("ProjectId")
                         .HasColumnType("uuid");
 
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("ContactPersonId");
+
                     b.HasIndex("ContentTypeId");
+
+                    b.HasIndex("FeedPageCategoryId");
+
+                    b.HasIndex("FeedPagePostId");
+
+                    b.HasIndex("HomePageBannerId");
 
                     b.HasIndex("LanguageStringId")
                         .IsUnique();
 
                     b.HasIndex("NewsId");
+
+                    b.HasIndex("PageContentId");
 
                     b.HasIndex("ProjectId");
 
@@ -73,6 +119,59 @@ namespace App.DAL.EF.Migrations
                         .IsUnique();
 
                     b.ToTable("ContentTypes");
+                });
+
+            modelBuilder.Entity("App.Domain.FeedPage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("FeedPageName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FeedPageName")
+                        .IsUnique();
+
+                    b.ToTable("FeedPages");
+                });
+
+            modelBuilder.Entity("App.Domain.FeedPageCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("FeedPageId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FeedPageId");
+
+                    b.ToTable("FeedPageCategories");
+                });
+
+            modelBuilder.Entity("App.Domain.FeedPagePost", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FeedPageCategoryId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FeedPageCategoryId");
+
+                    b.ToTable("FeedPagePosts");
                 });
 
             modelBuilder.Entity("App.Domain.HasTopicArea", b =>
@@ -99,6 +198,24 @@ namespace App.DAL.EF.Migrations
                     b.HasIndex("TopicAreaId");
 
                     b.ToTable("HasTopicAreas");
+                });
+
+            modelBuilder.Entity("App.Domain.HomePageBanner", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SequenceNumber")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HomePageBanners");
                 });
 
             modelBuilder.Entity("App.Domain.Identity.AppRefreshToken", b =>
@@ -164,6 +281,9 @@ namespace App.DAL.EF.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -256,9 +376,46 @@ namespace App.DAL.EF.Migrations
                     b.Property<string>("Image")
                         .HasColumnType("text");
 
+                    b.Property<string>("ThumbnailImage")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("News");
+                });
+
+            modelBuilder.Entity("App.Domain.PageContent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PageIdentifier")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PageContents");
+                });
+
+            modelBuilder.Entity("App.Domain.PartnerImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Link")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PartnerImages");
                 });
 
             modelBuilder.Entity("App.Domain.Project", b =>
@@ -270,18 +427,15 @@ namespace App.DAL.EF.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("text");
-
-                    b.Property<double>("PriceVolume")
-                        .HasColumnType("double precision");
+                    b.Property<bool>("IsOngoing")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("ProjectManager")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ThumbnailImage")
-                        .HasColumnType("text");
+                    b.Property<double>("ProjectVolume")
+                        .HasColumnType("double precision");
 
                     b.Property<int>("Year")
                         .HasColumnType("integer");
@@ -452,11 +606,31 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("App.Domain.Content", b =>
                 {
+                    b.HasOne("App.Domain.ContactPerson", "ContactPerson")
+                        .WithMany("Content")
+                        .HasForeignKey("ContactPersonId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("App.Domain.ContentType", "ContentType")
                         .WithMany()
                         .HasForeignKey("ContentTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("App.Domain.FeedPageCategory", "FeedPageCategory")
+                        .WithMany("Content")
+                        .HasForeignKey("FeedPageCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("App.Domain.FeedPagePost", "FeedPagePost")
+                        .WithMany("Content")
+                        .HasForeignKey("FeedPagePostId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("App.Domain.HomePageBanner", "HomePageBanner")
+                        .WithMany("Content")
+                        .HasForeignKey("HomePageBannerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("App.Domain.Translations.LanguageString", "LanguageString")
                         .WithOne("Content")
@@ -468,18 +642,55 @@ namespace App.DAL.EF.Migrations
                         .HasForeignKey("NewsId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("App.Domain.PageContent", "PageContent")
+                        .WithMany("Content")
+                        .HasForeignKey("PageContentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("App.Domain.Project", "Project")
                         .WithMany("Content")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.Navigation("ContactPerson");
+
                     b.Navigation("ContentType");
+
+                    b.Navigation("FeedPageCategory");
+
+                    b.Navigation("FeedPagePost");
+
+                    b.Navigation("HomePageBanner");
 
                     b.Navigation("LanguageString");
 
                     b.Navigation("News");
 
+                    b.Navigation("PageContent");
+
                     b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("App.Domain.FeedPageCategory", b =>
+                {
+                    b.HasOne("App.Domain.FeedPage", "FeedPage")
+                        .WithMany("FeedPageCategories")
+                        .HasForeignKey("FeedPageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FeedPage");
+                });
+
+            modelBuilder.Entity("App.Domain.FeedPagePost", b =>
+                {
+                    b.HasOne("App.Domain.FeedPageCategory", "FeedPageCategory")
+                        .WithMany("FeedPagePosts")
+                        .HasForeignKey("FeedPageCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FeedPageCategory");
                 });
 
             modelBuilder.Entity("App.Domain.HasTopicArea", b =>
@@ -490,9 +701,9 @@ namespace App.DAL.EF.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("App.Domain.Project", "Project")
-                        .WithMany("HasTopicAreas")
+                        .WithMany()
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("App.Domain.TopicArea", "TopicArea")
                         .WithMany()
@@ -601,6 +812,33 @@ namespace App.DAL.EF.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("App.Domain.ContactPerson", b =>
+                {
+                    b.Navigation("Content");
+                });
+
+            modelBuilder.Entity("App.Domain.FeedPage", b =>
+                {
+                    b.Navigation("FeedPageCategories");
+                });
+
+            modelBuilder.Entity("App.Domain.FeedPageCategory", b =>
+                {
+                    b.Navigation("Content");
+
+                    b.Navigation("FeedPagePosts");
+                });
+
+            modelBuilder.Entity("App.Domain.FeedPagePost", b =>
+                {
+                    b.Navigation("Content");
+                });
+
+            modelBuilder.Entity("App.Domain.HomePageBanner", b =>
+                {
+                    b.Navigation("Content");
+                });
+
             modelBuilder.Entity("App.Domain.Identity.AppRole", b =>
                 {
                     b.Navigation("UserRoles");
@@ -620,11 +858,14 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("HasTopicAreas");
                 });
 
+            modelBuilder.Entity("App.Domain.PageContent", b =>
+                {
+                    b.Navigation("Content");
+                });
+
             modelBuilder.Entity("App.Domain.Project", b =>
                 {
                     b.Navigation("Content");
-
-                    b.Navigation("HasTopicAreas");
                 });
 
             modelBuilder.Entity("App.Domain.Translations.LanguageString", b =>
