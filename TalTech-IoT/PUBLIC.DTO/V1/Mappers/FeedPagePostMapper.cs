@@ -1,4 +1,5 @@
 
+using System.Reflection.Emit;
 using System.Security.Cryptography.X509Certificates;
 using App.Domain;
 using Public.DTO.Content;
@@ -9,6 +10,17 @@ namespace Public.DTO.V1.Mappers;
 
 public class FeedPagePostMapper
 {
+
+    public static Public.DTO.V1.FeedPage.GetFeedPageCategoryPostTranslated MapTranslated(BLL.DTO.V1.FeedPagePost entity, string languageCulture)
+    {
+        return new GetFeedPageCategoryPostTranslated()
+        {
+            Id = entity.Id,
+            Body = ContentHelper.GetContentValue(entity, ContentTypes.BODY, languageCulture),
+            Title = ContentHelper.GetContentValue(entity, ContentTypes.TITLE, languageCulture),
+            FeedPageCategoryId = entity.FeedPageCategoryId
+        };
+    }
     public static BLL.DTO.V1.FeedPagePost Map(Public.DTO.V1.FeedPage.FeedPagePost entity, List<ContentType> contentTypes)
     {
         var titleContentType = contentTypes.First(x => x.Name == ContentTypes.TITLE);

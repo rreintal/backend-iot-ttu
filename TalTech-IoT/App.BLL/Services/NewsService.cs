@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using App.BLL.Contracts;
 using App.BLL.Contracts.ImageStorageModels.Save;
+using App.BLL.Services.ImageStorageService.Models.Delete;
 using App.DAL.Contracts;
 using App.Domain;
 using App.Domain.Constants;
@@ -152,6 +153,42 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         var dalResult = await Uow.NewsRepository.AddAsync(dalEntity);
         var result = _mapper.Map<News>(dalResult);
         return result;
+    }
+
+    public async Task<News> RemoveAsync(News entity)
+    {
+        var data = new DeleteContent()
+        {
+            Items = new List<DeletePayloadContent>()
+        };
+        data.Items.Add(new DeletePayloadContent()
+        {
+            Content = entity.GetContentValue(ContentTypes.BODY, LanguageCulture.ENG)
+        });
+        
+        data.Items.Add(new DeletePayloadContent()
+        {
+            Content = entity.GetContentValue(ContentTypes.BODY, LanguageCulture.EST)
+        });
+        
+        var bodyBaseContent = ContentHelper.GetContentBaseValue(entity.Content.First(x => x.ContentType!.Name == ContentTypes.BODY));
+        data.Items.Add(new DeletePayloadContent()
+        {
+            Content = bodyBaseContent
+        });
+
+        var response = await _imageStorageService.Delete(data);
+        
+        // What to do if it fails?? notify user?
+        if (response == false)
+        {
+            Console.WriteLine("NewsService: Delete to CDN failed!");            
+        }
+
+        // TODO: mõtle läbi. RemoveAsync peaks võtma ikka entity :)
+        //var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
+        var dalResult = await Uow.NewsRepository.RemoveAsync(entity.Id);
+        return _mapper.Map<News>(dalResult);
     }
     
     public override News Add(News entity)

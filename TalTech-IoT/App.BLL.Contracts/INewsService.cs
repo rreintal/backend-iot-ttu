@@ -15,5 +15,7 @@ public interface INewsService : ITranslateableEntityService<News>, INewsReposito
 
     public Task<News> AddAsync(News entity);
 
+    public Task<News> RemoveAsync(News entity);
+
     public Task<News?> FindByIdAllTranslationsAsync(Guid id);
 }

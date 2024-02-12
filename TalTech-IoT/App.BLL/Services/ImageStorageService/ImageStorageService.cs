@@ -33,6 +33,7 @@ public class ImageStorageService : IImageStorageService
     {
         // TODO: check if it even needs to send any data, if not don't bother!
         // TODO: mby make a wrapper for the object with field done = true/false
+        
         Dictionary<int, string> bufferMap = new Dictionary<int, string>(); // (sequence, OriginalContent)
         Dictionary<int, List<SaveImage>?> payloadDict = new Dictionary<int, List<SaveImage>?>(); // (sequence, OriginalContentImagesToSave)
         Dictionary<int, List<string>?> srcTagDict = new Dictionary<int, List<string>?>(); // siin on (sequence, OriginalContentSrcTagList [replace jaoks]) 
@@ -45,14 +46,14 @@ public class ImageStorageService : IImageStorageService
         // Get every content images which need to be saved
         foreach (var itemToSave in data.Items)
         {
-            var imagesToSave = _imageExtractor.ExtractBase64Images(itemToSave.Content);
+            var imagesToSave = _imageExtractor.ExtractBase64ImagesWithFormat(itemToSave.Content);
             if (imagesToSave.IsNullOrEmpty())
             {
                 // If content does not have any images to save
             }
             else
             {
-                var srcTagList = _imageExtractor.ExtractSrcElementList(itemToSave.Content);
+                var srcTagList = _imageExtractor.ExtractBase64ImageSrcTag(itemToSave.Content);
                 payloadDict[itemToSave.Sequence] = imagesToSave;
                 srcTagDict[itemToSave.Sequence] = srcTagList;   
             }
@@ -126,9 +127,48 @@ public class ImageStorageService : IImageStorageService
         return result;
     }
     
-    public bool Delete(string content)
+    public async Task<bool> Delete(DeleteContent content)
     {
-        throw new NotImplementedException();
+        List<CDNDeleteImage> imagesToDelete = new List<CDNDeleteImage>();
+        foreach (var contentToDelete in content.Items)
+        {
+            var extractedLinks = _imageExtractor.ExtractImageWithResource(contentToDelete.Content);
+            extractedLinks?.ForEach(e => imagesToDelete.Add(
+                new CDNDeleteImage()
+                {
+                    ImageName = e
+                }));
+        }
+        
+        
+        // If there is no items to delete then dont do it!
+        if (imagesToDelete.IsNullOrEmpty())
+        {
+            Console.WriteLine("ImageStorageService: Delete() - no images to delete!");
+            return true;
+        }
+        
+        Console.WriteLine($"ImageStorageService: Delete() - PENDING: deleting {imagesToDelete.Count} images");
+        var request = new HttpRequestMessage(HttpMethod.Delete, ImageStorageServiceConstants.DELETE_IMAGE)
+        {
+            Content = new StringContent(JsonConvert.SerializeObject(imagesToDelete), Encoding.UTF8, "application/json")
+        };
+        var response = await _httpClient.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            // Read the response content as a string.
+            var contentString = await response.Content.ReadAsStringAsync();
+
+            // Deserialize the content string to a boolean.
+            bool result = JsonSerializer.Deserialize<bool>(contentString);
+            Console.WriteLine($"ImageStorageService: Delete() - SUCCESS: deleting {imagesToDelete.Count} images!");
+            return result;
+        }
+        else
+        {
+            Console.WriteLine($"ImageStorageService: Delete() - FAIL: deleting {imagesToDelete.Count} images!");
+            return false;
+        }
     }
 
     public string ReplaceImages(string content)

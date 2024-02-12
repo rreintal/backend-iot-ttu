@@ -143,7 +143,7 @@ public class NewsController : ControllerBase
                 Status = HttpStatusCode.NotFound
             });
         }
-        _bll.NewsService.Remove(entity);
+        await _bll.NewsService.RemoveAsync(entity);
         await _bll.SaveChangesAsync();
         return Ok();
     }

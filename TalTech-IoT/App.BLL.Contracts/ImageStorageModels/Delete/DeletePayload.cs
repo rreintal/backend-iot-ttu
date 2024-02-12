@@ -1,6 +1,6 @@
 namespace App.BLL.Services.ImageStorageService.Models.Delete;
 
-public class DeletePayload
+public class DeleteContent
 {
-    public List<DeletePayloadContent> Data { get; set; } = default!;
+    public List<DeletePayloadContent> Items { get; set; } = default!;
 }

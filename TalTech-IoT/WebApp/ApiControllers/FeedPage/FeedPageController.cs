@@ -49,6 +49,7 @@ public class FeedPageController : ControllerBase
         return Ok(result);
     }
     
+    /*
     /// <summary>
     /// Get FeedPage with categories/posts by identifier (all langs)
     /// </summary>
@@ -69,6 +70,7 @@ public class FeedPageController : ControllerBase
 
         return Ok(FeedPageMapper.Map(bllEntity));
     }
+    */
     
     
     
@@ -79,7 +81,7 @@ public class FeedPageController : ControllerBase
     /// <param name="languageCulture"></param>
     /// <returns></returns>
     [HttpGet("{languageCulture}/{identifier}")]
-    public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPage>> Get(string identifier, string languageCulture)
+    public async Task<ActionResult<Public.DTO.V1.FeedPage.GetFeedPageTranslated>> Get(string identifier, string languageCulture)
     {
         var bllEntity = await _bll.FeedPageService.FindAsyncByNameTranslated(identifier, languageCulture);
         if (bllEntity == null)
@@ -91,7 +93,7 @@ public class FeedPageController : ControllerBase
             });
         }
 
-        var result = FeedPageMapper.Map(bllEntity, languageCulture); 
+        var result = FeedPageMapper.MapTranslated(bllEntity, languageCulture); 
         return Ok(result);
     }
     

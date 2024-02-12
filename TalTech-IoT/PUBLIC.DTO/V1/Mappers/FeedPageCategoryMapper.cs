@@ -34,6 +34,18 @@ public class FeedPageCategoryMapper
         };
     }
 
+    public static Public.DTO.V1.FeedPage.GetFeedPageCategoryTranslated MapTranslated(BLL.DTO.V1.FeedPageCategory entity,
+        string languageCulture)
+    {
+        return new GetFeedPageCategoryTranslated()
+        {
+            Id = entity.Id,
+            Title = ContentHelper.GetContentValue(entity, ContentTypes.TITLE, languageCulture),
+            FeedPageCategoryPost = entity.FeedPagePosts
+                .Select(e => FeedPagePostMapper.MapTranslated(e, languageCulture)).ToList()
+        };
+    }
+
     public static Public.DTO.V1.FeedPage.FeedPageCategory Map(BLL.DTO.V1.FeedPageCategory entity)
     {
         // ALL LANGS

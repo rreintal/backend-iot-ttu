@@ -9,6 +9,6 @@ public interface IImageStorageService
     public Task<List<SaveResult>> Save(SaveContent data);
     public string ReplaceImages(string content);
     
-    public bool Delete(string content);
+    public Task<bool> Delete(DeleteContent content);
 
 }
