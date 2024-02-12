@@ -80,4 +80,15 @@ public class FeedPageCategoryRepository : EFBaseRepository<FeedPageCategory, App
         var result = Update(existingObject);
         return result;
     }
+
+    public async Task<List<FeedPageCategory>> GetFeedPageCategoryWithoutPosts()
+    {
+        return await DbSet
+            .Include(x => x.Content)
+            .ThenInclude(x => x.LanguageString)
+            .ThenInclude(x => x.LanguageStringTranslations)
+            .Include(x => x.Content)
+            .ThenInclude(x => x.ContentType)
+            .ToListAsync();
+    }
 }

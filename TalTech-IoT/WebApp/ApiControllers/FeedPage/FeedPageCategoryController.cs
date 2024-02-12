@@ -2,7 +2,6 @@ using System.Net;
 using App.BLL.Contracts;
 using App.Domain.Constants;
 using Asp.Versioning;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1.FeedPage;
@@ -82,10 +81,48 @@ public class FeedPageCategoryController : ControllerBase
     }
 
     /// <summary>
+    /// Create new Category with PageIdentifier
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    [HttpPost]
+    public async Task<ActionResult> PostWithPageIdentifier(PostFeedPageCategoryWithPageIdentifier entity)
+    {
+        var contentTypes = await _bll.NewsService.GetContentTypes();
+        var feedPage = await _bll.FeedPageService.FindAsyncByName(entity.FeedPageIdentifier);
+        if (feedPage == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
+        var bllEntity = PostFeedPageCategoryWithPageIdenitiferMapper.Map(entity, contentTypes, feedPage.Id);
+        var result = _bll.FeedPageCategoryService.Add(bllEntity);
+        await _bll.SaveChangesAsync();
+        return Ok();
+    }
+
+    /// <summary>
+    /// Get Categories without Posts
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<ActionResult<List<FeedPageCategory>>> GetWithoutPosts()
+    {
+        var result = await _bll.FeedPageCategoryService.GetCategoryWithoutPosts();
+        return result.Select(e => FeedPageCategoryMapper.Map(e)).ToList();
+    }
+    
+
+    /// <summary>
     /// Create new FeedPageCategory 
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
+    /*
     [HttpPost]
     public async Task<ActionResult<FeedPageCategory>> Post(FeedPageCategory entity)
     {
@@ -96,6 +133,7 @@ public class FeedPageCategoryController : ControllerBase
         var result = FeedPageCategoryMapper.Map(bllResult);
         return Ok(result);
     }
+    */
 
     /// <summary>
     /// Update Feed Page Category (PS. only Title!)

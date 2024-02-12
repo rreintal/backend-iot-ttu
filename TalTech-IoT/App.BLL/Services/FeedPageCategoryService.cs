@@ -1,17 +1,21 @@
 using App.BLL.Contracts;
 using App.DAL.Contracts;
-using App.Domain;
+using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
+using BLL.DTO.V1;
+using FeedPageCategory = App.Domain.FeedPageCategory;
 
 namespace App.BLL.Services;
 
 public class FeedPageCategoryService : BaseEntityService<global::BLL.DTO.V1.FeedPageCategory, FeedPageCategory, IFeedPageCategoryRepository>, IFeedPageCategoryService
 {
     private IAppUOW _uow;
-    public FeedPageCategoryService(IAppUOW uow, IMapper<global::BLL.DTO.V1.FeedPageCategory, FeedPageCategory> mapper) : base(uow.FeedPageCategoryRepository, mapper)
+    private IMapper _mapper;
+    public FeedPageCategoryService(IAppUOW uow, IMapper<global::BLL.DTO.V1.FeedPageCategory, FeedPageCategory> mapper, IMapper mapper1) : base(uow.FeedPageCategoryRepository, mapper)
     {
         _uow = uow;
+        _mapper = mapper1;
     }
 
     public async Task<IEnumerable<global::BLL.DTO.V1.FeedPageCategory>> AllAsync(string? languageCulture)
@@ -35,5 +39,10 @@ public class FeedPageCategoryService : BaseEntityService<global::BLL.DTO.V1.Feed
         var domainObject = Mapper.Map(entity);
         var domainResult = await _uow.FeedPageCategoryRepository.UpdateAsync(domainObject);
         return Mapper.Map(domainResult)!;
+    }
+
+    public async Task<List<global::BLL.DTO.V1.FeedPageCategory>> GetCategoryWithoutPosts()
+    {
+        return (await _uow.FeedPageCategoryRepository.GetFeedPageCategoryWithoutPosts()).Select(e => _mapper.Map<global::BLL.DTO.V1.FeedPageCategory>(e)).ToList();
     }
 }
