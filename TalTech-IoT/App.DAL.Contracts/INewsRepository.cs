@@ -11,10 +11,16 @@ public interface INewsRepository :IBaseTranslateableRepository<App.Domain.News>,
     public Task<IEnumerable<App.Domain.News>> AllAsyncFiltered(NewsFilterSet filterSet, string languageString);
 
     public Task<App.Domain.News?> FindByIdWithAllTranslationsAsync(Guid Id);
+    
+    public Task<App.Domain.News?> FindByIdWithAllTranslationsAsyncNoTracking(Guid Id);
 
-    public Task<App.Domain.News?> Update(UpdateNews dalEntity);
+    public Task<App.Domain.News?> Update(News dalEntity);
 
     public News Add(News entity);
+
+    public Domain.News? FindByIdWithAllTranslations(Guid id);
+
+    public Task<News> AddAsync(News entity);
 }
 
 public interface INewsRepositoryCustom<TEntity>

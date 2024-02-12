@@ -12,8 +12,8 @@ public class ContentTypesRepository : EFBaseRepository<App.Domain.ContentType, A
     {
     }
 
-    public ContentType FindByName(string name)
+    public async Task<ContentType> FindByName(string name)
     {
-        return DbSet.Where(x => x.Name == name).AsNoTracking().First();
+        return await DbSet.Where(x => x.Name == name).AsNoTracking().FirstAsync();
     }
 }

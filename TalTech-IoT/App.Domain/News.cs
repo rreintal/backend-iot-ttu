@@ -37,4 +37,11 @@ public class News : DomainEntityIdMetaData, IHasTopicAreaEntity, IContentEntity
             .LanguageString;
         result.Value = value;
     }
+    
+    public string GetBaseLanguageContent(string contentType)
+    {
+        var result = Content.First(c => c.ContentType!.Name == contentType)
+            .LanguageString;
+        return result.Value;
+    }
 }

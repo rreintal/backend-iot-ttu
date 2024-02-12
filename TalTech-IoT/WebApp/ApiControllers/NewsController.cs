@@ -42,9 +42,9 @@ public class NewsController : ControllerBase
     {
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
-        var bllResult = _bll.NewsService.Add(bllEntity);
-        await _bll.SaveChangesAsync();
+        var bllResult = await _bll.NewsService.AddAsync(bllEntity);
         var result = ReturnNewsMapper.Map(bllResult);
+        await _bll.SaveChangesAsync();
         return Ok(result) ;
     }
 
@@ -106,14 +106,13 @@ public class NewsController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPut]
-    public async Task<ActionResult> Update([FromBody] Public.DTO.V1.UpdateNews data)
+    public async Task<ActionResult<News>> Update([FromBody] Public.DTO.V1.UpdateNews data)
     {
-        // TODO - when updating, should we add the language culture which one we want to update?
         // TODO - updating is with both languages!!!
-        // TODO: ei tööta
+        // TODO: TopicArea update not working!
         var contentTypes = await _bll.NewsService.GetContentTypes();
         var bllEntity = UpdateNewsMapper.Map(data, contentTypes);
-        var result = await _bll.NewsService.UpdateNews(bllEntity);
+        var result =  await _bll.NewsService.UpdateAsync(bllEntity);
         if (result == null)
         {
             return NotFound(new RestApiResponse()
@@ -135,7 +134,7 @@ public class NewsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
-        var entity = await _bll.NewsService.FindAsync(id);
+        var entity = await _bll.NewsService.FindByIdAllTranslationsAsync(id);
         if (entity == null)
         {
             return NotFound(new RestApiResponse()
@@ -144,7 +143,7 @@ public class NewsController : ControllerBase
                 Status = HttpStatusCode.NotFound
             });
         }
-        var result = _bll.NewsService.Remove(entity);
+        _bll.NewsService.Remove(entity);
         await _bll.SaveChangesAsync();
         return Ok();
     }
@@ -176,12 +175,17 @@ public class NewsController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("Preview/{id}")]
-    public async Task<Public.DTO.V1.NewsAllLangs> GetNewsAllLanguages(Guid id)
+    public async Task<ActionResult<Public.DTO.V1.NewsAllLangs>> GetNewsAllLanguages(Guid id)
     {
         var entity = await _bll.NewsService.FindByIdAllTranslationsAsync(id);
         if (entity == null)
         {
-            
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+
         }
         return NewsAllLangMapper.Map(entity);
     }

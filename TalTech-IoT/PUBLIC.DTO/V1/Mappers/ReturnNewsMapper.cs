@@ -5,11 +5,11 @@ namespace Public.DTO.V1.Mappers;
 
 public class ReturnNewsMapper
 {
-    public static News Map(BLL.DTO.V1.News data, bool thumbnail = false)
+    public static News? Map(BLL.DTO.V1.News? data, bool thumbnail = false)
     {
         
         // TODO: better fix, currently hack 
-        var body = data.Content.Count == 1 ? "" : data.GetContentValue(ContentTypes.BODY);
+        var body = data!.Content.Count == 1 ? "" : data.GetContentValue(ContentTypes.BODY); // this means when there is only title, then dont get body
         var result =  new News()
         {
             Body = body,

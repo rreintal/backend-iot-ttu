@@ -1,74 +1,103 @@
+
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.RegularExpressions;
 using App.BLL.Contracts;
+using App.BLL.Contracts.ImageStorageModels.Save;
+using App.BLL.Contracts.ImageStorageModels.Save.Result;
+using App.BLL.Services.ImageStorageService.Models;
+using App.BLL.Services.ImageStorageService.Models.Delete;
 using App.Domain.Constants;
+using BLL.DTO.V1;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualBasic;
 using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace App.BLL.Services;
+namespace App.BLL.Services.ImageStorageService;
 
+ 
 public class ImageStorageService : IImageStorageService
 {
     
     private static readonly HttpClient _httpClient = new HttpClient();
-    private const string PATTERN_IMAGE_WITH_RESOURCE = @"<img\s+src=""[^""]+/([^""]+)""";
-    private const string PATTERN_BASE64IMAGE = "<img src=\"data:image/(jpeg|png|jpg|webp);base64,([^\"]+)\""; // TODO: init this in constructor and List.join(|) for file types!
+    private ImageExtractor _imageExtractor { get; }
+
     public ImageStorageService()
     {
-        
+        _imageExtractor = new ImageExtractor();
     }
 
-    private SaveImagesDTO? ExtractBase64Images(string content)
+
+    public async Task<SaveResult> Save(SaveContent data)
     {
-        var srcElementRegex = "<img[^>]*>";
-        List<string> srcTagsList = new List<string> {};
+        Dictionary<int, string> bufferMap = new Dictionary<int, string>();
+        Dictionary<int, List<SaveImage>?> payloadDict = new Dictionary<int, List<SaveImage>?>();
+        Dictionary<int, List<string>?> srcTagDict = new Dictionary<int, List<string>?>();
 
-        MatchCollection matches = Regex.Matches(content, srcElementRegex);
-        
-        
-        foreach (Match match in matches)
+        foreach (var originalContent in data.Items)
         {
-            if (match.Success)
-            {
-                srcTagsList.Add(match.Value);
-            }
+            bufferMap[originalContent.Sequence] = originalContent.Content;
         }
 
-        // If no images in content
-        if (srcTagsList.IsNullOrEmpty())
+        // Get every content images which need to be saved
+        foreach (var itemToSave in data.Items)
         {
-            // return original content
-            return null;
+            var imagesToSave = _imageExtractor.ExtractBase64Images(itemToSave.Content);
+            var srcTagList = _imageExtractor.ExtractSrcElementList(itemToSave.Content);
+            payloadDict[itemToSave.Sequence] = imagesToSave;
+            srcTagDict[itemToSave.Sequence] = srcTagList;
         }
 
-        var imageServicePayload = new SaveImagesDTO()
+        var CDNPayload = new CDNSaveImages()
         {
-            data = new List<SaveImageDTO>()
+            Items = new List<CDNSaveUnit>()
         };
-        
-        string base64Regex = PATTERN_BASE64IMAGE;
 
-        foreach (var tag in srcTagsList)
+        foreach (var pair in payloadDict)
         {
-            Match match = Regex.Match(tag, base64Regex);
-            if (match.Success)
+            var sequenceNumber = pair.Key;
+            var items = pair.Value;
+            var unit = new CDNSaveUnit()
             {
-                var dto = new SaveImageDTO()
-                {
-                    FileFormat = match.Groups[1].Value,
-                    ImageContent = match.Groups[2].Value, 
-                    Sequence = srcTagsList.IndexOf(tag) // TODO: if there are multiple same images, make some buffer list
-                };
-                imageServicePayload.data.Add(dto);
-            }
+                Sequence = sequenceNumber,
+                Items = items
+            };
+            CDNPayload.Items.Add(unit);
+        }
+        
+        // Send images to save
+
+        var response = await _httpClient.PostAsJsonAsync(ImageStorageServiceConstants.UPLOAD_IMAGE, CDNPayload);
+        var responseJson = await response.Content.ReadAsStringAsync();
+
+        var responseData = JsonSerializer.Deserialize<List<CDNSaveResult>>(responseJson);
+        // Replace all images from original string with the updated link!
+        foreach (var originalData in data.Items)
+        {
+            // võta originaal content
+            // võta srcTagListist sama indexiga
+            // tee uus <src> tag
+            // replace vana item uuega ORIGINAALCONTENTIS
+            // salvesta content
+            var imagesWithCdnLinks = responseData.First(x => x.Sequence == originalData.Sequence);
+            var originalContent = bufferMap[originalData.Sequence]; // pole vaja? siin juba content olemas .content
+            var originalContentSrcStringList = srcTagDict[originalData.Sequence];
+            
+            //var newItem = $"<img src=\"{ImageStorageServiceConstants.IMAGE_PUBLIC_LOCATION}{resultDto.Link}.png\">";
+            
+
+            
         }
 
-        return imageServicePayload;
+        throw new NotImplementedException();
+        // return data
+
+
     }
-    public async Task<string> ReplaceImages(string content)
+
+    public string ReplaceImages(string content)
     {
+        /*
         // replace base string (languageString.value)
         var srcElementRegex = "<img[^>]*>";
         List<string> srcTagsList = new List<string> {};
@@ -91,9 +120,9 @@ public class ImageStorageService : IImageStorageService
             return content;
         }
         
-        var imageServicePayload = new SaveImagesDTO()
+        var imageServicePayload = new SavePayload()
         {
-            data = new List<SaveImageDTO>()
+            Data = new List<SaveImage>()
         };
         
         string base64Regex = PATTERN_BASE64IMAGE;
@@ -103,7 +132,7 @@ public class ImageStorageService : IImageStorageService
             Match match = Regex.Match(tag, base64Regex);
             if (match.Success)
             {
-                var dto = new SaveImageDTO()
+                var dto = new SaveImage()
                 {
                     FileFormat = match.Groups[1].Value,
                     ImageContent = match.Groups[2].Value, 
@@ -113,7 +142,7 @@ public class ImageStorageService : IImageStorageService
             }
         }
         
-        var saveImagesResultsDto = await Save(imageServicePayload);
+        var saveImagesResultsDto = Save(imageServicePayload);
 
         foreach (var resultDto in saveImagesResultsDto!.Results)
         {
@@ -122,27 +151,48 @@ public class ImageStorageService : IImageStorageService
             var newItem = $"<img src=\"{baseLoc}{resultDto.Link}\">"; // TODO: remove this .png here
             content = content.Replace(itemFromOriginalArray, newItem);
         }
-        
+        */
+        throw new NotImplementedException();
         return content;
     }
-    
-    // PROLLY EI TOHI OLLA ASYNC?
-    private async Task<SaveImagesResultsDTO?> Save(SaveImagesDTO payload)
+
+    public bool Delete(string content)
     {
-        try
-            {
-                var response = await _httpClient.PostAsJsonAsync(ImageStorageServiceConstants.UPLOAD_IMAGE, payload);
-                var responseData = await response.Content.ReadFromJsonAsync<SaveImagesResultsDTO>();
-                return responseData!;
-            }
-            catch (HttpRequestException e)
-            {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
-            }
-        return null;
+        throw new NotImplementedException();
     }
 
+    //private SaveImagesResultsDTO? Save(Content content)
+    //{
+        /*
+        try
+        {
+            var postPayload = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+            var response = _httpClient.Send(new HttpRequestMessage(HttpMethod.Post, ImageStorageServiceConstants.UPLOAD_IMAGE)
+            {
+                Content = postPayload
+            });
+                
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = response.Content.ReadAsStringAsync().Result;
+                var result = JsonConvert.DeserializeObject<SaveImagesResultsDTO>(responseContent);
+                return result;
+            }
+            else
+            {
+                // TODO: what happens if it fails?
+            }
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine("\nException Caught!");
+            Console.WriteLine("Message :{0} ", e.Message);
+        }
+        return null;
+        */
+    //}
+
+    /*
     public bool Delete(string content)
     {
         var payload = new List<DeleteImage>() { };
@@ -181,7 +231,7 @@ public class ImageStorageService : IImageStorageService
         return false;
     }
 
-    public async Task<string> Update(string oldContent, string newContent)
+    public string Update(string oldContent, string newContent)
     {
         // Get all old content images
         var oldContentImages = new List<string>() { };
@@ -240,7 +290,7 @@ public class ImageStorageService : IImageStorageService
         //var newImagesPayload = ExtractBase64Images(newContent);
 
         // TODO: refactor this replace images shit!
-        await ReplaceImages(newContent);
+        ReplaceImages(newContent);
 
         // Post all the new images
 
@@ -279,4 +329,5 @@ public class ImageStorageService : IImageStorageService
             return false;
         }
     }
+    */
 }

@@ -90,7 +90,23 @@ public abstract class ContentHelper
 
         return result;
     }
+    
+    public static void SetContentTranslationValue(IContentEntity entity, string contentType, string languageCulture, string value)
+    {
+        var result = entity.Content.First(c => c.ContentType!.Name == contentType)
+            .LanguageString!.LanguageStringTranslations
+            .Where(translation => translation.LanguageCulture == languageCulture).First();
+        
+        result.TranslationValue = value;
+    }
 
+    public static void SetBaseLanguage(IContentEntity entity,string contentType, string value)
+    {
+        var result = entity.Content.First(c => c.ContentType!.Name == contentType)
+            .LanguageString;
+        result.Value = value;
+    }
+    
     public static string? GetContentValue(IContentEntity entity, string contentType, string languageCulture)
     {
         var result = entity.Content

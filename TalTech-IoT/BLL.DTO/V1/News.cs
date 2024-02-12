@@ -1,9 +1,10 @@
 using Base.Domain;
+using BLL.DTO.ContentHelper;
 using Contracts;
 
 namespace BLL.DTO.V1;
 
-public class News : DomainEntityId, IContainsContent
+public class News : DomainEntityId, IContainsContent, IContentEntity
 {
     public List<BLL.DTO.V1.Content> Content { get; set; } = default!;
     public List<BLL.DTO.V1.TopicArea> TopicAreas { get; set; } = default!;
@@ -16,11 +17,17 @@ public class News : DomainEntityId, IContainsContent
 
     public string GetContentValue(string contentType)
     {
-        var result = Content.First(c => c.ContentType!.Name == contentType)
+        try
+        {
+            var result = Content.First(c => c.ContentType!.Name == contentType)
                 .LanguageString.LanguageStringTranslations!.First();
             return result.TranslationValue;
-
         }
+        catch
+        {
+            return "ERROR IN BLL.NEWS";
+        }
+    }
     
     public string GetContentValue(string contentType, string languageCulture)
     {

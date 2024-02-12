@@ -10,6 +10,9 @@ using Public.DTO.V1.Mappers;
 
 namespace WebApp.ApiControllers;
 
+/// <summary>
+/// Controller for Contact Persons
+/// </summary>
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
 [ApiVersion("1")]
@@ -107,6 +110,11 @@ public class ContactPersonController : ControllerBase
         return result;
     }
     
+    /// <summary>
+    /// Get all Concact Persons with translation
+    /// </summary>
+    /// <param name="languageCulture"></param>
+    /// <returns></returns>
     [HttpGet("{languageCulture}")]
     public async Task<ActionResult<IEnumerable<Public.DTO.V1.GetContactPerson>>> GetAll(string languageCulture)
     {

@@ -35,8 +35,61 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         var res = DbSet.Add(entity).Entity;
         return res;
     }
-    
+
     public News Add(News entity)
+    {
+        var domainEntity = _mapper.Map<App.Domain.News>(entity);
+
+        foreach (var bllTopicArea in entity.TopicAreas)
+        {
+            var hasTopicAreaId = Guid.NewGuid();
+            var hasTopicArea = new App.Domain.HasTopicArea()
+            {
+                Id = hasTopicAreaId,
+                NewsId = domainEntity.Id,
+                TopicAreaId = bllTopicArea.Id,
+            };
+
+            if (domainEntity.HasTopicAreas == null)
+            {
+                domainEntity.HasTopicAreas = new List<HasTopicArea>()
+                {
+                    hasTopicArea
+                };
+            }
+            else
+            {
+                domainEntity.HasTopicAreas.Add(hasTopicArea);
+            }
+        }
+
+        var dalResult = Add(domainEntity);
+        var result = _mapper.Map<News>(dalResult);
+        return result;
+    }
+
+    public Domain.News? FindByIdWithAllTranslations(Guid id)
+    {
+        var query = DbSet.Where(x => x.Id == id)
+            .IncludeHasTopicAreasWithTranslation()
+            .IncludeContentWithTranslation()
+            .FirstOrDefault();
+
+        if (query == null)
+        {
+            return null;
+        }
+        
+        return _mapper.Map<Domain.News>(query);
+    }
+
+    public override Domain.News Remove(Domain.News entity)
+    {
+        DbSet.Entry(entity).State = EntityState.Deleted;
+        return base.Remove(entity);
+    }
+
+    public async Task<News> AddAsync(News entity)
     {
         var domainEntity = _mapper.Map<App.Domain.News>(entity);
 
@@ -73,7 +126,6 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         var query = await DbSet.Where(x => x.Id == Id)
             .IncludeHasTopicAreasWithTranslation()
             .IncludeContentWithTranslation()
-            .AsTracking()
             .FirstOrDefaultAsync();
 
         if (query == null)
@@ -84,9 +136,31 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         return query;
     }
 
-    public async Task<App.Domain.News?> Update(UpdateNews dalEntity)
+    public async Task<Domain.News?> FindByIdWithAllTranslationsAsyncNoTracking(Guid Id)
     {
-        var existingDomainObject = await FindByIdWithAllTranslationsAsync(dalEntity.Id);
+        var query = await DbSet.Where(x => x.Id == Id)
+            .IncludeHasTopicAreasWithTranslation()
+            .IncludeContentWithTranslation()
+            .FirstOrDefaultAsync();
+
+        if (query == null)
+        {
+            return null;
+        }
+        
+        return query;
+    }
+
+    public async Task<App.Domain.News?> Update(News dalEntity)
+    {
+        /*
+         var existingDomainObject = FindByIdWithAllTranslations(entity.Id);
+        var newDomainObject = _mapper.Map<Domain.News>(existingDomainObject);
+        existingDomainObject!.Image = newDomainObject.Image;
+        UpdateContentHelper.UpdateContent(existingDomainObject, newDomainObject);
+        return base.Update(existingDomainObject);
+         */
+        var existingDomainObject = await FindByIdWithAllTranslationsAsyncTracking(dalEntity.Id);
         var newDomainObject = _mapper.Map<Domain.News>(dalEntity);
         
         // imagine its updated  
@@ -99,68 +173,24 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         UpdateContentHelper.UpdateContent(existingDomainObject, newDomainObject);
         var result = Update(existingDomainObject);
         return result;
+    }
 
+    public async Task<App.Domain.News?> FindByIdWithAllTranslationsAsyncTracking(Guid Id)
+    {
+        var query = await DbSet.Where(x => x.Id == Id)
+            .AsTracking()
+            .IncludeHasTopicAreasWithTranslation()
+            .IncludeContentWithTranslation()
+            .FirstOrDefaultAsync();
 
-        // TODO - if it has topicAreas more than 2 levels!?
-        // is it relevant? all children are linked with id
-        
-        // check if topicAreaHasChanged
-        /*
-        var updateTopicAreas = true;
-        foreach (var updateDtoTopicArea in entity.TopicAreas)
+        if (query == null)
         {
-            if (existingDomainObject!.HasTopicAreas.FirstOrDefault(ta => ta.TopicAreaId == updateDtoTopicArea.Id) ==
-                null)
-            {
-                updateTopicAreas = true;
-                break;
-            }
-        }
-        */
-        // TODO - refactor!!!!!
-        // remove all previous topicAreas
-
-        // TODO - 
-        /*
-        foreach (var ta in existingDomainObject!.HasTopicAreas)
-        {
-            DbContext.HasTopicAreas.Attach(ta);
-            DbContext.Entry(ta).State = EntityState.Deleted;
+            return null;
         }
         
-        // update topicAreas
-        if (updateTopicAreas)
-        {
-            var newTopicAreas = new List<HasTopicArea>();
-            foreach (var bllTa in entity.TopicAreas)
-            {
-                var hasTopicAreaId = Guid.NewGuid();
-                var hasTopicArea = new App.Domain.HasTopicArea()
-                {
-                    Id = hasTopicAreaId,
-                    NewsId = existingDomainObject!.Id,
-                    TopicAreaId = bllTa.Id
-                };
-                newTopicAreas.Add(hasTopicArea);
-            }
-
-            // TODO - maybe check if the HasTopicAreas is not null?
-            // is it relevant, as its mandatory to have atelast one TopicArea
-            existingDomainObject!.HasTopicAreas = newTopicAreas;
-        }
-        
-        // TODO - what is going on here?!
-        DbContext.HasTopicAreas.AddRange(existingDomainObject.HasTopicAreas);
-        existingDomainObject.Author = "a";
-        */
-        //var result = Update(existingDomainObject);
-        //return result;
+        return query;
     }
     
-
-    // see peaks vist DAL objekt olema tegelt?!
-    // need HasTopicArea-d oleks mpaitud juba TopicArea
-
     public async Task<IEnumerable<App.Domain.News>> AllAsyncFiltered(NewsFilterSet filterSet, string languageCulture)
     {
         // TODO - optimize!!!!

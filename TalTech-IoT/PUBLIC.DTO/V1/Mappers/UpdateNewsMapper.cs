@@ -5,7 +5,7 @@ namespace Public.DTO.V1.Mappers;
 
 public class UpdateNewsMapper
 {
-    public static BLL.DTO.V1.UpdateNews Map(Public.DTO.V1.UpdateNews entity, List<BLL.DTO.V1.ContentType> contentTypes)
+    public static BLL.DTO.V1.News Map(Public.DTO.V1.UpdateNews entity, List<BLL.DTO.V1.ContentType> contentTypes)
     {
         var entityId = Guid.NewGuid();
         var bodyContentType = contentTypes.First(x => x.Name == ContentTypes.BODY);
@@ -16,7 +16,7 @@ public class UpdateNewsMapper
         
         var bodyContent = ContentHelper.CreateContent(entity.Body, bodyContentType, entityId,
             ContentHelper.EContentHelperEntityType.HomePageBanner);
-        return new BLL.DTO.V1.UpdateNews()
+        return new BLL.DTO.V1.News()
         {
             Id = entity.Id,
             Author = entity.Author,

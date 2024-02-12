@@ -25,6 +25,11 @@ public class PageContentController : ControllerBase
         _bll = bll;
     }
 
+    /// <summary>
+    /// Create new PageContent
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<ActionResult<PageContent>> Add(PageContent entity)
     {
@@ -47,6 +52,11 @@ public class PageContentController : ControllerBase
     
     
     // TODO: see oleks nagu Preview!
+    /// <summary>
+    /// Get Page Content in both languages
+    /// </summary>
+    /// <param name="pageIdentifier"></param>
+    /// <returns></returns>
     [HttpGet("{pageIdentifier}")]
     public async Task<ActionResult<Public.DTO.V1.PageContent?>> Get(string pageIdentifier)
     {
@@ -65,7 +75,7 @@ public class PageContentController : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Get Page Content in specific language
     /// </summary>
     /// <param name="languageCulture"></param>
     /// <param name="pageIdentifier"></param>

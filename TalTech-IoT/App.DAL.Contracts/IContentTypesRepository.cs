@@ -5,5 +5,5 @@ namespace App.DAL.Contracts;
 
 public interface IContentTypesRepository : IBaseRepository<ContentType>
 {
-    public ContentType FindByName(string name);
+    public Task<ContentType> FindByName(string name);
 }

@@ -8,12 +8,12 @@ namespace App.BLL.Contracts;
 
 public interface INewsService : ITranslateableEntityService<News>, INewsRepositoryCustom<App.Domain.News> // App.Domain.News mby sketchy
 {
-    // add your custom service methods here!
     public Task<List<ContentType>> GetContentTypes();
     
     public Task<IEnumerable<News>> AllAsyncFiltered(NewsFilterSet filterSet, string languageCulture);
-    public Task<News?> UpdateNews(UpdateNews entity);
+    public Task<News?> UpdateAsync(News entity);
+
+    public Task<News> AddAsync(News entity);
 
     public Task<News?> FindByIdAllTranslationsAsync(Guid id);
-    
 }
