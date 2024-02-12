@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using App.BLL.Contracts;
 using App.BLL.Contracts.ImageStorageModels.Save;
 using App.BLL.Contracts.ImageStorageModels.Save.Result;
+using App.BLL.Contracts.ImageStorageModels.Update;
 using App.BLL.Services.ImageStorageService.Models;
 using App.BLL.Services.ImageStorageService.Models.Delete;
 using App.Domain.Constants;
@@ -105,20 +106,26 @@ public class ImageStorageService : IImageStorageService
                 var responseListWithContentLinks = responseData.First(e => e.Sequence == originalData.Sequence);
             
                 // replace originaalContentis srcTag uue srcTagiga
-                var updatedContent = "";
+                
+                
+                // this is because when it does not have any images to save, then it wont override the existing content with ""!!
+                
+                    var updatedContent = "";
             
-                foreach (var newLink in responseListWithContentLinks.Items)
-                {
-                    var newItem = $"<img src=\"{ImageStorageServiceConstants.IMAGE_PUBLIC_LOCATION}{newLink.Link}\">"; // Link = Image name on server 'abc.png'
-                    var oldItem = originalContentSrcTagList![newLink.Sequence];
-                    updatedContent = originalData.Content.Replace(oldItem, newItem);
-                }
+                    foreach (var newLink in responseListWithContentLinks.Items)
+                    {
+                        var newItem = $"<img src=\"{ImageStorageServiceConstants.IMAGE_PUBLIC_LOCATION}{newLink.Link}\">"; // Link = Image name on server 'abc.png'
+                        var oldItem = originalContentSrcTagList![newLink.Sequence];
+                        updatedContent = originalData.Content.Replace(oldItem, newItem);
+                    }
 
-                var resultItem = new SaveResult()
-                {
-                    Sequence = originalData.Sequence,
-                    UpdatedContent = updatedContent
-                };
+                    var resultItem = new SaveResult()
+                    {
+                        Sequence = originalData.Sequence,
+                        UpdatedContent = updatedContent
+                    };    
+                
+                
                 result.Add(resultItem);
             }
 
@@ -126,19 +133,147 @@ public class ImageStorageService : IImageStorageService
         }
         return result;
     }
-    
-    public async Task<bool> Delete(DeleteContent content)
+
+    public async Task<List<UpdateResult>> Update(UpdateContent data)
+    {
+        var deleteData = new DeleteContent()
+        {
+            Items = new List<DeletePayloadContent>()
+        };
+
+        foreach (var itemToUpdate in data.Items)
+        {
+            var unusedImages = _imageExtractor.ExtractUnusedImages(itemToUpdate.OldContent, itemToUpdate.NewContent);
+            if (unusedImages != null)
+            {
+                unusedImages.ForEach(item =>
+                {
+                    deleteData.Items.Add(new DeletePayloadContent()
+                    {
+                        Content = item
+                    });
+                });
+            }
+        }
+
+        // If there are some unused images to delete!
+        if (!deleteData.Items.IsNullOrEmpty())
+        {
+            var isDeleteSuccessful = await Delete(deleteData, true);
+            if (!isDeleteSuccessful)
+            {
+                // TODO: what to do here if delete fails???
+            }
+        }
+        
+        // Update new iamges
+        var saveData = new SaveContent()
+        {
+            Items = new List<SaveItem>()
+        };
+        Dictionary<int, string> newContentDict = new Dictionary<int, string>();
+
+        foreach (var dataToUpdate in data.Items)
+        {
+            // lisa uus content
+            newContentDict[dataToUpdate.Sequence] = dataToUpdate.NewContent;
+        }
+
+        foreach (var pair in newContentDict)
+        {
+            var saveItem = new SaveItem()
+            {
+                Content = pair.Value,
+                Sequence = pair.Key
+            };
+            saveData.Items.Add(saveItem);
+        }
+
+
+        
+        var result = new List<UpdateResult>() { };
+        // TODO ADD CHECK HERE IF SAVEDATA == 0 THEN DONT EVEN SEND IT!
+        var saveResult = await Save(saveData);
+        // if there was something to save
+        if (!saveResult.IsNullOrEmpty())
+        {
+            foreach (var saveItem in saveResult)
+            {
+                result.Add(new UpdateResult()
+                {
+                    NewContent = saveItem.UpdatedContent,
+                    Sequence = saveItem.Sequence
+                });   
+            }
+
+            if (saveResult.Count != data.Items.Count)
+            {
+                foreach (var item in data.Items)
+                {
+                    // If there is nothing to update, then still add the content as UpdateResult
+                    var isItemUpdated = saveResult.FirstOrDefault(e => e.Sequence == item.Sequence) != null;
+                    if (!isItemUpdated)
+                    {
+                        result.Add(new UpdateResult()
+                        {
+                            Sequence = item.Sequence,
+                            NewContent = item.NewContent
+                        });
+                    }
+                }
+            }
+
+            return result;    
+        }
+        else
+        {
+            foreach (var originalItems in data.Items)
+            {
+                result.Add(new UpdateResult()
+                {
+                    NewContent = originalItems.NewContent,
+                    Sequence = originalItems.Sequence
+                });
+            }
+
+            return result;
+        }
+        
+    }
+
+
+    /// <summary>
+    /// This deletes images, if "alreadyImages = true" it means that the content already contains only image name for example "aaaa-aaaa-aaaa-aaaa.pdf"
+    /// </summary>
+    /// <param name="content"></param>
+    /// <param name="alreadyImages"></param>
+    /// <returns></returns>
+    public async Task<bool> Delete(DeleteContent content, bool alreadyImages = false)
     {
         List<CDNDeleteImage> imagesToDelete = new List<CDNDeleteImage>();
-        foreach (var contentToDelete in content.Items)
+        if (!alreadyImages)
         {
-            var extractedLinks = _imageExtractor.ExtractImageWithResource(contentToDelete.Content);
-            extractedLinks?.ForEach(e => imagesToDelete.Add(
-                new CDNDeleteImage()
-                {
-                    ImageName = e
-                }));
+            foreach (var contentToDelete in content.Items)
+            {
+                var extractedLinks = _imageExtractor.ExtractImageWithResource(contentToDelete.Content);
+                extractedLinks?.ForEach(e => imagesToDelete.Add(
+                    new CDNDeleteImage()
+                    {
+                        ImageName = e
+                    }));
+            }    
         }
+        else
+        {
+            foreach (var alreadyExtractedImage in content.Items)
+            {
+                imagesToDelete.Add(new CDNDeleteImage()
+                {
+                    ImageName = alreadyExtractedImage.Content
+                });
+            }
+        }
+        
         
         
         // If there is no items to delete then dont do it!

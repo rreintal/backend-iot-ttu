@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ImageStorageModels\Update" />
+      <Folder Include="ImageStorageModels\Update\Result" />
     </ItemGroup>
 
 </Project>
