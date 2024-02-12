@@ -13,4 +13,8 @@
       <ProjectReference Include="..\PUBLIC.DTO\PUBLIC.DTO.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="ImageStorageModels\Update" />
+    </ItemGroup>
+
 </Project>

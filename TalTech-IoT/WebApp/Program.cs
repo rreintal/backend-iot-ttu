@@ -2,6 +2,7 @@ using System.Text;
 using App.BLL;
 using App.BLL.Contracts;
 using App.BLL.Services;
+using App.BLL.Services.ImageStorageService;
 using App.DAL.Contracts;
 using App.DAL.EF;
 using App.DAL.EF.Seeding;
@@ -77,7 +78,7 @@ builder.Services
         options.UseNpgsql(connectionString, options =>
         {
             options.CommandTimeout(60);
-        }).EnableSensitiveDataLogging(true);
+        }).EnableSensitiveDataLogging();
     });
 
 builder.Services.AddIdentity<AppUser, AppRole>(

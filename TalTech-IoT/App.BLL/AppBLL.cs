@@ -75,7 +75,7 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
     private IContactPersonService? _contactPersonService;
     
     public IFeedPageCategoryService FeedPageCategoryService => _feedPageCategoryService ??=
-        new FeedPageCategoryService(Uow, new BaseMapper<FeedPageCategory, Domain.FeedPageCategory>(_mapper));
+        new FeedPageCategoryService(Uow, new BaseMapper<FeedPageCategory, Domain.FeedPageCategory>(_mapper), _mapper);
 
     private IFeedPageCategoryService? _feedPageCategoryService;
 
