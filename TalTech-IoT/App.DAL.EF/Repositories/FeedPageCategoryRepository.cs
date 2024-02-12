@@ -81,12 +81,13 @@ public class FeedPageCategoryRepository : EFBaseRepository<FeedPageCategory, App
         return result;
     }
 
-    public async Task<List<FeedPageCategory>> GetFeedPageCategoryWithoutPosts()
+    public async Task<List<FeedPageCategory>> GetFeedPageCategoryWithoutPosts(Guid feedPageId, string languageCulture)
     {
         return await DbSet
+            .Where(x => x.FeedPageId == feedPageId)
             .Include(x => x.Content)
             .ThenInclude(x => x.LanguageString)
-            .ThenInclude(x => x.LanguageStringTranslations)
+            .ThenInclude(x => x.LanguageStringTranslations.Where(e => e.LanguageCulture == languageCulture))
             .Include(x => x.Content)
             .ThenInclude(x => x.ContentType)
             .ToListAsync();

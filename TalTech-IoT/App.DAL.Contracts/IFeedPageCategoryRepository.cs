@@ -7,7 +7,7 @@ namespace App.DAL.Contracts;
 public interface IFeedPageCategoryRepository : IBaseTranslateableRepository<FeedPageCategory>  , IFeedPageCategoryRepositoryCustom
 {
     public Task<FeedPageCategory> UpdateAsync(FeedPageCategory entity);
-    public Task<List<FeedPageCategory>> GetFeedPageCategoryWithoutPosts();
+    public Task<List<FeedPageCategory>> GetFeedPageCategoryWithoutPosts(Guid feedPageId, string languageCulture);
 }
 
 public interface IFeedPageCategoryRepositoryCustom

@@ -6,7 +6,7 @@ namespace App.BLL.Contracts;
 
 public interface IImageStorageService
 {
-    public Task<SaveResult> Save(SaveContent data);
+    public Task<List<SaveResult>> Save(SaveContent data);
     public string ReplaceImages(string content);
     
     public bool Delete(string content);

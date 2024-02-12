@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using App.BLL.Contracts;
+using App.BLL.Contracts.ImageStorageModels.Save;
 using App.DAL.Contracts;
 using App.Domain;
 using App.Domain.Constants;
@@ -88,6 +89,51 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
+        
+        var data = new SaveContent()
+        {
+            Items = new List<SaveItem>()
+        };
+        var bodyEn = new SaveItem()
+        {
+            Sequence = 0,
+            Content = entity.GetContentValue(ContentTypes.BODY, LanguageCulture.ENG)
+        };
+        var bodyEt = new SaveItem()
+        {
+            Sequence = 1,
+            Content = entity.GetContentValue(ContentTypes.BODY, LanguageCulture.EST)
+        };
+        var bodyBaseContent = ContentHelper.GetContentBaseValue(entity.Content.First(x => x.ContentType!.Name == ContentTypes.BODY));
+        var bodyBase = new SaveItem()
+        {
+            Sequence = 2,
+            Content = bodyBaseContent
+        };
+        
+        data.Items.Add(bodyEn);
+        data.Items.Add(bodyEt);
+        data.Items.Add(bodyBase);
+
+        var cdnResult = await _imageStorageService.Save(data);
+
+        var newBodyEn = cdnResult.FirstOrDefault(e => e.Sequence == 0)?.UpdatedContent;
+        var newBodyEt = cdnResult.FirstOrDefault(e => e.Sequence == 1)?.UpdatedContent;
+        var newBBaseBody = cdnResult.FirstOrDefault(e => e.Sequence == 2)?.UpdatedContent;
+        
+        // check if content is not null
+        if (newBodyEn != null)
+        {
+            ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.ENG, newBodyEn);    
+        }
+
+        if (newBodyEt != null)
+        {
+            // TODO: this works because baseLanguage == ET and so if one of these has values, they both have! :(
+            ContentHelper.SetBaseLanguage(entity, ContentTypes.BODY, newBBaseBody);
+            ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, newBodyEt);    
+        }
+
         /*
         // User input content
         var bodyEn = entity.GetContentValue(ContentTypes.BODY, LanguageCulture.ENG);
@@ -119,6 +165,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
+        
         
         // User input content
         /*

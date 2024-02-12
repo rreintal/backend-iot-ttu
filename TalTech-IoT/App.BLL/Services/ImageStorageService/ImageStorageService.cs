@@ -1,6 +1,7 @@
 
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using App.BLL.Contracts;
 using App.BLL.Contracts.ImageStorageModels.Save;
@@ -28,11 +29,11 @@ public class ImageStorageService : IImageStorageService
     }
 
 
-    public async Task<SaveResult> Save(SaveContent data)
+    public async Task<List<SaveResult>> Save(SaveContent data)
     {
-        Dictionary<int, string> bufferMap = new Dictionary<int, string>();
-        Dictionary<int, List<SaveImage>?> payloadDict = new Dictionary<int, List<SaveImage>?>();
-        Dictionary<int, List<string>?> srcTagDict = new Dictionary<int, List<string>?>();
+        Dictionary<int, string> bufferMap = new Dictionary<int, string>(); // (sequence, OriginalContent)
+        Dictionary<int, List<SaveImage>?> payloadDict = new Dictionary<int, List<SaveImage>?>(); // (sequence, OriginalContentImagesToSave)
+        Dictionary<int, List<string>?> srcTagDict = new Dictionary<int, List<string>?>(); // siin on (sequence, OriginalContentSrcTagList [replace jaoks]) 
 
         foreach (var originalContent in data.Items)
         {
@@ -43,9 +44,16 @@ public class ImageStorageService : IImageStorageService
         foreach (var itemToSave in data.Items)
         {
             var imagesToSave = _imageExtractor.ExtractBase64Images(itemToSave.Content);
-            var srcTagList = _imageExtractor.ExtractSrcElementList(itemToSave.Content);
-            payloadDict[itemToSave.Sequence] = imagesToSave;
-            srcTagDict[itemToSave.Sequence] = srcTagList;
+            if (imagesToSave.IsNullOrEmpty())
+            {
+                // If content does not have any images to save
+            }
+            else
+            {
+                var srcTagList = _imageExtractor.ExtractSrcElementList(itemToSave.Content);
+                payloadDict[itemToSave.Sequence] = imagesToSave;
+                srcTagDict[itemToSave.Sequence] = srcTagList;   
+            }
         }
 
         var CDNPayload = new CDNSaveImages()
@@ -56,6 +64,7 @@ public class ImageStorageService : IImageStorageService
         foreach (var pair in payloadDict)
         {
             var sequenceNumber = pair.Key;
+            
             var items = pair.Value;
             var unit = new CDNSaveUnit()
             {
@@ -63,6 +72,7 @@ public class ImageStorageService : IImageStorageService
                 Items = items
             };
             CDNPayload.Items.Add(unit);
+
         }
         
         // Send images to save
@@ -70,29 +80,53 @@ public class ImageStorageService : IImageStorageService
         var response = await _httpClient.PostAsJsonAsync(ImageStorageServiceConstants.UPLOAD_IMAGE, CDNPayload);
         var responseJson = await response.Content.ReadAsStringAsync();
 
-        var responseData = JsonSerializer.Deserialize<List<CDNSaveResult>>(responseJson);
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        var responseData = JsonSerializer.Deserialize<List<CDNSaveResult>>(responseJson, options);
         // Replace all images from original string with the updated link!
+
+        var result = new List<SaveResult>() { };
+        // võta originaal content
         foreach (var originalData in data.Items)
         {
-            // võta originaal content
-            // võta srcTagListist sama indexiga
-            // tee uus <src> tag
-            // replace vana item uuega ORIGINAALCONTENTIS
-            // salvesta content
-            var imagesWithCdnLinks = responseData.First(x => x.Sequence == originalData.Sequence);
-            var originalContent = bufferMap[originalData.Sequence]; // pole vaja? siin juba content olemas .content
-            var originalContentSrcStringList = srcTagDict[originalData.Sequence];
-            
-            //var newItem = $"<img src=\"{ImageStorageServiceConstants.IMAGE_PUBLIC_LOCATION}{resultDto.Link}.png\">";
-            
 
+            // Check if content with this sequence even needs updating!
+            if (srcTagDict.ContainsKey(originalData.Sequence))
+            {
+                // võta originaalContenti srcTagList
+                var originalContentSrcTagList = srcTagDict[originalData.Sequence];
+                
+                // võta response item
+                var responseListWithContentLinks = responseData.First(e => e.Sequence == originalData.Sequence);
             
+                // replace originaalContentis srcTag uue srcTagiga
+                var updatedContent = "";
+            
+                foreach (var newLink in responseListWithContentLinks.Items)
+                {
+                    var newItem = $"<img src=\"{ImageStorageServiceConstants.IMAGE_PUBLIC_LOCATION}{newLink.Link}\">"; // Link = Image name on server 'abc.png'
+                    var oldItem = originalContentSrcTagList![newLink.Sequence];
+                    updatedContent = originalData.Content.Replace(oldItem, newItem);
+                }
+
+                var resultItem = new SaveResult()
+                {
+                    Sequence = originalData.Sequence,
+                    UpdatedContent = updatedContent
+                };
+                result.Add(resultItem);
+            }
+
+
         }
-
+        return result;
+    }
+    
+    public bool Delete(string content)
+    {
         throw new NotImplementedException();
-        // return data
-
-
     }
 
     public string ReplaceImages(string content)
@@ -154,11 +188,6 @@ public class ImageStorageService : IImageStorageService
         */
         throw new NotImplementedException();
         return content;
-    }
-
-    public bool Delete(string content)
-    {
-        throw new NotImplementedException();
     }
 
     //private SaveImagesResultsDTO? Save(Content content)

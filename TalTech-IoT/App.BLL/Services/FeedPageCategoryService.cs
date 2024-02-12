@@ -41,8 +41,10 @@ public class FeedPageCategoryService : BaseEntityService<global::BLL.DTO.V1.Feed
         return Mapper.Map(domainResult)!;
     }
 
-    public async Task<List<global::BLL.DTO.V1.FeedPageCategory>> GetCategoryWithoutPosts()
+    public async Task<List<global::BLL.DTO.V1.FeedPageCategory>> GetCategoryWithoutPosts(Guid feedPageId, string languageCulture)
     {
-        return (await _uow.FeedPageCategoryRepository.GetFeedPageCategoryWithoutPosts()).Select(e => _mapper.Map<global::BLL.DTO.V1.FeedPageCategory>(e)).ToList();
+
+        return (await _uow.FeedPageCategoryRepository.GetFeedPageCategoryWithoutPosts(feedPageId, languageCulture))
+            .Select(e => _mapper.Map<global::BLL.DTO.V1.FeedPageCategory>(e)).ToList();
     }
 }

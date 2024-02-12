@@ -109,11 +109,21 @@ public class FeedPageCategoryController : ControllerBase
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
-    [HttpGet]
-    public async Task<ActionResult<List<FeedPageCategory>>> GetWithoutPosts()
+    [HttpGet("{languageCulture}/{identifier}")]
+    public async Task<ActionResult<FeedPageCategory>> GetWithoutPosts(string languageCulture, string identifier)
     {
-        var result = await _bll.FeedPageCategoryService.GetCategoryWithoutPosts();
-        return result.Select(e => FeedPageCategoryMapper.Map(e)).ToList();
+        var feedPage = await _bll.FeedPageService.FindAsyncByName(identifier);
+        if (feedPage == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
+        var result = await _bll.FeedPageCategoryService.GetCategoryWithoutPosts(feedPage.Id, languageCulture);
+        var retrunResult = result.Select(e => FeedPageCategoryMapper.Map(e, languageCulture)).ToList();
+        return Ok(retrunResult);
     }
     
 
@@ -167,7 +177,7 @@ public class FeedPageCategoryController : ControllerBase
     /// <param name="id"></param>
     /// <param name="languageCulture"></param>
     /// <returns></returns>
-    [HttpGet("{languageCulture}/{id}")]
+    [HttpGet("/posts/{languageCulture}/{id}")]
     public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPageCategory>> Get(Guid id, string languageCulture)
     {
         var bllEntity = await _bll.FeedPageCategoryService.FindAsync(id, languageCulture);
