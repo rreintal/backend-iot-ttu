@@ -110,7 +110,7 @@ public class FeedPageCategoryController : ControllerBase
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpGet("{languageCulture}/{identifier}")]
-    public async Task<ActionResult<FeedPageCategory>> GetWithoutPosts(string languageCulture, string identifier)
+    public async Task<ActionResult<GetFeedPageCategoryWithoutPosts>> GetWithoutPosts(string languageCulture, string identifier)
     {
         var feedPage = await _bll.FeedPageService.FindAsyncByName(identifier);
         if (feedPage == null)
@@ -122,7 +122,8 @@ public class FeedPageCategoryController : ControllerBase
             });
         }
         var result = await _bll.FeedPageCategoryService.GetCategoryWithoutPosts(feedPage.Id, languageCulture);
-        var retrunResult = result.Select(e => FeedPageCategoryMapper.Map(e, languageCulture)).ToList();
+        
+        var retrunResult = result.Select(e => GetFeedPageCategoryWithoutPostsMapper.Map(e, languageCulture)).ToList();
         return Ok(retrunResult);
     }
     

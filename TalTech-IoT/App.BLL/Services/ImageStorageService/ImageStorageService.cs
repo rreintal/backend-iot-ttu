@@ -31,6 +31,8 @@ public class ImageStorageService : IImageStorageService
 
     public async Task<List<SaveResult>> Save(SaveContent data)
     {
+        // TODO: check if it even needs to send any data, if not don't bother!
+        // TODO: mby make a wrapper for the object with field done = true/false
         Dictionary<int, string> bufferMap = new Dictionary<int, string>(); // (sequence, OriginalContent)
         Dictionary<int, List<SaveImage>?> payloadDict = new Dictionary<int, List<SaveImage>?>(); // (sequence, OriginalContentImagesToSave)
         Dictionary<int, List<string>?> srcTagDict = new Dictionary<int, List<string>?>(); // siin on (sequence, OriginalContentSrcTagList [replace jaoks]) 
