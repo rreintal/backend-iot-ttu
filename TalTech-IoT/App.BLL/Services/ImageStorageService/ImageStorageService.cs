@@ -34,7 +34,7 @@ public class ImageStorageService : IImageStorageService
     {
         // TODO: check if it even needs to send any data, if not don't bother!
         // TODO: mby make a wrapper for the object with field done = true/false
-        
+        var thumbnailIndex = -1;
         Dictionary<int, string> bufferMap = new Dictionary<int, string>(); // (sequence, OriginalContent)
         Dictionary<int, List<SaveImage>?> payloadDict = new Dictionary<int, List<SaveImage>?>(); // (sequence, OriginalContentImagesToSave)
         Dictionary<int, List<string>?> srcTagDict = new Dictionary<int, List<string>?>(); // siin on (sequence, OriginalContentSrcTagList [replace jaoks]) 
@@ -47,6 +47,7 @@ public class ImageStorageService : IImageStorageService
         // Get every content images which need to be saved
         foreach (var itemToSave in data.Items)
         {
+            // Thumbnailiga probleem siin, see REGEX ei catchi seda
             var imagesToSave = _imageExtractor.ExtractBase64ImagesWithFormat(itemToSave.Content);
             if (imagesToSave.IsNullOrEmpty())
             {
@@ -58,6 +59,8 @@ public class ImageStorageService : IImageStorageService
                 payloadDict[itemToSave.Sequence] = imagesToSave;
                 srcTagDict[itemToSave.Sequence] = srcTagList;   
             }
+            
+            
         }
 
         var CDNPayload = new CDNSaveImages()
@@ -114,6 +117,7 @@ public class ImageStorageService : IImageStorageService
             
                     foreach (var newLink in responseListWithContentLinks.Items)
                     {
+                        
                         var newItem = $"<img src=\"{ImageStorageServiceConstants.IMAGE_PUBLIC_LOCATION}{newLink.Link}\">"; // Link = Image name on server 'abc.png'
                         var oldItem = originalContentSrcTagList![newLink.Sequence];
                         updatedContent = originalData.Content.Replace(oldItem, newItem);

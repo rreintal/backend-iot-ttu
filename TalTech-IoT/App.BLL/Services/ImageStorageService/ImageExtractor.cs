@@ -1,3 +1,4 @@
+using System.Security;
 using System.Text.RegularExpressions;
 using App.BLL.Contracts.ImageStorageModels.Save;
 using App.BLL.Services.ImageStorageService.Models;
@@ -16,43 +17,9 @@ public class ImageExtractor
     /// <summary>
     /// This detects  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==">
     /// </summary>
-    private const string PATTERN_BASE64IMAGE = "<img src=\"data:image/(jpeg|png|jpg|webp);base64,([^\"]+)\">"; 
-    
-    /*
-    public DeletePayload? ExtractImagesInCloud(string content)
-    {
-        var result = new DeletePayload()
-        {
-            Data = new List<Models.Delete.DeleteImage>()
-        };
-        
-        
-        // Regular expression pattern to match src attribute in img tags
-        string pattern = PATTERN_IMAGE_WITH_RESOURCE;
+    private const string PATTERN_BASE64IMAGE = "<img src=\"data:image/(jpeg|png|jpg|webp);base64,([^\"]+)\">";
 
-        MatchCollection matches = Regex.Matches(content, pattern);
-        // Iterate over the matches and extract image filenames
-        foreach (Match match in matches)
-        {
-            // Extract image filename
-            string filename = match.Groups[1].Value;
-            result.Data.Add(
-                new Models.Delete.DeleteImage()
-                {
-                    ImageName = filename
-                });
-        }
-
-        // If no images were found!
-        if (result.Data.IsNullOrEmpty())
-        {
-            return null;
-        }
-
-        return result;
-    }
-    */
-    // See tagastab { seq, [{img, format, seq}] }
+    private const string PATTERN_THUMBNAIL = @"^data:image\/(jpeg|png|jpg|webp);base64,([\/+A-Za-z0-9]+={0,2})$";
 
     /// <summary>
     /// 
@@ -75,8 +42,11 @@ public class ImageExtractor
     }
     public List<SaveImage>? ExtractBase64ImagesWithFormat(string content)
     {
-        var srcElementRegex = PATTERN_BASE64IMAGE;
         List<string> srcTagsList = new List<string> {};
+        var imageServicePayload = new List<SaveImage>() {};
+        
+        var srcElementRegex = PATTERN_BASE64IMAGE;
+        
 
         RegexHelper(srcElementRegex, content, (match => srcTagsList.Add(match)));
 
@@ -87,7 +57,7 @@ public class ImageExtractor
             return null;
         }
 
-        var imageServicePayload = new List<SaveImage>() {};
+            
         
         string base64Regex = PATTERN_BASE64IMAGE;
 
@@ -106,7 +76,8 @@ public class ImageExtractor
             }
         }
 
-        return imageServicePayload;
+        return imageServicePayload;   
+        
     }
 
     /// <summary>

@@ -10,6 +10,7 @@ using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
 using BLL.DTO.V1;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Public.DTO;
 using Public.DTO.Content;
 using Content = App.Domain.Content;
@@ -44,14 +45,12 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             return null;
         }
-        
+        /*
         var oldBodyEn = existingEntity.GetContentValue(ContentTypes.BODY, LanguageCulture.ENG);
         var oldBodyEt = existingEntity.GetContentValue(ContentTypes.BODY, LanguageCulture.EST);
-        var oldBaseBody = existingEntity.GetBaseLanguageContent(ContentTypes.BODY);
         
         var bodyEn = ContentHelper.GetContentValue(entity, ContentTypes.BODY, LanguageCulture.ENG);
         var bodyEt = ContentHelper.GetContentValue(entity, ContentTypes.BODY, LanguageCulture.EST);
-        var baseBody = ContentHelper.GetContentBaseValue(entity.Content.First(x => x.ContentType!.Name == ContentTypes.BODY));
 
         var updateData = new UpdateContent()
         {
@@ -71,48 +70,15 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             NewContent = bodyEt,
             Sequence = 1
         };
-
-        /*
-        var updatedBase = new UpdateItem()
-        {
-            OldContent = oldBaseBody,
-            NewContent = baseBody,
-            Sequence = 2
-        };
-        */
-
+        
         updateData.Items.Add(updateBodyEn);
         updateData.Items.Add(updateBodyEt);
-        //updateData.Items.Add(updatedBase);
 
         var updateResult = await _imageStorageService.Update(updateData);
-        var a = 2;
-        //ContentHelper.SetBaseLanguage(entity, ContentTypes.BODY, updateResult.First(e => e.Sequence == 2).NewContent);
         ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, updateResult.First(e => e.Sequence == 1).NewContent);
         ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.ENG, updateResult.First(e => e.Sequence == 0).NewContent);
-
-        /*
-         Tee Map
-        {1, oldBodyEn}
-        {2, oldBodyEt}
-        {3, oldBodyBase}
-        
-        // OLD VALUES
-        
-        
-        // NEW VALUES
-        
-
-        // UPDATED VALUES
-        var newBodyEn = _imageStorageService.Update(oldBodyEn, bodyEn);
-        var newBodyEt = _imageStorageService.Update(oldBodyEt, bodyEt);
-        var newBaseBody =  _imageStorageService.Update(oldBaseBody, baseBody);
-        
-        // SET NEW VALUES
-        ContentHelper.SetBaseLanguage(entity, ContentTypes.BODY, newBaseBody);
-        ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, newBodyEt);
-        ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.ENG, newBodyEn);
         */
+        
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var updatedDalEntity =  await Uow.NewsRepository.Update(dalEntity);
         var bllEntity = _mapper.Map<News?>(updatedDalEntity);
@@ -131,7 +97,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
-        
+        /*
         var data = new SaveContent()
         {
             Items = new List<SaveItem>()
@@ -146,25 +112,14 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             Sequence = 1,
             Content = entity.GetContentValue(ContentTypes.BODY, LanguageCulture.EST)
         };
-        
-        /*
-        var bodyBaseContent = ContentHelper.GetContentBaseValue(entity.Content.First(x => x.ContentType!.Name == ContentTypes.BODY));
-        var bodyBase = new SaveItem()
-        {
-            Sequence = 2,
-            Content = bodyBaseContent
-        };
-        */
-        
+
         data.Items.Add(bodyEn);
         data.Items.Add(bodyEt);
-        //data.Items.Add(bodyBase);
 
         var cdnResult = await _imageStorageService.Save(data);
 
         var newBodyEn = cdnResult.FirstOrDefault(e => e.Sequence == 0)?.UpdatedContent;
         var newBodyEt = cdnResult.FirstOrDefault(e => e.Sequence == 1)?.UpdatedContent;
-        //var newBBaseBody = cdnResult.FirstOrDefault(e => e.Sequence == 2)?.UpdatedContent;
         
         // check if content is not null
         if (newBodyEn != null)
@@ -174,9 +129,10 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
         if (newBodyEt != null)
         {
-            //ContentHelper.SetBaseLanguage(entity, ContentTypes.BODY, newBBaseBody);
             ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, newBodyEt);    
         }
+        
+        */
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var dalResult = await Uow.NewsRepository.AddAsync(dalEntity);
         var result = _mapper.Map<News>(dalResult);
@@ -185,6 +141,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
     public async Task<News> RemoveAsync(News entity)
     {
+        /*
         var data = new DeleteContent()
         {
             Items = new List<DeletePayloadContent>()
@@ -212,7 +169,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             Console.WriteLine("NewsService: Delete to CDN failed!");            
         }
-
+        */
         // TODO: mõtle läbi. RemoveAsync peaks võtma ikka entity :)
         //var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var dalResult = await Uow.NewsRepository.RemoveAsync(entity.Id);
