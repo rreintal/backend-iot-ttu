@@ -77,8 +77,8 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         var updateResult = await _imageStorageService.Update(updateData);
         ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, updateResult.First(e => e.Sequence == 1).NewContent);
         ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.ENG, updateResult.First(e => e.Sequence == 0).NewContent);
-        */
         
+        */
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var updatedDalEntity =  await Uow.NewsRepository.Update(dalEntity);
         var bllEntity = _mapper.Map<News?>(updatedDalEntity);
@@ -131,8 +131,8 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, newBodyEt);    
         }
-        
         */
+        
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var dalResult = await Uow.NewsRepository.AddAsync(dalEntity);
         var result = _mapper.Map<News>(dalResult);
@@ -141,7 +141,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
     public async Task<News> RemoveAsync(News entity)
     {
-        /*
+        
         var data = new DeleteContent()
         {
             Items = new List<DeletePayloadContent>()
@@ -169,7 +169,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             Console.WriteLine("NewsService: Delete to CDN failed!");            
         }
-        */
+        
         // TODO: mõtle läbi. RemoveAsync peaks võtma ikka entity :)
         //var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var dalResult = await Uow.NewsRepository.RemoveAsync(entity.Id);

@@ -27,12 +27,11 @@ public class ProjectsTests
     [Test, Order(0)]
     public async Task AddProjects_ValidData_ReturnsOk()
     {
-        // TODO: äkki mingi helper objekt mille kaudu saan muuta neid prope?
-        // TODO: aga iga objekti jaoks Helper?? ei tundu ok, küsi Edgarilt ka
         var data = new Public.DTO.V1.PostProjectDto()
         {
             ProjectManager = "super manager",
             ProjectVolume = 2000.0,
+            IsOngoing = true,
             Title = new List<ContentDto>()
             {
                 new ContentDto()
@@ -110,6 +109,7 @@ public class ProjectsTests
         var data = new Public.DTO.V1.PostProjectDto()
         {
             ProjectVolume = 2000.0,
+            IsOngoing = true,
             Title = new List<ContentDto>()
             {
                 new ContentDto()
@@ -190,6 +190,7 @@ public class ProjectsTests
         {
             ProjectManager = "super manager",
             ProjectVolume = 2000.0,
+            IsOngoing = true,
             Title = new List<ContentDto>()
             {
                 new ContentDto()
@@ -216,6 +217,7 @@ public class ProjectsTests
                     Value = bodyMessage
                 }
             }
+            
         };
         var client = _factory!.CreateClient();
         var response = await client.PostAsJsonAsync(BASE_URL, data);
