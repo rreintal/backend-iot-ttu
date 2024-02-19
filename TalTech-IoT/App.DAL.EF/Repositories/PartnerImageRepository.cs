@@ -14,7 +14,7 @@ public class PartnerImageRepository : EFBaseRepository<PartnerImage, AppDbContex
 
     public async override Task<PartnerImage?> FindAsync(Guid id)
     {
-        return await DbSet.Include(x => x.Link)
-            .Where(x => x.Id == id).FirstOrDefaultAsync();
+        return await DbSet
+            .FirstOrDefaultAsync(e => e.Id == id);
     }
 }

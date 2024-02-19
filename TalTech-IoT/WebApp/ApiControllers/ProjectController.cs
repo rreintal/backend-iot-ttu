@@ -35,11 +35,8 @@ public class ProjectController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Public.DTO.V1.PostProjectSuccessDto>> Create([FromBody] Public.DTO.V1.PostProjectDto data)
     {
-        // TODO - image optionaliks!
         var types = await _bll.NewsService.GetContentTypes(); // TODO - tee eraldi service ehk?
-        
         var bllEntity = ProjectMapper.Map(data, types);
-        
          var addedEntity = _bll.ProjectService.Add(bllEntity);
          await _bll.SaveChangesAsync();
          var result = ProjectMapper.Map(addedEntity);

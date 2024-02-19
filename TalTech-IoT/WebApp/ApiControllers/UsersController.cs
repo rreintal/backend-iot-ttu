@@ -446,7 +446,8 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(RestApiResponse), 400)]
     public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordModel model)
     {
-        var user = await _userManager.FindByIdAsync(model.UserId.ToString());
+        var userId = User.GetUserId();
+        var user = await _userManager.FindByIdAsync(userId.ToString());
 
         if (user == null)
         {

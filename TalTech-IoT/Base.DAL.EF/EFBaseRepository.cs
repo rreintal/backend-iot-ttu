@@ -40,6 +40,11 @@ public class EFBaseRepository<TEntity, TKey, TDbContext> : IBaseRepository<TEnti
          return await DbSet.ToListAsync();
     }
 
+    public virtual TEntity? Find(Guid id)
+    {
+        return DbSet.Find(id);
+    }
+
     public virtual async Task<TEntity?> FindAsync(TKey id)
     {
         return await DbSet.FindAsync(id);

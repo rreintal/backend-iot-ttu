@@ -4,12 +4,12 @@ namespace App.Domain.Helpers;
 
 public static class UpdateContentHelper
 {
-    public static void UpdateContent(IContentEntity existingEntity, IContentEntity newEntity, bool isOnlyTitleEntity = false)
+    public static void UpdateContent(IContentEntity existingEntity, IContentEntity newEntity, bool UpdateBody = true, bool UpdateTitle = true)
     {
         var cults = LanguageCulture.ALL_LANGUAGES;
         foreach (var lang in cults)
         {
-            if (!isOnlyTitleEntity)
+            if (UpdateBody)
             {
                 var oldBodyValue = GetContentValue(existingEntity, ContentTypes.BODY, lang);
                 var newBodyValue = GetContentValue(newEntity, ContentTypes.BODY, lang);
@@ -21,14 +21,18 @@ public static class UpdateContentHelper
                 }   
             }
 
-            var newTitleValue = GetContentValue(newEntity, ContentTypes.TITLE, lang);
-            var oldTitleValue = GetContentValue(existingEntity, ContentTypes.TITLE, lang);
-            var isTitleContentChanged = oldTitleValue != newTitleValue;
-            if (isTitleContentChanged)
+            if (UpdateTitle)
             {
-                SetContentTranslationValue(existingEntity, ContentTypes.TITLE, lang, newTitleValue);
-                SetBaseLanguage(existingEntity, ContentTypes.TITLE, newTitleValue);
+                var newTitleValue = GetContentValue(newEntity, ContentTypes.TITLE, lang);
+                var oldTitleValue = GetContentValue(existingEntity, ContentTypes.TITLE, lang);
+                var isTitleContentChanged = oldTitleValue != newTitleValue;
+                if (isTitleContentChanged)
+                {
+                    SetContentTranslationValue(existingEntity, ContentTypes.TITLE, lang, newTitleValue);
+                    SetBaseLanguage(existingEntity, ContentTypes.TITLE, newTitleValue);
+                }   
             }
+            
         }
     }
 

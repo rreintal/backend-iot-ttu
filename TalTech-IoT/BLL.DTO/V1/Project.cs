@@ -10,8 +10,6 @@ public class Project : DomainEntityId, IContainsContent
     public double ProjectVolume { get; set; } = default!;
     public DateTime CreatedAt { get; set; }
     public bool IsOngoing { get; set; }
-    
-    // body + title
     public List<Content> Content { get; set; } = default!;
     
     public string GetContentValue(string contentType)

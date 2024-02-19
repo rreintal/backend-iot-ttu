@@ -76,7 +76,7 @@ public class FeedPageCategoryRepository : EFBaseRepository<FeedPageCategory, App
     {
         var existingObject = await FindAsync(entity.Id);
         Console.WriteLine(entity.Id);
-        UpdateContentHelper.UpdateContent(existingObject, entity, isOnlyTitleEntity: true);
+        UpdateContentHelper.UpdateContent(existingObject, entity, UpdateBody: false);
         var result = Update(existingObject);
         return result;
     }

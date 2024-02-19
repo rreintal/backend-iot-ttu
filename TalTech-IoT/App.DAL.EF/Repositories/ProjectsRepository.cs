@@ -54,9 +54,13 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
         existingDomainObject.ProjectManager = entity.ProjectManager;
         if (entity.ProjectVolume != null)
         {
-            existingDomainObject.ProjectVolume = (double) entity.ProjectVolume;    
+            existingDomainObject.ProjectVolume = entity.ProjectVolume.Value;    
         }
-        
+
+        if (entity.Year != null)
+        {
+            existingDomainObject.Year = entity.Year.Value;
+        }
 
         var updateResult = Update(existingDomainObject);
         var result = _mapper.Map<Project>(updateResult);
@@ -69,7 +73,8 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
         {
             DbContext.ContentTypes.Attach(content.ContentType);
         }
-        
+
+        entity.CreatedAt = DateTime.UtcNow;
         return base.Add(entity);
     }
 

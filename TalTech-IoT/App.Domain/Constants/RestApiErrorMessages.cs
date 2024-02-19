@@ -24,6 +24,7 @@ public static class RestApiErrorMessages
     public const string MissingProjectManager = "MISING_PROJECT_MANAGER"; // TODO: kas vajalik?
     public const string MissingProjectVolume = "MISSING_PROJECT_VOLUME"; // TODO: kas vajalik?
     public const string MissingProjectYear = "MISSING_PROJECT_YEAR";
+    public const string InvalidProjectYear = "PROJECT_YEAR_MUST_BE_1000_TO_3000";
 
     /// <summary>
     /// FeedPageCategory

@@ -24,6 +24,24 @@ public class ContactPersonMapper
         return res;
     }
 
+    public static BLL.DTO.V1.ContactPerson MapToUpdate(Public.DTO.V1.ContactPerson entity, List<BLL.DTO.V1.ContentType> contentTypes)
+    {
+        var bodyContentType = contentTypes.First(x => x.Name == ContentTypes.BODY);
+
+        var bodyContent = ContentHelper.CreateContent(entity.Body, bodyContentType, entity.Id,
+            ContentHelper.EContentHelperEntityType.ContactPerson);
+
+        return new BLL.DTO.V1.ContactPerson()
+        {
+            Id = entity.Id,
+            Content = new List<BLL.DTO.V1.Content>()
+            { 
+                bodyContent
+            },
+            Name = entity.Name
+        };
+    }
+
     public static Public.DTO.V1.ContactPerson Map(BLL.DTO.V1.ContactPerson data)
     {
         return new ContactPerson()

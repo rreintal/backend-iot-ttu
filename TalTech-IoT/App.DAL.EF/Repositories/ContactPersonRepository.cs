@@ -1,6 +1,7 @@
 using App.DAL.Contracts;
 using App.DAL.EF.DbExtensions;
 using App.Domain;
+using App.Domain.Helpers;
 using AutoMapper;
 using Base.DAL.EF;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,24 @@ public class ContactPersonRepository : EFBaseRepository<ContactPerson, AppDbCont
             DbContext.Attach(content.ContentType);
         }
         return base.Add(entity);
+    }
+
+    public override ContactPerson? Find(Guid id)
+    {
+        var a=  DbSet
+            .IncludeContentWithTranslation()
+            .FirstOrDefault(e => e.Id == id);
+        return a;
+
+    }
+
+
+    public override ContactPerson Update(ContactPerson entity)
+    {
+        var existingObject = Find(entity.Id);
+        UpdateContentHelper.UpdateContent(existingObject, entity, UpdateTitle: false);
+        existingObject.Name = entity.Name;
+        return base.Update(existingObject);
     }
 
     public async Task<IEnumerable<ContactPerson>> AllAsync(string? languageCulture)

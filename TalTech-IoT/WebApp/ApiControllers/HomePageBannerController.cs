@@ -76,11 +76,13 @@ public class HomePageBannerController : ControllerBase
     /// Get all Banners with all languages
     /// </summary>
     /// <returns></returns>
+    /*
     [HttpGet]
     public async Task<ActionResult<IEnumerable<HomePageBanner>>> GetAll()
     {
         return (await _bll.HomePageBannerService.AllAsync()).Select(e => HomePageBannerMapper.Map(e)).ToList();
     }
+    */
 
     /// <summary>
     /// Send bulk request to update banner sequence

@@ -51,6 +51,7 @@ public class PartnerImageController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
+    /*
     [HttpGet("{id}")]
     public async Task<ActionResult<PartnerImage>> Get(Guid id)
     {
@@ -66,6 +67,7 @@ public class PartnerImageController : ControllerBase
 
         return PartnerImageMapper.Map(entity);
     }
+    */
 
     /// <summary>
     /// Delete PartnerImage by id

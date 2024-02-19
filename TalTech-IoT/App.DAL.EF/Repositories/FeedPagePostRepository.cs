@@ -54,9 +54,14 @@ public class FeedPagePostRepository : EFBaseRepository<FeedPagePost, AppDbContex
 
     public async Task<FeedPagePost> UpdateAsync(FeedPagePost entity)
     {
-        // TODO: is it possible to set a post to new category?
-        
         var existingObject = await FindAsync(entity.Id);
+        var categoryExists = await DbContext.FeedPageCategories.FindAsync(entity.FeedPageCategoryId) != null;
+        
+        // TODO: Check if category exists!! Do this in BLL, and throw an error if not!
+        if (categoryExists)
+        {
+            existingObject!.FeedPageCategoryId = entity.FeedPageCategoryId;
+        }
         UpdateContentHelper.UpdateContent(existingObject, entity);
         var result = Update(existingObject);
         return result;

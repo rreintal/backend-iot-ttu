@@ -122,5 +122,30 @@ public class ContactPersonController : ControllerBase
         var result = bllResult.Select(e => GetContactPersonMapper.Map(e));
         return Ok(result);
     }
-    
+
+    /// <summary>
+    /// Update Contact Person
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    [HttpPut]
+    public async Task<ActionResult<ContactPerson>> Update(ContactPerson entity)
+    {
+        var isEntityExists = await _bll.ContactPersonService.FindAsync(entity.Id) != null;
+        if (!isEntityExists)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Status = HttpStatusCode.NotFound,
+                Message = RestApiErrorMessages.GeneralNotFound
+            });
+        }
+        var contentTypes = await _bll.NewsService.GetContentTypes();
+        var bllEntity = ContactPersonMapper.MapToUpdate(entity, contentTypes);
+        var bllResult = _bll.ContactPersonService.Update(bllEntity);
+        var publicResult = ContactPersonMapper.Map(bllResult);
+        await _bll.SaveChangesAsync();
+        return Ok(publicResult);
+    }
+
 }

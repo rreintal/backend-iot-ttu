@@ -22,8 +22,4 @@
       <ProjectReference Include="..\IntegrationStartup\IntegrationStartup.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="ValidationTests" />
-    </ItemGroup>
-
 </Project>

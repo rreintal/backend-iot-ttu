@@ -115,6 +115,7 @@ public class FeedPagePostController : ControllerBase
     /// <param name="id"></param>
     /// <param name="languageCulture"></param>
     /// <returns></returns>
+    /*
     [HttpGet("{languageCulture}/{id}")]
     public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPagePost>> Get(Guid id, string languageCulture)
     {
@@ -131,4 +132,5 @@ public class FeedPagePostController : ControllerBase
         var result = FeedPagePostMapper.Map(bllEntity, languageCulture); 
         return Ok(result);
     }
+    */
 }

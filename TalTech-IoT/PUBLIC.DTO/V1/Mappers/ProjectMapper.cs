@@ -31,7 +31,7 @@ public class ProjectMapper
             ProjectVolume = entity.ProjectVolume,
             ProjectManager = entity.ProjectManager,
             Year = entity.Year,
-            IsOngoing = entity.IsOngoing
+            IsOngoing = entity.IsOngoing,
         };
 
         return project;
@@ -66,7 +66,8 @@ public class ProjectMapper
                     Culture = languageCulture,
                     Value = entity.GetContentValue(ContentTypes.TITLE, languageCulture)
                 };
-            }).ToList()
+            }).ToList(),
+            CreatedAt = entity.CreatedAt
 
         };
     }

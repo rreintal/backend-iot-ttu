@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices.JavaScript;
 using App.Domain.Constants;
 using Base.Domain;
 
@@ -6,7 +7,7 @@ namespace Public.DTO.V1;
 
 public class UpdateProject : DomainEntityId
 {
-    //[Range(1000, 3000)] 
+    [Range(1000, 3000, ErrorMessage = RestApiErrorMessages.InvalidProjectYear)] 
     public int? Year { get; set; }
 
     [MinLength(2)]

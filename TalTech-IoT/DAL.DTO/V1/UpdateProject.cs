@@ -9,7 +9,6 @@ public class UpdateProject : DomainEntityId
     public string? ProjectManager { get; set; }
     public double? ProjectVolume { get; set; }
     
-    public List<DAL.DTO.V1.TopicArea>? TopicAreas { get; set; }
     public List<DAL.DTO.V1.ContentDto> Title { get; set; } = default!;
     public List<DAL.DTO.V1.ContentDto> Body { get; set; } = default!;
 

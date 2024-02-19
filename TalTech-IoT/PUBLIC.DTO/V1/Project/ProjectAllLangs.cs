@@ -9,4 +9,6 @@ public class ProjectAllLangs
     public int Year { get; set; } 
     public double ProjectVolume { get; set; } 
     public string ProjectManager { get; set; } = default!;
+
+    public DateTime CreatedAt { get; set; }
 }

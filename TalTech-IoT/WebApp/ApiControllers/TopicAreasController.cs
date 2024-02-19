@@ -6,12 +6,9 @@ using Asp.Versioning;
 using AutoMapper;
 using DAL.DTO.V1.FilterObjects;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Public.DTO;
-using Public.DTO.ApiExceptions;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
-using TopicArea = BLL.DTO.V1.TopicArea;
 
 namespace WebApp.ApiControllers;
 
@@ -26,6 +23,7 @@ public class TopicAreasController : ControllerBase
     private readonly IAppBLL _bll;
     private readonly IMapper _mapper;
 
+    /// <inheritdoc />
     public TopicAreasController(IAppBLL bll, IMapper mapper)
     {
         _bll = bll;

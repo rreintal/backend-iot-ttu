@@ -30,6 +30,7 @@ public class FeedPageController : ControllerBase
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
+    /*
     [HttpPost]
     public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPage>> Post(Public.DTO.V1.FeedPage.FeedPage entity)
     {
@@ -48,6 +49,7 @@ public class FeedPageController : ControllerBase
         await _bll.SaveChangesAsync();
         return Ok(result);
     }
+    */
     
     /*
     /// <summary>

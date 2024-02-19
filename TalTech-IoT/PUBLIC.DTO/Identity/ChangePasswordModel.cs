@@ -10,6 +10,4 @@ public class ChangePasswordModel
     [Required] 
     public string OldPassword { get; set; } = default!;
 
-    [Required] 
-    public Guid UserId { get; set; } = default!;
 }
