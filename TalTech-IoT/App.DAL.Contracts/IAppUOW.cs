@@ -30,4 +30,6 @@ public interface IAppUOW : IBaseUOW
     IFeedPageRepository FeedPageRepository { get; }
     
     IFeedPagePostRepository FeedPagePostRepository { get; }
+    
+    IOpenSourceSolutionRepository OpenSourceSolutionRepository { get; }
 }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace App.DAL.EF;
 
-// Tee mingi BaseDb jne
+// TODO: Tee mingi BaseDb jne
 public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid, 
     IdentityUserClaim<Guid>, AppUserRole, IdentityUserLogin<Guid>,
     IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
@@ -35,6 +35,8 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
     public DbSet<HomePageBanner> HomePageBanners { get; set; } = default!;
 
     public DbSet<ContactPerson> ContactPersons { get; set; } = default!;
+
+    public DbSet<OpenSourceSolution> OpenSourceSolutions { get; set; } = default!;
 
     private const string TopicAreaUniqueNameExpression = "\"TopicAreaId\" IS NOT NULL";
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -171,6 +173,11 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
         builder.Entity<FeedPageCategory>()
             .HasMany(x => x.Content)
             .WithOne(x => x.FeedPageCategory)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Entity<OpenSourceSolution>()
+            .HasMany(x => x.Content)
+            .WithOne(x => x.OpenSourceSolution)
             .OnDelete(DeleteBehavior.Cascade);
 
     }

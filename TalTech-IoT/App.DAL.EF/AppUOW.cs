@@ -69,5 +69,10 @@ public class AppUOW : EFBaseUOW<AppDbContext>, IAppUOW
         _feedPagePostRepository ??= new FeedPagePostRepository(UowDbContext, _mapper);
 
     private IFeedPagePostRepository? _feedPagePostRepository;
-    
+
+    public IOpenSourceSolutionRepository OpenSourceSolutionRepository =>
+        _openSourceSolutionRepository ??= new OpenSourceSolutionRepository(UowDbContext, _mapper);
+
+    private IOpenSourceSolutionRepository? _openSourceSolutionRepository;
+
 }

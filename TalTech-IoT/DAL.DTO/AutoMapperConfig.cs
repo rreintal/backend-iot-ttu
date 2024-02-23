@@ -48,5 +48,7 @@ public class AutoMapperConfig : Profile
 
         CreateMap<App.Domain.News, DAL.DTO.V1.UpdateNews>().ReverseMap();
 
+        CreateMap<App.Domain.OpenSourceSolution, DAL.DTO.V1.OpenSourceSolution>().ReverseMap();
+
     }
 }

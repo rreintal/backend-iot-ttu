@@ -89,4 +89,10 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
 
     private IFeedPageService? _feedPageService;
 
+    public IOpenSourceSolutionService OpenSourceSolutionService =>
+        _openSourceSolutionService ??= new OpenSourceSolutionService(Uow,
+            new BaseMapper<OpenSourceSolution, Domain.OpenSourceSolution>(_mapper));
+
+    private IOpenSourceSolutionService? _openSourceSolutionService;
+
 }

@@ -31,6 +31,9 @@ public class Content : DomainEntityId
 
     public Guid? FeedPagePostId { get; set; }
     public FeedPagePost? FeedPagePost { get; set; }
+
+    public Guid? OpenSourceSolutionId { get; set; }
+    public OpenSourceSolution? OpenSourceSolution { get; set; }
     
     public Guid LanguageStringId { get; set; }
     public LanguageString LanguageString { get; set; } = default!;

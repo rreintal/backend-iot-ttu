@@ -8,7 +8,7 @@ namespace App.BLL.Services;
 
 public class FeedPagePostService : BaseEntityService<global::BLL.DTO.V1.FeedPagePost,FeedPagePost, IFeedPagePostRepository>, IFeedPagePostService
 {
-    private IAppUOW _uow;
+    private readonly IAppUOW _uow;
     public FeedPagePostService(IAppUOW uow, IMapper<global::BLL.DTO.V1.FeedPagePost, FeedPagePost> mapper) : base(uow.FeedPagePostRepository, mapper)
     {
         _uow = uow;

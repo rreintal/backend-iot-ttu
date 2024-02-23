@@ -15,7 +15,8 @@ public abstract class ContentHelper
         HomePageBanner,
         ContactPerson,
         FeedPageCategory,
-        FeedPagePost
+        FeedPagePost,
+        OpenSourceSolution
     }
     /// <summary>
     /// Helper to create content based on type (Title, Body)
@@ -34,6 +35,7 @@ public abstract class ContentHelper
         var contactPersonId = entityType == EContentHelperEntityType.ContactPerson ? entityId : (Guid?)null;
         var feedPageCategoryId = entityType == EContentHelperEntityType.FeedPageCategory ? entityId : (Guid?)null;
         var feedPagePostId = entityType == EContentHelperEntityType.FeedPagePost ? entityId : (Guid?)null;
+        var openSourceSolutionId = entityType == EContentHelperEntityType.OpenSourceSolution ? entityId : (Guid?)null;
         
         var baseContentDto = contentDtoList.First(x => x.Culture == LanguageCulture.BASE_LANGUAGE);
         var languageStringId = Guid.NewGuid();
@@ -54,7 +56,8 @@ public abstract class ContentHelper
             HomePageBannerId = homePageBannerId,
             ContactPersonId = contactPersonId,
             FeedPageCategoryId = feedPageCategoryId,
-            FeedPagePostId = feedPagePostId
+            FeedPagePostId = feedPagePostId,
+            OpenSourceSolutionId = openSourceSolutionId
             
         };
 
@@ -85,7 +88,8 @@ public abstract class ContentHelper
             ContentType = contentType,
             ContactPersonId = contactPersonId,
             FeedPageCategoryId = feedPageCategoryId,
-            FeedPagePostId = feedPagePostId
+            FeedPagePostId = feedPagePostId,
+            OpenSourceSolutionId = openSourceSolutionId
         };
 
         return result;

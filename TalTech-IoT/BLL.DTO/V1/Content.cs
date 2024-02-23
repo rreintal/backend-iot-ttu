@@ -32,4 +32,7 @@ public class Content : DomainEntityId, IContent
     
     public Guid? ContactPersonId { get; set; }
     public BLL.DTO.V1.ContactPerson? ContactPerson { get; set; }
+
+    public Guid? OpenSourceSolutionId { get; set; }
+    public BLL.DTO.V1.OpenSourceSolution? OpenSourceSolution { get; set; }
 }
