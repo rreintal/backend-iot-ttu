@@ -184,15 +184,9 @@ app.UseSwaggerUI(options =>
 });
 
 app.UseHttpsRedirection();
-
 app.UseCors("develop");
-
-
 app.UseRouting();
-
-// Order counts!!!!
 app.UseAuthorization(); 
-
 app.UseStaticFiles();
 
 

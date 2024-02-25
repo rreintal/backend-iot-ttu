@@ -26,11 +26,11 @@ COPY App.Domain/*.csproj ./App.Domain/
 COPY Base.BLL.Contracts/*.csproj ./Base.BLL.Contracts/
 COPY Base.DAL.EF/*.csproj ./Base.DAL.EF/
 COPY Base.Domain.Contracts/*.csproj ./Base.Domain.Contracts/
-COPY Integration/*.csproj ./Integration/
+COPY IntegrationTests/*.csproj ./IntegrationTests/
 COPY Factory/*.csproj ./Factory/
 COPY Util/*.csproj ./Util/
 COPY Helpers/*.csproj ./Helpers/
-COPY NUnitTests/*.csproj ./NUnitTests/
+COPY IntegrationStartup/*.csproj ./IntegrationStartup/
 
 RUN dotnet restore
 
@@ -53,11 +53,11 @@ COPY App.Domain/. ./App.Domain/
 COPY Base.BLL.Contracts/. ./Base.BLL.Contracts/
 COPY Base.DAL.EF/. ./Base.DAL.EF/
 COPY Base.Domain.Contracts/. ./Base.Domain.Contracts/
-COPY Integration/. ./Integration/
+COPY IntegrationTests/. ./IntegrationTests/
 COPY Factory/. ./Factory/
 COPY Util/. ./Util/
 COPY Helpers/. ./Helpers/
-COPY NUnitTests/. ./NUnitTests/
+COPY IntegrationStartup/. ./IntegrationStartup/
 
 
 WORKDIR /src/WebApp

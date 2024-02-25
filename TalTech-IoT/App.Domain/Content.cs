@@ -6,8 +6,6 @@ namespace App.Domain;
 
 public class Content : DomainEntityId
 {
-    [Timestamp]
-    public uint Version { get; set; }
     public Guid ContentTypeId { get; set; }
     public ContentType? ContentType { get; set; }
 
@@ -34,7 +32,6 @@ public class Content : DomainEntityId
 
     public Guid? OpenSourceSolutionId { get; set; }
     public OpenSourceSolution? OpenSourceSolution { get; set; }
-    
     public Guid LanguageStringId { get; set; }
     public LanguageString LanguageString { get; set; } = default!;
 }

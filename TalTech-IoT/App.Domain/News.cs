@@ -13,6 +13,8 @@ public class News : DomainEntityIdMetaData, IHasTopicAreaEntity, IContentEntity
     public string? Image { get; set; }
     public string ThumbnailImage { get; set; } = default!;
     public string Author { get; set; } = default!;
+    
+    public ICollection<ImageResource>? ImageResources { get; set; }
 
     public string GetContentValue(string contentType, string languageCulture)
     {

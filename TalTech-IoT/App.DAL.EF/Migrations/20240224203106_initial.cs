@@ -133,6 +133,20 @@ namespace App.DAL.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OpenSourceSolutions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Private = table.Column<bool>(type: "boolean", nullable: false),
+                    Link = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OpenSourceSolutions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PageContents",
                 columns: table => new
                 {
@@ -418,7 +432,6 @@ namespace App.DAL.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false),
                     ContentTypeId = table.Column<Guid>(type: "uuid", nullable: false),
                     NewsId = table.Column<Guid>(type: "uuid", nullable: true),
                     ProjectId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -427,6 +440,7 @@ namespace App.DAL.EF.Migrations
                     ContactPersonId = table.Column<Guid>(type: "uuid", nullable: true),
                     FeedPageCategoryId = table.Column<Guid>(type: "uuid", nullable: true),
                     FeedPagePostId = table.Column<Guid>(type: "uuid", nullable: true),
+                    OpenSourceSolutionId = table.Column<Guid>(type: "uuid", nullable: true),
                     LanguageStringId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -449,7 +463,7 @@ namespace App.DAL.EF.Migrations
                         column: x => x.FeedPageCategoryId,
                         principalTable: "FeedPageCategories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Contents_FeedPagePosts_FeedPagePostId",
                         column: x => x.FeedPagePostId,
@@ -475,6 +489,12 @@ namespace App.DAL.EF.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_Contents_OpenSourceSolutions_OpenSourceSolutionId",
+                        column: x => x.OpenSourceSolutionId,
+                        principalTable: "OpenSourceSolutions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Contents_PageContents_PageContentId",
                         column: x => x.PageContentId,
                         principalTable: "PageContents",
@@ -486,6 +506,33 @@ namespace App.DAL.EF.Migrations
                         principalTable: "Projects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ImageResource",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Link = table.Column<string>(type: "text", nullable: false),
+                    NewsId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ContentId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ImageResource", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ImageResource_Contents_ContentId",
+                        column: x => x.ContentId,
+                        principalTable: "Contents",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ImageResource_News_NewsId",
+                        column: x => x.NewsId,
+                        principalTable: "News",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -567,6 +614,11 @@ namespace App.DAL.EF.Migrations
                 column: "NewsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Contents_OpenSourceSolutionId",
+                table: "Contents",
+                column: "OpenSourceSolutionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Contents_PageContentId",
                 table: "Contents",
                 column: "PageContentId");
@@ -614,6 +666,16 @@ namespace App.DAL.EF.Migrations
                 column: "TopicAreaId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ImageResource_ContentId",
+                table: "ImageResource",
+                column: "ContentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ImageResource_NewsId",
+                table: "ImageResource",
+                column: "NewsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LanguageStrings_Value",
                 table: "LanguageStrings",
                 column: "Value",
@@ -659,10 +721,10 @@ namespace App.DAL.EF.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Contents");
+                name: "HasTopicAreas");
 
             migrationBuilder.DropTable(
-                name: "HasTopicAreas");
+                name: "ImageResource");
 
             migrationBuilder.DropTable(
                 name: "LanguageStringTranslations");
@@ -677,6 +739,12 @@ namespace App.DAL.EF.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
+                name: "TopicAreas");
+
+            migrationBuilder.DropTable(
+                name: "Contents");
+
+            migrationBuilder.DropTable(
                 name: "ContactPersons");
 
             migrationBuilder.DropTable(
@@ -689,22 +757,22 @@ namespace App.DAL.EF.Migrations
                 name: "HomePageBanners");
 
             migrationBuilder.DropTable(
-                name: "PageContents");
+                name: "LanguageStrings");
 
             migrationBuilder.DropTable(
                 name: "News");
 
             migrationBuilder.DropTable(
+                name: "OpenSourceSolutions");
+
+            migrationBuilder.DropTable(
+                name: "PageContents");
+
+            migrationBuilder.DropTable(
                 name: "Projects");
 
             migrationBuilder.DropTable(
-                name: "TopicAreas");
-
-            migrationBuilder.DropTable(
                 name: "FeedPageCategories");
-
-            migrationBuilder.DropTable(
-                name: "LanguageStrings");
 
             migrationBuilder.DropTable(
                 name: "FeedPages");

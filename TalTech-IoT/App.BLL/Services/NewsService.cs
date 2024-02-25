@@ -11,10 +11,12 @@ using Base.BLL;
 using Base.Contracts;
 using BLL.DTO.V1;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.IdentityModel.Tokens;
 using Public.DTO;
 using Public.DTO.Content;
 using Content = App.Domain.Content;
 using ContentType = BLL.DTO.V1.ContentType;
+using ImageResource = BLL.DTO.V1.ImageResource;
 using News = BLL.DTO.V1.News;
 
 
@@ -45,40 +47,94 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             return null;
         }
-        /*
-        var oldBodyEn = existingEntity.GetContentValue(ContentTypes.BODY, LanguageCulture.ENG);
-        var oldBodyEt = existingEntity.GetContentValue(ContentTypes.BODY, LanguageCulture.EST);
         
         var bodyEn = ContentHelper.GetContentValue(entity, ContentTypes.BODY, LanguageCulture.ENG);
         var bodyEt = ContentHelper.GetContentValue(entity, ContentTypes.BODY, LanguageCulture.EST);
+        var image = entity.Image;
+
+        
+        // If not adding the image + Thumbnail image then when updating
+        // the 'not used' or more specific 'not in the list when checking for unused images' then it gets deleted
+        var thumbNail = entity.ThumbnailImage == null ? existingEntity.ThumbnailImage : entity.ThumbnailImage;
 
         var updateData = new UpdateContent()
         {
             Items = new List<UpdateItem>()
         };
+        
+        var imageResources = await Uow.NewsRepository.GetImageResources(entity.Id);
+        updateData.ExistingImageLinks = imageResources.Select(e => e.Link).ToList();
 
         var updateBodyEn = new UpdateItem()
         {
-            OldContent = oldBodyEn,
-            NewContent = bodyEn,
+            Content = bodyEn,
             Sequence = 0
         };
 
         var updateBodyEt = new UpdateItem()
         {
-            OldContent = oldBodyEt,
-            NewContent = bodyEt,
+            Content = bodyEt,
             Sequence = 1
+        };
+
+        var updateImage = new UpdateItem()
+        {
+            Content = image,
+            Sequence = 2,
+            IsAlreadyBase64 = true
+        };
+
+        var thumbNailImage = new UpdateItem()
+        {
+            Content = thumbNail,
+            Sequence = 3,
+            IsAlreadyBase64 = true
         };
         
         updateData.Items.Add(updateBodyEn);
         updateData.Items.Add(updateBodyEt);
+        updateData.Items.Add(updateImage);
+        updateData.Items.Add(thumbNailImage);
 
         var updateResult = await _imageStorageService.Update(updateData);
-        ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, updateResult.First(e => e.Sequence == 1).NewContent);
-        ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.ENG, updateResult.First(e => e.Sequence == 0).NewContent);
+        if (updateResult != null && !updateResult.IsEmpty())
+        {
+            ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, updateResult.Items.First(e => e.Sequence == 1).Content);
+            ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.ENG, updateResult.Items.First(e => e.Sequence == 0).Content);
+            entity.Image = updateResult.Items.First(e => e.Sequence == 2).Content;
+            entity.ThumbnailImage = updateResult.Items.First(e => e.Sequence == 3).Content;
+
+            
+            // TODO: this is a hack as the BLL entity does not have the IMAGERESOURCES but DOMAIN object has 
+
+            entity.ImageResources = existingEntity.ImageResources.Select(e => _mapper.Map<ImageResource>(e)).ToList();
+            var IsAddedLinksEmpty = updateResult.AddedLinks.IsNullOrEmpty();
+            if (!IsAddedLinksEmpty)
+            {
+                // TODO: IMPORTANT- when fetching the object for update we need all these ImageResources!!1
+                foreach (var newLink in updateResult.AddedLinks)
+                {
+                    entity.ImageResources.Add(new ImageResource()
+                    {
+                        NewsId = entity.Id,
+                        Link = newLink 
+                    });   
+                }
+            }
+
+            var IsDeletedLinksEmpty = updateResult.DeletedLinks.IsNullOrEmpty();
+            if (!IsDeletedLinksEmpty && updateResult.DeletedLinks != null)
+            {
+                foreach (var deletedLink in updateResult.DeletedLinks)
+                {
+                    var itemToRemove = entity.ImageResources.First(e => e.Link == deletedLink);
+                    entity.ImageResources.Remove(itemToRemove);
+                }
+            }
+        }
         
-        */
+        
+        
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var updatedDalEntity =  await Uow.NewsRepository.Update(dalEntity);
         var bllEntity = _mapper.Map<News?>(updatedDalEntity);
@@ -88,16 +144,16 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
     public async Task<News> AddAsync(News entity)
     {
-        // TODO: thumbnail
         try
         {
             entity.ThumbnailImage = ThumbnailService.Compress(entity.Image);
         }
         catch (Exception e)
         {
+            // TODO: what to do here? this actually should not get to this point
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
-        /*
+        
         var data = new SaveContent()
         {
             Items = new List<SaveItem>()
@@ -112,27 +168,67 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             Sequence = 1,
             Content = entity.GetContentValue(ContentTypes.BODY, LanguageCulture.EST)
         };
+        
+        var image = new SaveItem()
+        {
+            Sequence = 2,
+            Content = entity.Image,
+            IsAlreadyBase64 = true
+        };
 
+        var thumbNailImage = new SaveItem()
+        {
+            Sequence = 3,
+            Content = entity.ThumbnailImage,
+            IsAlreadyBase64 = true
+        };
+        
         data.Items.Add(bodyEn);
         data.Items.Add(bodyEt);
+        data.Items.Add(image);
+        data.Items.Add(thumbNailImage);
 
         var cdnResult = await _imageStorageService.Save(data);
 
-        var newBodyEn = cdnResult.FirstOrDefault(e => e.Sequence == 0)?.UpdatedContent;
-        var newBodyEt = cdnResult.FirstOrDefault(e => e.Sequence == 1)?.UpdatedContent;
-        
-        // check if content is not null
-        if (newBodyEn != null)
+        if (cdnResult != null)
         {
-            ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.ENG, newBodyEn);    
+            var newBodyEn = cdnResult.Items.FirstOrDefault(e => e.Sequence == 0)?.Content;
+            var newBodyEt = cdnResult.Items.FirstOrDefault(e => e.Sequence == 1)?.Content;
+            var newImage = cdnResult.Items.FirstOrDefault(e => e.Sequence == 2)?.Content;
+            var newThumbNail = cdnResult.Items.FirstOrDefault(e => e.Sequence == 3)?.Content;
+            
+            if (newBodyEn != null)
+            {
+                ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.ENG, newBodyEn);    
+            }
+
+            if (newBodyEt != null)
+            {
+                ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, newBodyEt);    
+            }
+
+            if (newImage != null)
+            {
+                entity.Image = newImage;
+            }
+
+            if (newThumbNail != null)
+            {
+                entity.ThumbnailImage = newThumbNail;
+            }
+            
+            var imageResources = new List<ImageResource>();
+            cdnResult.SavedLinks.ForEach(link =>
+            {
+                imageResources.Add(new ImageResource()
+                {
+                    Link = link,
+                    News = entity
+                });   
+            });
+            entity.ImageResources = imageResources;
         }
 
-        if (newBodyEt != null)
-        {
-            ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, newBodyEt);    
-        }
-        */
-        
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var dalResult = await Uow.NewsRepository.AddAsync(dalEntity);
         var result = _mapper.Map<News>(dalResult);
@@ -141,37 +237,22 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
     public async Task<News> RemoveAsync(News entity)
     {
-        
+        var imageResources = (await Uow.NewsRepository.GetImageResources(entity.Id)).Select(e => e.Link);
         var data = new DeleteContent()
         {
-            Items = new List<DeletePayloadContent>()
+            Links = imageResources.ToList()
         };
-        data.Items.Add(new DeletePayloadContent()
-        {
-            Content = entity.GetContentValue(ContentTypes.BODY, LanguageCulture.ENG)
-        });
-        
-        data.Items.Add(new DeletePayloadContent()
-        {
-            Content = entity.GetContentValue(ContentTypes.BODY, LanguageCulture.EST)
-        });
-        
-        var bodyBaseContent = ContentHelper.GetContentBaseValue(entity.Content.First(x => x.ContentType!.Name == ContentTypes.BODY));
-        data.Items.Add(new DeletePayloadContent()
-        {
-            Content = bodyBaseContent
-        });
 
-        var response = await _imageStorageService.Delete(data);
-        
-        // What to do if it fails?? notify user?
-        if (response == false)
+        if (!data.Links.IsNullOrEmpty())
         {
-            Console.WriteLine("NewsService: Delete to CDN failed!");            
-        }
+            var response = await _imageStorageService.Delete(data);
         
-        // TODO: mõtle läbi. RemoveAsync peaks võtma ikka entity :)
-        //var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
+            // What to do if it fails?? notify user?
+            if (response == false)
+            {
+                Console.WriteLine("NewsService: Delete to CDN failed!");            
+            }   
+        }
         var dalResult = await Uow.NewsRepository.RemoveAsync(entity.Id);
         return _mapper.Map<News>(dalResult);
     }

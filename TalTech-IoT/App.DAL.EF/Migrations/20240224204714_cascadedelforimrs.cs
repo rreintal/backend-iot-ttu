@@ -5,20 +5,20 @@
 namespace App.DAL.EF.Migrations
 {
     /// <inheritdoc />
-    public partial class cascadedelfrofeedpcategory : Migration
+    public partial class cascadedelforimrs : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Contents_FeedPageCategories_FeedPageCategoryId",
-                table: "Contents");
+                name: "FK_ImageResources_News_NewsId",
+                table: "ImageResources");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Contents_FeedPageCategories_FeedPageCategoryId",
-                table: "Contents",
-                column: "FeedPageCategoryId",
-                principalTable: "FeedPageCategories",
+                name: "FK_ImageResources_News_NewsId",
+                table: "ImageResources",
+                column: "NewsId",
+                principalTable: "News",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
@@ -27,14 +27,14 @@ namespace App.DAL.EF.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Contents_FeedPageCategories_FeedPageCategoryId",
-                table: "Contents");
+                name: "FK_ImageResources_News_NewsId",
+                table: "ImageResources");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Contents_FeedPageCategories_FeedPageCategoryId",
-                table: "Contents",
-                column: "FeedPageCategoryId",
-                principalTable: "FeedPageCategories",
+                name: "FK_ImageResources_News_NewsId",
+                table: "ImageResources",
+                column: "NewsId",
+                principalTable: "News",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
