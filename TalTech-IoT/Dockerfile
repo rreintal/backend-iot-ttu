@@ -59,9 +59,6 @@ COPY Util/. ./Util/
 COPY Helpers/. ./Helpers/
 COPY IntegrationStartup/. ./IntegrationStartup/
 
-  
-  
-  
 WORKDIR /src/WebApp
 
 # this is for thumbnail generating, if this is not done then thumbnail generation will not work
