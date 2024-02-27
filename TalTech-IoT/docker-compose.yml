@@ -7,18 +7,24 @@ services:
       dockerfile: Dockerfile
     #platform: linux/amd64
     ports:
-      - "5180:80"
+      - "${PORT}:80"
     depends_on:
       - db
+    env_file:
+      - "./.env"
     environment:
-      - DOCKERDBCONNECTION=Server=iot-ttu-db:5432;Database=iot-ttu;Username=postgres;Password=postgres;
+      #- DOCKERDBCONNECTION=Server=iot-ttu-db:5432;Database=iot-ttu;Username=postgres;Password=postgres;
+      - DOCKERDBCONNECTION=${DB_CONNECTION_STRING}
   db:
     container_name: iot-ttu-db
     image: "postgres:15.2-bullseye"
     restart: always
+    
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      #- POSTGRES_USER=postgres
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      #- POSTGRES_PASSWORD=postgres
     logging:
       options:
         max-size: 10m
