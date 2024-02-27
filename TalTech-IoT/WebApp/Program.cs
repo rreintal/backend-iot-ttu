@@ -56,15 +56,8 @@ builder.Services.AddCors(options =>
 // TODO Identity
 //DockerDbConnection 
 //DevDbConnection
-// asadsad asdokasodkas amsidmasi asdasd asdasd asdasd asdasd asdasdasd
  
-// aaa
 string? databaseUrl = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
-
-string? pw = Environment.GetEnvironmentVariable("DB_USER");
-string? name = Environment.GetEnvironmentVariable("DB_PASSWORD");
-Console.WriteLine($"PASSWORDI S: {pw}");
-Console.WriteLine($"NAME IS: {name}");
 var connectionString = "";
 if (string.IsNullOrWhiteSpace(databaseUrl))
 {
