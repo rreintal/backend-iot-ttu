@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   app:
-    container_name: iot-ttu-backend
+    container_name: ${DOCKER_APP}
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,7 +16,7 @@ services:
       #- DOCKERDBCONNECTION=Server=iot-ttu-db:5432;Database=iot-ttu;Username=postgres;Password=postgres;
       - DOCKERDBCONNECTION=${DB_CONNECTION_STRING}
   db:
-    container_name: iot-ttu-db
+    container_name: ${DOCKER_DB} 
     image: "postgres:15.2-bullseye"
     restart: always
     
