@@ -12,7 +12,7 @@ services:
       - db
     environment:
       #- DOCKERDBCONNECTION=Server=iot-ttu-db:5432;Database=iot-ttu;Username=postgres;Password=postgres;
-      - DOCKERDBCONNECTION=${DB_CONNECTION_STRING}
+      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
   db:
     container_name: ${DOCKER_DB} 
     image: "postgres:15.2-bullseye"
