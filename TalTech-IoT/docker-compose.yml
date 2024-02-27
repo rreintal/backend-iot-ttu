@@ -11,7 +11,7 @@ services:
     depends_on:
       - db
     env_file:
-      - "../../.env"
+      - "./.env"
     environment:
       #- DOCKERDBCONNECTION=Server=iot-ttu-db:5432;Database=iot-ttu;Username=postgres;Password=postgres;
       - DOCKERDBCONNECTION=${DB_CONNECTION_STRING}
