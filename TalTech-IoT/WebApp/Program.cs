@@ -56,10 +56,10 @@ builder.Services.AddCors(options =>
 // TODO Identity
 //DockerDbConnection 
 //DevDbConnection
-// TestDbConnection
+// TestDbConnection aoksdoaksdokasokdoaskd
 
 
-string? databaseUrl = Environment.GetEnvironmentVariable("DOCKERDBCONNECTION");
+string? databaseUrl = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 var connectionString = "";
 if (string.IsNullOrWhiteSpace(databaseUrl))
 {
