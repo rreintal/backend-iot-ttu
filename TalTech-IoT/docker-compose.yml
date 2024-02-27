@@ -28,7 +28,7 @@ services:
         max-size: 10m
         max-file: "3"
     ports:
-      - "5432:5432"
+      - ${DB_PORT}
       #volumes:
       #- /Users/richardreintal/dev/iot-db:/var/lib/postgresql/data
 #volumes:
