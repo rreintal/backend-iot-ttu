@@ -72,7 +72,7 @@ else
     connectionString = databaseUrl;
 }
 
-// a  ss sadsad
+// a  ss sadsadasdasdasd
 builder.Services
     .AddDbContext<AppDbContext>(options =>
     {
