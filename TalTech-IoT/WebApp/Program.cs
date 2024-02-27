@@ -56,7 +56,7 @@ builder.Services.AddCors(options =>
 // TODO Identity
 //DockerDbConnection 
 //DevDbConnection
-// asadsad asdokasodkas amsidmasi asdasd asdasd
+// asadsad asdokasodkas amsidmasi asdasd asdasd asdasd
  
 // aaa
 string? databaseUrl = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
