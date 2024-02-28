@@ -17,19 +17,21 @@ public static class AppDataSeeding
     public const string TOPIC_AREA_ROBOTICS_ID = "23e18f8b-0f97-496c-99a3-774f66b8c43d";
     public const string TOPIC_AREA_TECHNOLOGY_ID = "daf06b3e-26f0-4d0e-b68a-6b236ce6a84c";
     
-    public static async Task SetupAppData(IApplicationBuilder app, IWebHostEnvironment environment, IConfiguration configuration)
+    public static async Task SetupAppData(IServiceProvider serviceProvider, IConfiguration configuration)
     {
-        using var serviceScope = app.ApplicationServices
-            .GetRequiredService<IServiceScopeFactory>()
-            .CreateScope();
-        using var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
+        using var scope = serviceProvider.CreateScope();
+        var scopedServices = scope.ServiceProvider;
+        var context = scopedServices.GetRequiredService<AppDbContext>();
         if (configuration.GetValue<bool>("DataInit:DropDatabase"))
         {
             context!.Database.EnsureDeleted();
         }
         if (configuration.GetValue<bool>("DataInit:Migrate"))
         {
-            context!.Database.Migrate();
+            if (context.Database.IsRelational()) // This is because, when running tests, in memory db can't migrate :(
+            {
+                context.Database.Migrate();
+            }
         }
         if (configuration.GetValue<bool>("DataInit:Seed"))
         {
@@ -89,7 +91,7 @@ public static class AppDataSeeding
                 context.AddRange(new List<FeedPage>() { hardware, research });
             }
 
-            using var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<AppRole>>();
+            using var roleManager = scopedServices.GetService<RoleManager<AppRole>>();
             
             var roles = new List<AppRole>()
             {
@@ -111,7 +113,7 @@ public static class AppDataSeeding
                 }
             }
 
-            var userManager = serviceScope.ServiceProvider.GetService<UserManager<AppUser>>()!;
+            var userManager = scopedServices.GetService<UserManager<AppUser>>()!;
             var usersCount = (await userManager.Users.ToListAsync()).Count;
             if (usersCount == 0)
             {

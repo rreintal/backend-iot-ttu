@@ -61,7 +61,7 @@ string? databaseUrl = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
 var connectionString = "";
 if (string.IsNullOrWhiteSpace(databaseUrl))
 {
-    databaseUrl = "DockerDbConnection";
+    databaseUrl = "DevDbConnection";
     connectionString = builder.Configuration.GetConnectionString(databaseUrl) ??
                        throw new InvalidOperationException("Connection string not found");
 }
@@ -160,7 +160,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 var app = builder.Build();
 
 // Setup start data
-await AppDataSeeding.SetupAppData(app, app.Environment, app.Configuration);
+await AppDataSeeding.SetupAppData(app.Services, app.Configuration);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
