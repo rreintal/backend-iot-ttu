@@ -11,7 +11,7 @@ namespace NUnitTests.News
 {
     public class NewsTests
     {
-        private const string BASE_URL = $"api/{VERSION}News2";
+        private const string BASE_URL = $"api/{VERSION}News";
         private const string VERSION = "v1/";
         private CustomWebAppFactory<Program>? _factory;
 
