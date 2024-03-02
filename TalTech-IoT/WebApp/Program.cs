@@ -65,7 +65,7 @@ if (string.IsNullOrWhiteSpace(databaseUrl))
     //databaseUrl = "DevDbConnection";
     //connectionString = builder.Configuration.GetConnectionString(databaseUrl) ??
                        //throw new InvalidOperationException("Connection string not found");
-    connectionString = "Server=localhost:5432;Database=iot-ttu;Username=postgres;Password=postgres;";
+    //connectionString = "Server=localhost:5432;Database=iot-ttu;Username=postgres;Password=postgres;";
 }
 else
 {

@@ -95,8 +95,8 @@ public class ImageStorageService : IImageStorageService
         {
             if (isContentEntity)
             {
-                var etBody = data.Items.FirstOrDefault(e => e.Sequence == 1)?.Content;
-                var enBody = data.Items.FirstOrDefault(e => e.Sequence == 2)?.Content;
+                var etBody = result.Items.FirstOrDefault(e => e.Sequence == 1)?.Content;
+                var enBody = result.Items.FirstOrDefault(e => e.Sequence == 2)?.Content;
                 if (enBody != null) // TODO: add && imageEntity != null
                 {
                     var contentEntity = entity as IContentEntity;
@@ -107,27 +107,33 @@ public class ImageStorageService : IImageStorageService
                     var contentEntity = entity as IContentEntity;
                     ContentHelper.SetContentTranslationValue(contentEntity, ContentTypes.BODY, LanguageCulture.ENG, enBody);
                 }
+                var a = 1;
             }
 
             if (isImageEntity)
             {
                 var imageEntity = entity as IContainsImage;
-                var image = data.Items.FirstOrDefault(e => e.Sequence == 3)?.Content;
+                var image = result.Items.FirstOrDefault(e => e.Sequence == 3)?.Content;
                 if (!image.IsNullOrEmpty()) // TODO: add && imageEntity != null
                 {
                     imageEntity!.Image = image;
                 }
+                var a = 1;
             }
 
             if (isThumbnailEntity)
             {
                 var thumbnailEntity = entity as IContainsThumbnail;
-                var thumbnail = data.Items.FirstOrDefault(e => e.Sequence == 4)?.Content;
-                if (!thumbnail.IsNullOrEmpty() && thumbnailEntity != null)
+                var thumbnail = result.Items.FirstOrDefault(e => e.Sequence == 4)?.Content;
+                if (thumbnail != null && thumbnailEntity != null)
                 {
                     thumbnailEntity.ThumbnailImage = thumbnail;
                 }
+
+                var a = 1;
             }
+            
+            // TODO: imageResources
         }
 
 
