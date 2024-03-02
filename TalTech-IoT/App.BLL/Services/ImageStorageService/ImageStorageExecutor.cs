@@ -14,17 +14,17 @@ public interface IIMageStorageExecutor
 
 // TODO: make it atomic, that first conver everything from base64 to byteArray, and after everything successful, then write.
 
-public class ImageStorageExectutor : IIMageStorageExecutor
+public class ImageStorageExecutor : IIMageStorageExecutor
 {
     private string IMAGES_DIRECTORY = "/Users/richardreintal/dev/images/"; // use env variable from constructor, if not set then throw fatal error
 
-    public ImageStorageExectutor()
+    public ImageStorageExecutor()
     {
         var imagesDirectory = Environment.GetEnvironmentVariable("IMAGES_DIRECTORY");
         var isValueMissing = imagesDirectory.IsNullOrEmpty();
         if (isValueMissing)
         {
-            throw new Exception("ImageStorageExectutor: Environemnt variable: IMAGES_DIRECTORY - is not set or is empty!");
+            throw new Exception("ImageStorageExecutor: Environemnt variable: IMAGES_DIRECTORY - is not set or is empty!");
         }
         IMAGES_DIRECTORY = imagesDirectory;
     }

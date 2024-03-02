@@ -17,7 +17,7 @@ namespace App.BLL.Services.ImageStorageService;
 public class ImageStorageService : IImageStorageService
 {
     private ImageExtractor _imageExtractor { get; }
-    private ImageStorageExectutor _imageStorageExecutor { get; }
+    private ImageStorageExecutor _imageStorageExecutor { get; }
     
     private string IMAGE_PUBLIC_LOCATION { get; set; } = "http://185.170.213.135:5052/images/"; // TODO: use env variable!
 
@@ -32,7 +32,7 @@ public class ImageStorageService : IImageStorageService
         IMAGE_PUBLIC_LOCATION = imagesLocation;
         
         _imageExtractor = new ImageExtractor();
-        _imageStorageExecutor = new ImageStorageExectutor();
+        _imageStorageExecutor = new ImageStorageExecutor();
     }
 
     public bool ProccessSave(object entity)
@@ -105,7 +105,7 @@ public class ImageStorageService : IImageStorageService
                 if (etBody != null) // TODO: add && imageEntity != null
                 {
                     var contentEntity = entity as IContentEntity;
-                    ContentHelper.SetContentTranslationValue(contentEntity, ContentTypes.BODY, LanguageCulture.ENG, enBody);
+                    ContentHelper.SetContentTranslationValue(contentEntity, ContentTypes.BODY, LanguageCulture.EST, etBody);
                 }
                 var a = 1;
             }
@@ -138,26 +138,6 @@ public class ImageStorageService : IImageStorageService
 
 
         return true; // TODO: when to return false :)
-    }
-
-    private bool InstanceOf(object obj, Type interfaceType)
-    {
-        if (obj == null)
-        {
-            throw new ArgumentNullException(nameof(obj), "The object to check cannot be null.");
-        }
-
-        if (interfaceType == null)
-        {
-            throw new ArgumentNullException(nameof(interfaceType), "The interface type cannot be null.");
-        }
-
-        if (!interfaceType.IsInterface)
-        {
-            throw new ArgumentException("The specified type is not an interface.", nameof(interfaceType));
-        }
-
-        return interfaceType.IsAssignableFrom(obj.GetType());
     }
 
     public SaveResult? Save(SaveContent data)
@@ -404,6 +384,27 @@ public class ImageStorageService : IImageStorageService
         }
 
         return true;
+    }
+    
+    
+    private bool InstanceOf(object obj, Type interfaceType)
+    {
+        if (obj == null)
+        {
+            throw new ArgumentNullException(nameof(obj), "The object to check cannot be null.");
+        }
+
+        if (interfaceType == null)
+        {
+            throw new ArgumentNullException(nameof(interfaceType), "The interface type cannot be null.");
+        }
+
+        if (!interfaceType.IsInterface)
+        {
+            throw new ArgumentException("The specified type is not an interface.", nameof(interfaceType));
+        }
+
+        return interfaceType.IsAssignableFrom(obj.GetType());
     }
     
     
