@@ -16,11 +16,11 @@ public class HomePageBannerService : BaseEntityService<HomePageBanner, Domain.Ho
     private IMapper _mapper;
     private IImageStorageService _imageStorageService { get; set; }
 
-    public HomePageBannerService(IAppUOW uow, IMapper<HomePageBanner, Domain.HomePageBanner> mapper, IMapper autoMapper, IImageStorageService imageStorageService) : base(uow.HomePageBannerRepository, mapper)
+    public HomePageBannerService(IAppUOW uow, IMapper<HomePageBanner, Domain.HomePageBanner> mapper, IMapper autoMapper) : base(uow.HomePageBannerRepository, mapper)
     {
         _uow = uow;
         _mapper = autoMapper;
-        _imageStorageService = imageStorageService;
+        _imageStorageService = new ImageStorageService.ImageStorageService();
     }
     // TODO: here do CDN magic!
     public async Task<IEnumerable<HomePageBanner>> AllAsync(string? languageCulture)
