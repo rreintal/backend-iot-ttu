@@ -14,6 +14,7 @@ services:
       #- DOCKERDBCONNECTION=Server=iot-ttu-db:5432;Database=iot-ttu;Username=postgres;Password=postgres;   
       - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
       - IMAGES_DIRECTORY=${IMAGES_DIRECTORY}
+      - IMAGES_LOCATION=${IMAGES_LOCATION}
     volumes:
       - type: bind
         source: ${IMAGES_DIRECTORY} # Host machine

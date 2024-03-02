@@ -20,7 +20,13 @@ public class ImageStorageService : IImageStorageService
     public ImageStorageService()
     {
         // TODO: use env variable
-        var imagesDirectory = Environment.GetEnvironmentVariable("IMAGES_DIRECTORY");
+        var imagesLocation = Environment.GetEnvironmentVariable("IMAGES_LOCATION");
+        if (imagesLocation.IsNullOrEmpty())
+        {
+            throw new Exception("ImageStorageService: Environemnt variable: IMAGES_LOCATION - is not set or is empty!");
+        }
+        IMAGE_PUBLIC_LOCATION = imagesLocation;
+        
         _imageExtractor = new ImageExtractor();
         _imageStorageExecutor = new ImageStorageExectutor();
     }
