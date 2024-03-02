@@ -11,6 +11,8 @@ public class Project : DomainEntityIdMetaData, IContentEntity
     public string ProjectManager { get; set; } = default!;
 
     public bool IsOngoing { get; set; }
+    
+    public ICollection<ImageResource>? ImageResources { get; set; }
 
     // title, content
     public ICollection<Content> Content { get; set; } = default!;
