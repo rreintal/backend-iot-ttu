@@ -57,21 +57,8 @@ builder.Services.AddCors(options =>
 // TestDbConnection
 // asdas asdasd oops
 
-<<<<<<< HEAD
 string? databaseUrl = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
-=======
-/*
- *
- * //"ConnectionStrings": {
-     //"DevDbConnection" : "Server=localhost:5432;Database=iot-ttu;Username=postgres;Password=postgres;",
-     //"TestDbConnection" : "Server=localhost:5432;Database=iot-ttu-test;Username=postgres;Password=postgres;",
-     //"DockerDbConnection" : "Server=iot-ttu-db:5432;Database=iot-ttu;Username=postgres;Password=postgres;"
-   //},
- */
 
-string? databaseUrl = Environment.GetEnvironmentVariable("DOCKERDBCONNECTION");
-Console.WriteLine($"CONNECTION STRING IS: {databaseUrl?.ToUpper()}");
->>>>>>> CDN
 var connectionString = "";
 if (string.IsNullOrWhiteSpace(databaseUrl))
 {
