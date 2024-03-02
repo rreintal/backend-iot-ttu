@@ -1,8 +1,9 @@
 using Base.Domain;
+using BLL.DTO.Contracts;
 
 namespace BLL.DTO.V1;
 
-public class HomePageBanner : DomainEntityId
+public class HomePageBanner : DomainEntityId, IContainsImage
 {
 
     public List<Content> Content { get; set; } = default!;

@@ -31,23 +31,7 @@ public class HomePageBannerService : BaseEntityService<HomePageBanner, Domain.Ho
 
     public override HomePageBanner Add(HomePageBanner entity)
     {
-        var data = new SaveContent()
-        {
-            Items = new List<SaveItem>()
-        };
-        var banner = new SaveItem()
-        {
-            Sequence = 1,
-            Content = entity.Image,
-            IsAlreadyBase64 = true
-        };
-        data.Items.Add(banner);
-        var cdnResult = _imageStorageService.Save(data);
-        if (cdnResult != null)
-        {
-            var link = cdnResult.Items.FirstOrDefault(e => e.Sequence == 1)?.Content;
-            entity.Image = link;
-        }
+        _imageStorageService.ProccessSave(entity);
         return base.Add(entity);
     }
 

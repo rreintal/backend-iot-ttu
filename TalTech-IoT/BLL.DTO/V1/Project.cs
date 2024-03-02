@@ -1,9 +1,10 @@
 using Base.Domain;
+using BLL.DTO.ContentHelper;
 using Contracts;
 
 namespace BLL.DTO.V1;
 
-public class Project : DomainEntityId, IContainsContent
+public class Project : DomainEntityId, IContentEntity
 {
     public int Year { get; set; } = default!;
     public string ProjectManager { get; set; } = default!;

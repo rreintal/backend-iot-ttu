@@ -12,21 +12,23 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
 {
     private IAppUOW Uow { get; }
     private IThumbnailService ThumbnailService { get; }
+    
+    private IImageStorageService _imageStorageService { get; }
     private IMapper _mapper { get; set; }
     public ProjectService(IAppUOW uow, IMapper<Project, Domain.Project> mapper,  IMapper autoMapper, IThumbnailService thumbnailService) : base(uow.ProjectsRepository, mapper)
     {
         Uow = uow;
         ThumbnailService = thumbnailService;
         _mapper = autoMapper;
+        _imageStorageService = new ImageStorageService.ImageStorageService();
     }
 
     public override Project Add(Project entity)
     {
-        var domainEntity = Mapper.Map(entity);
-
         // CDN stuff
+        _imageStorageService.ProccessSave(entity);
         
-        
+        var domainEntity = Mapper.Map(entity);
         var dalResult = Uow.ProjectsRepository.Add(domainEntity);
         return _mapper.Map<Project>(dalResult);
     }
