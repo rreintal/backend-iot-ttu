@@ -15,7 +15,7 @@ services:
       - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
       - IMAGES_DIRECTORY=${IMAGES_DIRECTORY}
     volumes:
-      - ${IMAGES_DIRECTORY}:/app${IMAGES_DIRECTORY}
+      - ${IMAGES_DIRECTORY}:/app/${IMAGES_DIRECTORY}
   db:
     container_name: ${DOCKER_DB}
     image: "postgres:15.2-bullseye"
