@@ -10,6 +10,7 @@ using BLL.DTO.Contracts;
 using HtmlAgilityPack;
 using Microsoft.IdentityModel.Tokens;
 using Public.DTO.Content;
+using News = BLL.DTO.V1.News;
 
 namespace App.BLL.Services.ImageStorageService;
 
@@ -107,7 +108,6 @@ public class ImageStorageService : IImageStorageService
                     var contentEntity = entity as IContentEntity;
                     ContentHelper.SetContentTranslationValue(contentEntity, ContentTypes.BODY, LanguageCulture.EST, etBody);
                 }
-                var a = 1;
             }
 
             if (isImageEntity)
@@ -118,7 +118,6 @@ public class ImageStorageService : IImageStorageService
                 {
                     imageEntity!.Image = image;
                 }
-                var a = 1;
             }
 
             if (isThumbnailEntity)
@@ -130,9 +129,10 @@ public class ImageStorageService : IImageStorageService
                     thumbnailEntity.ThumbnailImage = thumbnail;
                 }
 
-                var a = 1;
             }
+
             
+
             // TODO: imageResources
             // TODO: imageResources
             // TODO: imageResources
@@ -141,11 +141,133 @@ public class ImageStorageService : IImageStorageService
             // TODO: imageResources
             // TODO: imageResources
             // TODO: imageResources
-            
+
         }
 
 
         return true; // TODO: when to return false :)
+    }
+
+    public void ProccessUpdate(object entity)
+    {
+        var data = new UpdateContent()
+        {
+            Items = new List<UpdateItem>()
+        };
+        var isContentEntity = InstanceOf(entity, typeof(IContentEntity));
+        var isImageEntity = InstanceOf(entity, typeof(IContainsImage));
+        var isThumbnailEntity = InstanceOf(entity, typeof(IContainsThumbnail));
+        if (isContentEntity)
+        {
+            var bodyEntity = entity as IContentEntity;
+            var engBody = ContentHelper.GetContentValue(bodyEntity, ContentTypes.BODY, LanguageCulture.ENG);
+            var estBody = ContentHelper.GetContentValue(bodyEntity, ContentTypes.BODY, LanguageCulture.EST);
+
+            var bodyEtPayload = new UpdateItem()
+            {
+                Content = estBody,
+                Sequence = 1
+            };
+            
+            var bodyEngPayload = new UpdateItem()
+            {
+                Content = engBody,
+                Sequence = 2
+            };
+            
+            data.Items.Add(bodyEtPayload);
+            data.Items.Add(bodyEngPayload);
+        }
+
+        if (isImageEntity)
+        {
+            var imageEntity = entity as IContainsImage;
+            var image = imageEntity!.Image;
+            // Because for News update, image can be null!
+            if (image != null)
+            {
+                var imagePayload = new UpdateItem()
+                {
+                    Content = image,
+                    Sequence = 3,
+                    IsAlreadyBase64 = true
+                };
+                data.Items.Add(imagePayload);
+            }
+            else
+            {
+                isImageEntity = false;
+            }
+        }
+
+        if (isThumbnailEntity)
+        {
+            var thumbnailEntity = entity as IContainsThumbnail;
+            var thumbnail = thumbnailEntity!.ThumbnailImage;
+            // Because for News update, thumbnail can be null!
+            if (thumbnail != null)
+            {
+                var thumbnailPayload = new UpdateItem()
+                {
+                    Content = thumbnail,
+                    Sequence = 4,
+                    IsAlreadyBase64 = true
+                };
+                data.Items.Add(thumbnailPayload);   
+            }
+            else
+            {
+                isThumbnailEntity = false;
+            }
+        }
+
+        var result = Update(data);
+        if (result != null && !result.IsEmpty())
+        {
+            if (isContentEntity)
+            {
+                var etBody = result.Items.FirstOrDefault(e => e.Sequence == 1)?.Content;
+                var enBody = result.Items.FirstOrDefault(e => e.Sequence == 2)?.Content;
+                if (enBody != null) // TODO: add && imageEntity != null
+                {
+                    var contentEntity = entity as IContentEntity;
+                    ContentHelper.SetContentTranslationValue(contentEntity, ContentTypes.BODY, LanguageCulture.ENG, enBody);
+                }
+                if (etBody != null) // TODO: add && imageEntity != null
+                {
+                    var contentEntity = entity as IContentEntity;
+                    ContentHelper.SetContentTranslationValue(contentEntity, ContentTypes.BODY, LanguageCulture.EST, etBody);
+                }
+            }
+
+            if (isImageEntity)
+            {
+                var imageEntity = entity as IContainsImage;
+                var image = result.Items.FirstOrDefault(e => e.Sequence == 3)?.Content;
+                if (!image.IsNullOrEmpty()) // TODO: add && imageEntity != null
+                {
+                    imageEntity!.Image = image;
+                }
+            }
+
+            if (isThumbnailEntity)
+            {
+                var thumbnailEntity = entity as IContainsThumbnail;
+                var thumbnail = result.Items.FirstOrDefault(e => e.Sequence == 4)?.Content;
+                if (thumbnail != null && thumbnailEntity != null)
+                {
+                    thumbnailEntity.ThumbnailImage = thumbnail;
+                }
+
+            }
+        }
+
+
+    }
+
+    public void ProccessDelete(object entity)
+    {
+        throw new NotImplementedException();
     }
 
     public SaveResult? Save(SaveContent data)
@@ -306,10 +428,10 @@ public class ImageStorageService : IImageStorageService
     }
     public UpdateResult? Update(UpdateContent data)
     {
-        
-        var existingLinksDuplicate = new List<string>(data.ExistingImageLinks);
+        var existingLinksDuplicate = new List<string>();
         if (!data.ExistingImageLinks.IsNullOrEmpty())
         {
+            existingLinksDuplicate = data.ExistingImageLinks;
             // Remove all links which are present in the currently updated content
             // if the link is empty in the end, then all the existing stuff is used
             

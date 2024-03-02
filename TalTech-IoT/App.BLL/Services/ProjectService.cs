@@ -36,6 +36,8 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
     public async Task<Project?> UpdateAsync(UpdateProject entity)
     {
         // TODO: here use the ImageService
+        _imageStorageService.ProccessUpdate(entity);
+        
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.UpdateProject>(entity);
         var updatedDalEntity = await Uow.ProjectsRepository.UpdateAsync(dalEntity);
         var result = _mapper.Map<Project>(updatedDalEntity);

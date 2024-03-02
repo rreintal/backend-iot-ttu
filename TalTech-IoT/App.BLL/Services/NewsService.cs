@@ -48,15 +48,18 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             return null;
         }
         
+        /*
         var bodyEn = ContentHelper.GetContentValue(entity, ContentTypes.BODY, LanguageCulture.ENG);
         var bodyEt = ContentHelper.GetContentValue(entity, ContentTypes.BODY, LanguageCulture.EST);
         var image = entity.Image;
-
+        */
         
         // If not adding the image + Thumbnail image then when updating
         // the 'not used' or more specific 'not in the list when checking for unused images' then it gets deleted
         var thumbNail = entity.ThumbnailImage == null ? existingEntity.ThumbnailImage : entity.ThumbnailImage;
 
+        _imageStorageService.ProccessUpdate(entity);
+        /*
         var updateData = new UpdateContent()
         {
             Items = new List<UpdateItem>()
@@ -97,6 +100,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         updateData.Items.Add(thumbNailImage);
 
         var updateResult = _imageStorageService.Update(updateData);
+        /*
         if (updateResult != null && !updateResult.IsEmpty())
         {
             ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, updateResult.Items.First(e => e.Sequence == 1).Content);
@@ -132,8 +136,12 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
                 }
             }
         }
-        
-        
+        */
+        // TODO: IMAGERESOURCES
+        // TODO: IMAGERESOURCES
+        // TODO: IMAGERESOURCES
+        // TODO: IMAGERESOURCES
+        // TODO: IMAGERESOURCES
         
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var updatedDalEntity =  await Uow.NewsRepository.Update(dalEntity);
@@ -153,84 +161,6 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             // TODO: what to do here? this actually should not get to this point
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
-        /*
-        
-        var data = new SaveContent()
-        {
-            Items = new List<SaveItem>()
-        };
-        var bodyEn = new SaveItem()
-        {
-            Sequence = 0,
-            Content = entity.GetContentValue(ContentTypes.BODY, LanguageCulture.ENG)
-        };
-        var bodyEt = new SaveItem()
-        {
-            Sequence = 1,
-            Content = entity.GetContentValue(ContentTypes.BODY, LanguageCulture.EST)
-        };
-        
-        var image = new SaveItem()
-        {
-            Sequence = 2,
-            Content = entity.Image,
-            IsAlreadyBase64 = true
-        };
-
-        var thumbNailImage = new SaveItem()
-        {
-            Sequence = 3,
-            Content = entity.ThumbnailImage,
-            IsAlreadyBase64 = true
-        };
-        
-        data.Items.Add(bodyEn);
-        data.Items.Add(bodyEt);
-        data.Items.Add(image);
-        data.Items.Add(thumbNailImage);
-
-        var cdnResult = _imageStorageService.Save(data);
-
-        if (cdnResult != null)
-        {
-            var newBodyEn = cdnResult.Items.FirstOrDefault(e => e.Sequence == 0)?.Content;
-            var newBodyEt = cdnResult.Items.FirstOrDefault(e => e.Sequence == 1)?.Content;
-            var newImage = cdnResult.Items.FirstOrDefault(e => e.Sequence == 2)?.Content;
-            var newThumbNail = cdnResult.Items.FirstOrDefault(e => e.Sequence == 3)?.Content;
-            
-            if (newBodyEn != null)
-            {
-                ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.ENG, newBodyEn);    
-            }
-
-            if (newBodyEt != null)
-            {
-                ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, newBodyEt);    
-            }
-
-            if (newImage != null)
-            {
-                entity.Image = newImage;
-            }
-
-            if (newThumbNail != null)
-            {
-                entity.ThumbnailImage = newThumbNail;
-            }
-            
-            var imageResources = new List<ImageResource>();
-            cdnResult.SavedLinks.ForEach(link =>
-            {
-                imageResources.Add(new ImageResource()
-                {
-                    Link = link,
-                    News = entity
-                });   
-            });
-            entity.ImageResources = imageResources;
-        }
-        */
-
         var serviceResult = _imageStorageService.ProccessSave(entity);
         Console.WriteLine("ImageService result: " + serviceResult);
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);

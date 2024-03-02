@@ -23,7 +23,7 @@ public class PageContentService : BaseEntityService<global::BLL.DTO.V1.PageConte
 
     public override global::BLL.DTO.V1.PageContent Add(global::BLL.DTO.V1.PageContent entity)
     {
-        //_imageStorageService.ProccessSave(entity); // TODO: removed because no time to test :(
+        _imageStorageService.ProccessSave(entity);
         return base.Add(entity);
     }
 
@@ -43,6 +43,7 @@ public class PageContentService : BaseEntityService<global::BLL.DTO.V1.PageConte
 
     public async Task<global::BLL.DTO.V1.PageContent?> UpdateAsync(global::BLL.DTO.V1.PageContent entity)
     {
+        _imageStorageService.ProccessUpdate(entity);
         var domainEntity = Mapper.Map(entity);
         var updatedDomainEntity = await Uow.PageContentRepository.UpdateAsync(domainEntity);
         return Mapper.Map(updatedDomainEntity);
