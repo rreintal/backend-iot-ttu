@@ -17,7 +17,7 @@ services:
     volumes:
       - type: bind
         source: ${IMAGES_DIRECTORY} # Host machine
-        target: /app/${IMAGES_DIRECTORY} # Container path
+        target: /app${IMAGES_DIRECTORY} # Container path
   db:
     container_name: ${DOCKER_DB}
     image: "postgres:15.2-bullseye"
