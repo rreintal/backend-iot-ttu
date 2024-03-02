@@ -20,6 +20,7 @@ public class ImageStorageService : IImageStorageService
     public ImageStorageService()
     {
         // TODO: use env variable
+        var imagesDirectory = Environment.GetEnvironmentVariable("IMAGES_DIRECTORY");
         _imageExtractor = new ImageExtractor();
         _imageStorageExecutor = new ImageStorageExectutor();
     }
