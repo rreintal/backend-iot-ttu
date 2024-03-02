@@ -31,7 +31,7 @@ public class ImageStorageService : IImageStorageService
         _imageStorageExecutor = new ImageStorageExectutor();
     }
     
-    public async Task<SaveResult?> Save(SaveContent data)
+    public SaveResult? Save(SaveContent data)
     {
         var CDNPayload = new CDNSaveImages()
         {
@@ -156,7 +156,7 @@ public class ImageStorageService : IImageStorageService
         return result;
     }
 
-    public async Task<bool> Delete(DeleteContent content)
+    public bool Delete(DeleteContent content)
     {
         var payload = new List<CDNDeleteImage>();
 
@@ -187,7 +187,7 @@ public class ImageStorageService : IImageStorageService
         }
         return result;
     }
-    public async Task<UpdateResult?> Update(UpdateContent data)
+    public UpdateResult? Update(UpdateContent data)
     {
         
         var existingLinksDuplicate = new List<string>(data.ExistingImageLinks);
@@ -217,7 +217,7 @@ public class ImageStorageService : IImageStorageService
                 {
                     Links = existingLinksDuplicate
                 };
-                var deleteResult = await Delete(DeletePayload);
+                var deleteResult = Delete(DeletePayload);
 
                 if (deleteResult == false)
                 {
@@ -241,7 +241,7 @@ public class ImageStorageService : IImageStorageService
         };
 
 
-        var saveResult = await Save(saveContent);
+        var saveResult = Save(saveContent);
 
         if (saveResult != null)
         {

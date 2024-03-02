@@ -96,7 +96,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         updateData.Items.Add(updateImage);
         updateData.Items.Add(thumbNailImage);
 
-        var updateResult = await _imageStorageService.Update(updateData);
+        var updateResult = _imageStorageService.Update(updateData);
         if (updateResult != null && !updateResult.IsEmpty())
         {
             ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, updateResult.Items.First(e => e.Sequence == 1).Content);
@@ -188,7 +188,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         data.Items.Add(image);
         data.Items.Add(thumbNailImage);
 
-        var cdnResult = await _imageStorageService.Save(data);
+        var cdnResult = _imageStorageService.Save(data);
 
         if (cdnResult != null)
         {
@@ -245,7 +245,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
         if (!data.Links.IsNullOrEmpty())
         {
-            var response = await _imageStorageService.Delete(data);
+            var response = _imageStorageService.Delete(data);
         
             // What to do if it fails?? notify user?
             if (response == false)

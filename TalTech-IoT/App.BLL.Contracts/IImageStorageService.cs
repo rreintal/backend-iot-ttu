@@ -8,9 +8,9 @@ namespace App.BLL.Contracts;
 
 public interface IImageStorageService
 {
-    public Task<SaveResult?> Save(SaveContent data);
-    public Task<bool> Delete(DeleteContent content);
+    public SaveResult? Save(SaveContent data);
+    public bool Delete(DeleteContent content);
 
-    public Task<UpdateResult?> Update(UpdateContent data);
+    public UpdateResult? Update(UpdateContent data);
 
 }
