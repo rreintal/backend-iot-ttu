@@ -1,35 +1,27 @@
-
-using System.Net;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 using App.BLL.Contracts;
 using App.BLL.Contracts.ImageStorageModels.Save;
 using App.BLL.Contracts.ImageStorageModels.Save.Result;
 using App.BLL.Contracts.ImageStorageModels.Update;
 using App.BLL.Contracts.ImageStorageModels.Update.Result;
-using App.BLL.Services.ImageStorageService.Models;
 using App.BLL.Services.ImageStorageService.Models.Delete;
-using App.Domain.Constants;
-using BLL.DTO.V1;
 using HtmlAgilityPack;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace App.BLL.Services.ImageStorageService;
 
  
 public class ImageStorageService : IImageStorageService
 {
-    
-    private static readonly HttpClient _httpClient = new HttpClient();
     private ImageExtractor _imageExtractor { get; }
+    private ImageStorageExectutor _imageStorageExecutor { get; }
+    
+    private string IMAGE_PUBLIC_LOCATION { get; set; } = "http://185.170.213.135:5052/images/"; // TODO: use env variable!
 
     public ImageStorageService()
     {
+        // TODO: use env variable
         _imageExtractor = new ImageExtractor();
+        _imageStorageExecutor = new ImageStorageExectutor();
     }
     
     public async Task<SaveResult?> Save(SaveContent data)
@@ -90,23 +82,13 @@ public class ImageStorageService : IImageStorageService
         }
         
         // Send items to CDN for save
-        
         // TODO: check here if there is even anything to save!!!!
-        
-        var response = await _httpClient.PostAsJsonAsync(ImageStorageServiceConstants.UPLOAD_IMAGE, CDNPayload);
-        var responseJson = await response.Content.ReadAsStringAsync();
-        
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
-        var saveResponseData = JsonSerializer.Deserialize<List<CDNSaveResult>>(responseJson, options);
+        var saveResponseData = _imageStorageExecutor.Upload(CDNPayload);
 
         
 
         var result = new SaveResult();
         // TODO: kui response on null, ehk midagi ei uuendatud, siis lihtsalt returni ka null??
-
         if (IsSaveResultEmpty(saveResponseData)) return result; // Return empty SaveResult object when nothing to save
             
             
@@ -167,16 +149,6 @@ public class ImageStorageService : IImageStorageService
         return result;
     }
 
-    private bool IsSaveResultEmpty(List<CDNSaveResult> items)
-    {
-        foreach (var set in items)
-        {
-            if (!set.Items.IsNullOrEmpty()) return false;
-        }
-
-        return true;
-    }
-
     public async Task<bool> Delete(DeleteContent content)
     {
         var payload = new List<CDNDeleteImage>();
@@ -197,49 +169,17 @@ public class ImageStorageService : IImageStorageService
         }
         
         Console.WriteLine($"ImageStorageService: Delete() - PENDING: deleting {payload.Count} images");
-        var request = new HttpRequestMessage(HttpMethod.Delete, ImageStorageServiceConstants.DELETE_IMAGE)
+        var result = _imageStorageExecutor.DeleteImages(payload);
+        if (result)
         {
-            Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json")
-        };
-        var response = await _httpClient.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            var contentString = await response.Content.ReadAsStringAsync();
-            bool result = JsonSerializer.Deserialize<bool>(contentString);
-            return result;
+            Console.WriteLine("ImageStorageService: Delete() - success!");
         }
-
-        // something went wrong!
-        return false;
-    }
-
-    private string CreateImageLink(string link)
-    {
-        return $"{ImageStorageServiceConstants.IMAGE_PUBLIC_LOCATION}{link}";
-    }
-
-    private bool IsTagValueInBase64(HtmlNode imgTag)
-    {
-        var defaultValue = "DEF";
-        var value = imgTag.GetAttributeValue("src", defaultValue);
-        if (value == defaultValue)
+        else
         {
-            Console.WriteLine("ImageStorageService: IsTagValueInBase64 - Failed to get 'src' attribute value");
-            return false;
+            Console.WriteLine("ImageStorageService: Delete() - failure!");
         }
-        return _imageExtractor.IsBase64String(value);
+        return result;
     }
-
-    private int GetLatestSequence(List<SaveImage> list)
-    {
-        if (list.Count == 0)
-        {
-            return 0;
-        }
-        int latestSequence = list.Max(image => image.Sequence) + 1;
-        return latestSequence;
-    }
-
     public async Task<UpdateResult?> Update(UpdateContent data)
     {
         
@@ -317,5 +257,46 @@ public class ImageStorageService : IImageStorageService
         // TODO: mõtle mis oleks parem nulli asemel
         return null;
     }
+    
+    // Helpers
+    
+    private bool IsSaveResultEmpty(List<CDNSaveResult> items)
+    {
+        foreach (var set in items)
+        {
+            if (!set.Items.IsNullOrEmpty()) return false;
+        }
+
+        return true;
+    }
+    
+    
+    private string CreateImageLink(string link)
+    {
+        return $"{IMAGE_PUBLIC_LOCATION}{link}";
+    }
+
+    private bool IsTagValueInBase64(HtmlNode imgTag)
+    {
+        var defaultValue = "DEF";
+        var value = imgTag.GetAttributeValue("src", defaultValue);
+        if (value == defaultValue)
+        {
+            Console.WriteLine("ImageStorageService: IsTagValueInBase64 - Failed to get 'src' attribute value");
+            return false;
+        }
+        return _imageExtractor.IsBase64String(value);
+    }
+
+    private int GetLatestSequence(List<SaveImage> list)
+    {
+        if (list.Count == 0)
+        {
+            return 0;
+        }
+        int latestSequence = list.Max(image => image.Sequence) + 1;
+        return latestSequence;
+    }
+
 
 }
