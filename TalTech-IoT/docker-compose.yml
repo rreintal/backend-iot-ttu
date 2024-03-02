@@ -15,7 +15,9 @@ services:
       - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
       - IMAGES_DIRECTORY=${IMAGES_DIRECTORY}
     volumes:
-      - ${IMAGES_DIRECTORY}:/app/${IMAGES_DIRECTORY}
+      - type: bind
+        source: ${IMAGES_DIRECTORY} # Host machine
+        target: /app/${IMAGES_DIRECTORY} # Container path
   db:
     container_name: ${DOCKER_DB}
     image: "postgres:15.2-bullseye"
@@ -33,7 +35,9 @@ services:
       - ${DB_PORT}
       #volumes :
       #- /Users/richardreintal/dev/iot-db:/var/lib/postgresql/data
-#volumes:
+volumes:
+  images-volume:
+    
 #  db-volume:
 #    driver: local
 #    driver_opts:
