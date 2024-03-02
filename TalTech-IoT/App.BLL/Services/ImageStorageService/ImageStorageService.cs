@@ -4,8 +4,12 @@ using App.BLL.Contracts.ImageStorageModels.Save.Result;
 using App.BLL.Contracts.ImageStorageModels.Update;
 using App.BLL.Contracts.ImageStorageModels.Update.Result;
 using App.BLL.Services.ImageStorageService.Models.Delete;
+using App.Domain;
+using BLL.DTO.ContentHelper;
+using BLL.DTO.Contracts;
 using HtmlAgilityPack;
 using Microsoft.IdentityModel.Tokens;
+using Public.DTO.Content;
 
 namespace App.BLL.Services.ImageStorageService;
 
@@ -30,7 +34,126 @@ public class ImageStorageService : IImageStorageService
         _imageExtractor = new ImageExtractor();
         _imageStorageExecutor = new ImageStorageExectutor();
     }
-    
+
+    public bool ProccessSave(object entity)
+    {
+        var isContentEntity = InstanceOf(entity, typeof(IContentEntity));
+        var isImageEntity = InstanceOf(entity, typeof(IContainsImage));
+        var isThumbnailEntity = InstanceOf(entity, typeof(IContainsThumbnail));
+        var data = new SaveContent() { Items = new List<SaveItem>() };
+        if (isContentEntity)
+        {
+            var bodyEntity = entity as IContentEntity;
+            var engBody = ContentHelper.GetContentValue(bodyEntity, ContentTypes.BODY, LanguageCulture.ENG);
+            var estBody = ContentHelper.GetContentValue(bodyEntity, ContentTypes.BODY, LanguageCulture.EST);
+
+            var bodyEtPayload = new SaveItem()
+            {
+                Content = estBody,
+                Sequence = 1
+            };
+            
+            var bodyEngPayload = new SaveItem()
+            {
+                Content = engBody,
+                Sequence = 2
+            };
+            
+            data.Items.Add(bodyEtPayload);
+            data.Items.Add(bodyEngPayload);
+        }
+
+        if (isImageEntity)
+        {
+            var imageEntity = entity as IContainsImage;
+            var image = imageEntity!.Image;
+            var imagePayload = new SaveItem()
+            {
+                Content = image,
+                Sequence = 3,
+                IsAlreadyBase64 = true
+            };
+            data.Items.Add(imagePayload);
+        }
+
+        if (isThumbnailEntity)
+        {
+            var thumbnailEntity = entity as IContainsThumbnail;
+            var thumbnail = thumbnailEntity!.ThumbnailImage;
+            var thumbnailPayload = new SaveItem()
+            {
+                Content = thumbnail,
+                Sequence = 4,
+                IsAlreadyBase64 = true
+            };
+            data.Items.Add(thumbnailPayload);
+        }
+
+        var result = Save(data);
+
+        if (result != null)
+        {
+            if (isContentEntity)
+            {
+                var etBody = data.Items.FirstOrDefault(e => e.Sequence == 1)?.Content;
+                var enBody = data.Items.FirstOrDefault(e => e.Sequence == 2)?.Content;
+                if (enBody != null) // TODO: add && imageEntity != null
+                {
+                    var contentEntity = entity as IContentEntity;
+                    ContentHelper.SetContentTranslationValue(contentEntity, ContentTypes.BODY, LanguageCulture.ENG, enBody);
+                }
+                if (etBody != null) // TODO: add && imageEntity != null
+                {
+                    var contentEntity = entity as IContentEntity;
+                    ContentHelper.SetContentTranslationValue(contentEntity, ContentTypes.BODY, LanguageCulture.ENG, enBody);
+                }
+            }
+
+            if (isImageEntity)
+            {
+                var imageEntity = entity as IContainsImage;
+                var image = data.Items.FirstOrDefault(e => e.Sequence == 3)?.Content;
+                if (!image.IsNullOrEmpty()) // TODO: add && imageEntity != null
+                {
+                    imageEntity!.Image = image;
+                }
+            }
+
+            if (isThumbnailEntity)
+            {
+                var thumbnailEntity = entity as IContainsThumbnail;
+                var thumbnail = data.Items.FirstOrDefault(e => e.Sequence == 4)?.Content;
+                if (!thumbnail.IsNullOrEmpty() && thumbnailEntity != null)
+                {
+                    thumbnailEntity.ThumbnailImage = thumbnail;
+                }
+            }
+        }
+
+
+        return true; // TODO: when to return false :)
+    }
+
+    private bool InstanceOf(object obj, Type interfaceType)
+    {
+        if (obj == null)
+        {
+            throw new ArgumentNullException(nameof(obj), "The object to check cannot be null.");
+        }
+
+        if (interfaceType == null)
+        {
+            throw new ArgumentNullException(nameof(interfaceType), "The interface type cannot be null.");
+        }
+
+        if (!interfaceType.IsInterface)
+        {
+            throw new ArgumentException("The specified type is not an interface.", nameof(interfaceType));
+        }
+
+        return interfaceType.IsAssignableFrom(obj.GetType());
+    }
+
     public SaveResult? Save(SaveContent data)
     {
         var CDNPayload = new CDNSaveImages()

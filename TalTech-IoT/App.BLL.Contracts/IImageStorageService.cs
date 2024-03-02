@@ -8,6 +8,7 @@ namespace App.BLL.Contracts;
 
 public interface IImageStorageService
 {
+    public bool ProccessSave(Object entity);
     public SaveResult? Save(SaveContent data);
     public bool Delete(DeleteContent content);
 

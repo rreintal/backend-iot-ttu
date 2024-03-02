@@ -153,6 +153,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             // TODO: what to do here? this actually should not get to this point
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
+        /*
         
         var data = new SaveContent()
         {
@@ -228,7 +229,10 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             });
             entity.ImageResources = imageResources;
         }
+        */
 
+        var serviceResult = _imageStorageService.ProccessSave(entity);
+        Console.WriteLine("ImageService result: " + serviceResult);
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var dalResult = await Uow.NewsRepository.AddAsync(dalEntity);
         var result = _mapper.Map<News>(dalResult);
