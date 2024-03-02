@@ -1,297 +1,302 @@
-
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 using App.BLL.Contracts;
 using App.BLL.Contracts.ImageStorageModels.Save;
 using App.BLL.Contracts.ImageStorageModels.Save.Result;
 using App.BLL.Contracts.ImageStorageModels.Update;
-using App.BLL.Services.ImageStorageService.Models;
+using App.BLL.Contracts.ImageStorageModels.Update.Result;
 using App.BLL.Services.ImageStorageService.Models.Delete;
-using App.Domain.Constants;
-using BLL.DTO.V1;
+using HtmlAgilityPack;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace App.BLL.Services.ImageStorageService;
 
  
 public class ImageStorageService : IImageStorageService
 {
-    
-    private static readonly HttpClient _httpClient = new HttpClient();
     private ImageExtractor _imageExtractor { get; }
+    private ImageStorageExectutor _imageStorageExecutor { get; }
+    
+    private string IMAGE_PUBLIC_LOCATION { get; set; } = "http://185.170.213.135:5052/images/"; // TODO: use env variable!
 
     public ImageStorageService()
     {
+        // TODO: use env variable
         _imageExtractor = new ImageExtractor();
+        _imageStorageExecutor = new ImageStorageExectutor();
     }
-
-
-    public async Task<List<SaveResult>> Save(SaveContent data)
+    
+    public async Task<SaveResult?> Save(SaveContent data)
     {
-        // TODO: check if it even needs to send any data, if not don't bother!
-        
-        Dictionary<int, List<SaveImage>?> payloadDict = new Dictionary<int, List<SaveImage>?>(); // (sequence, OriginalContentImagesToSave)
-        Dictionary<int, List<string>?> srcTagDict = new Dictionary<int, List<string>?>(); // siin on (sequence, OriginalContentSrcTagList [replace jaoks]) 
-
-        // Get every content images which need to be saved
-        foreach (var itemToSave in data.Items)
-        {
-            // Thumbnailiga probleem siin, see REGEX ei catchi seda
-            var imagesToSave = _imageExtractor.ExtractBase64ImagesWithFormat(itemToSave.Content);
-            if (imagesToSave.IsNullOrEmpty())
-            {
-                // If content does not have any images to save
-            }
-            else
-            {
-                var srcTagList = _imageExtractor.ExtractBase64ImageSrcTag(itemToSave.Content);
-                payloadDict[itemToSave.Sequence] = imagesToSave;
-                srcTagDict[itemToSave.Sequence] = srcTagList;   
-            }
-        }
-
         var CDNPayload = new CDNSaveImages()
         {
             Items = new List<CDNSaveUnit>()
         };
 
-        foreach (var pair in payloadDict)
+        
+        foreach (var SaveContentItem in data.Items)
         {
-            var sequenceNumber = pair.Key;
-            
-            var items = pair.Value;
-            var unit = new CDNSaveUnit()
+            var SaveUnit = new CDNSaveUnit()
             {
-                Sequence = sequenceNumber,
-                Items = items
+                Items = new List<SaveImage>(),
+                Sequence = SaveContentItem.Sequence
             };
-            CDNPayload.Items.Add(unit);
-
+            
+            switch (SaveContentItem.IsAlreadyBase64)
+            {
+                case true:
+                    if (!_imageExtractor.IsBase64String(SaveContentItem.Content)) break;
+                    
+                    var extractResult = _imageExtractor.CreatePayloadFromBase64(SaveContentItem.Content);
+                    
+                    // add to payload
+                    SaveUnit.Items.Add(new SaveImage()
+                    {
+                        FileFormat = extractResult!.FileFormat,  // TODO: handle null!!
+                        ImageContent = extractResult.ImageContent,
+                        Sequence = GetLatestSequence(SaveUnit.Items)
+                    });
+                    break;
+                case false:
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.LoadHtml(SaveContentItem.Content);
+                    var imgElements = doc.DocumentNode.Descendants("img").ToList();
+                    foreach (var imgElement in imgElements)
+                    {
+                        // Check if image is in base64String or not. as the user can add its own image with preexisting src = link.
+                        // Also we use this method for updating but in update the content may contain already images with source
+                        var imageSourceInBase64 = imgElement.GetAttributeValue("src", "default value");
+                        if(imageSourceInBase64 == "default value" || !_imageExtractor.IsBase64String(imageSourceInBase64)) continue; // This is when the SRC is missing for some reason (should not happen!)
+                        var extractorResult = _imageExtractor.CreatePayloadFromBase64(imageSourceInBase64);
+                        
+                        // add to payload
+                        SaveUnit.Items.Add(new SaveImage()
+                        {
+                            FileFormat = extractorResult!.FileFormat,  // TODO: handle null!!
+                            ImageContent = extractorResult.ImageContent,
+                            Sequence = GetLatestSequence(SaveUnit.Items)
+                        });
+                    }
+                    break;
+            }
+            
+            CDNPayload.Items.Add(SaveUnit);
         }
         
-        // Send images to save
+        // Send items to CDN for save
+        // TODO: check here if there is even anything to save!!!!
+        var saveResponseData = _imageStorageExecutor.Upload(CDNPayload);
 
-        var response = await _httpClient.PostAsJsonAsync(ImageStorageServiceConstants.UPLOAD_IMAGE, CDNPayload);
-        var responseJson = await response.Content.ReadAsStringAsync();
+        
 
-        var options = new JsonSerializerOptions
+        var result = new SaveResult();
+        // TODO: kui response on null, ehk midagi ei uuendatud, siis lihtsalt returni ka null??
+        if (IsSaveResultEmpty(saveResponseData)) return result; // Return empty SaveResult object when nothing to save
+            
+            
+        foreach (var SaveResult in saveResponseData!)
         {
-            PropertyNameCaseInsensitive = true
-        };
-        var responseData = JsonSerializer.Deserialize<List<CDNSaveResult>>(responseJson, options);
-        // Replace all images from original string with the updated link!
-
-        var result = new List<SaveResult>() { };
-        // võta originaal content
-        foreach (var originalData in data.Items)
-        {
-
-            // Check if content with this sequence even needs updating!
-            if (srcTagDict.ContainsKey(originalData.Sequence))
+            var oldContent = data.Items.FirstOrDefault(oldContent => oldContent.Sequence == SaveResult.Sequence);
+            if (oldContent == null)
             {
-                // võta originaalContenti srcTagList
-                var originalContentSrcTagList = srcTagDict[originalData.Sequence];
-                
-                // võta response item
-                var responseListWithContentLinks = responseData.First(e => e.Sequence == originalData.Sequence);
-            
-                // replace originaalContentis srcTag uue srcTagiga
-                
-                
-                // this is because when it does not have any images to save, then it wont override the existing content with ""!!
-                
-                    var updatedContent = "";
-            
-                    foreach (var newLink in responseListWithContentLinks.Items)
-                    {
-                        
-                        var newItem = $"<img src=\"{ImageStorageServiceConstants.IMAGE_PUBLIC_LOCATION}{newLink.Link}\">"; // Link = Image name on server 'abc.png'
-                        var oldItem = originalContentSrcTagList![newLink.Sequence];
-                        updatedContent = originalData.Content.Replace(oldItem, newItem);
-                    }
-
-                    var resultItem = new SaveResult()
-                    {
-                        Sequence = originalData.Sequence,
-                        UpdatedContent = updatedContent
-                    };    
-                result.Add(resultItem);
+                Console.WriteLine($"ImageStorageService: Save() - Old content with {SaveResult.Sequence} sequence number does not exist.");
+                continue;
             }
+
+            // Thumbnail
+            if (oldContent.IsAlreadyBase64 && !SaveResult.Items.IsNullOrEmpty())
+            {
+                var link = CreateImageLink(SaveResult.Items.First().Link); // TODO: Items.First() can theoretically be null!
+                // Kui on ainult thumbnail siis kas CDN saadab tagasi seq 0
+                result.SavedLinks.Add(link);
+                result.Items.Add(new SaveResultItem()
+                {
+                    Sequence = oldContent.Sequence,
+                    Content = link,
+                });
+                continue;
+            }
+
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(oldContent.Content);
+            var imgElements = doc.DocumentNode.Descendants("img");
+
+            var sequence = 0;
+            foreach (var img in imgElements)
+            {
+                // HTML structure itself did not change so I can assume that the order from 'doc.DocumentNode.Descendants("img")'.
+                // is the same as when filtering form base64
+                var isBase64String = IsTagValueInBase64(img);
+                if (isBase64String)
+                {
+                    var imageSaveResult = SaveResult.Items.First(item => item.Sequence == sequence); // TODO: null check!
+                    // Add link to the list, in order to save it in db w associtated links to content!
+                    // Main reason for it is like this the update MUCH easier!
+                    result.SavedLinks.Add(imageSaveResult.Link);
+                    
+                    var link = CreateImageLink(imageSaveResult.Link);
+                    img.SetAttributeValue("src", link);
+                    sequence++; // Add sequence only when we are updating any image, otherway it could be that the sequence gets incremented when analyzing some random <img>
+                }
+                // else continue
+            }
+
+            result.Items.Add(new SaveResultItem()
+            {
+                Sequence = oldContent.Sequence,
+                Content = doc.DocumentNode.OuterHtml,
+            });
         }
+
         return result;
     }
 
-    public async Task<List<UpdateResult>> Update(UpdateContent data)
+    public async Task<bool> Delete(DeleteContent content)
     {
-        var deleteData = new DeleteContent()
-        {
-            Items = new List<DeletePayloadContent>()
-        };
+        var payload = new List<CDNDeleteImage>();
 
-        foreach (var itemToUpdate in data.Items)
+        foreach (var link in content.Links)
         {
-            var unusedImages = _imageExtractor.ExtractUnusedImages(itemToUpdate.OldContent, itemToUpdate.NewContent);
-            if (unusedImages != null)
+            var imageName = _imageExtractor.GetImageNameFromLink(link);
+            payload.Add(new CDNDeleteImage()
             {
-                unusedImages.ForEach(item =>
-                {
-                    deleteData.Items.Add(new DeletePayloadContent()
-                    {
-                        Content = item
-                    });
-                });
-            }
+                ImageName = imageName
+            });
         }
-
-        // If there are some unused images to delete!
-        if (!deleteData.Items.IsNullOrEmpty())
-        {
-            var isDeleteSuccessful = await Delete(deleteData, true);
-            if (!isDeleteSuccessful)
-            {
-                // TODO: what to do here if delete fails???
-            }
-        }
-        
-        // Update new iamges
-        var saveData = new SaveContent()
-        {
-            Items = new List<SaveItem>()
-        };
-        Dictionary<int, string> newContentDict = new Dictionary<int, string>();
-
-        foreach (var dataToUpdate in data.Items)
-        {
-            // lisa uus content
-            newContentDict[dataToUpdate.Sequence] = dataToUpdate.NewContent;
-        }
-
-        foreach (var pair in newContentDict)
-        {
-            var saveItem = new SaveItem()
-            {
-                Content = pair.Value,
-                Sequence = pair.Key
-            };
-            saveData.Items.Add(saveItem);
-        }
-
-
-        
-        var result = new List<UpdateResult>() { };
-        // TODO ADD CHECK HERE IF SAVEDATA == 0 THEN DONT EVEN SEND IT!
-        var saveResult = await Save(saveData);
-        // if there was something to save
-        if (!saveResult.IsNullOrEmpty())
-        {
-            foreach (var saveItem in saveResult)
-            {
-                result.Add(new UpdateResult()
-                {
-                    NewContent = saveItem.UpdatedContent,
-                    Sequence = saveItem.Sequence
-                });   
-            }
-
-            if (saveResult.Count != data.Items.Count)
-            {
-                foreach (var item in data.Items)
-                {
-                    // If there is nothing to update, then still add the content as UpdateResult
-                    var isItemUpdated = saveResult.FirstOrDefault(e => e.Sequence == item.Sequence) != null;
-                    if (!isItemUpdated)
-                    {
-                        result.Add(new UpdateResult()
-                        {
-                            Sequence = item.Sequence,
-                            NewContent = item.NewContent
-                        });
-                    }
-                }
-            }
-
-            return result;    
-        }
-        else
-        {
-            foreach (var originalItems in data.Items)
-            {
-                result.Add(new UpdateResult()
-                {
-                    NewContent = originalItems.NewContent,
-                    Sequence = originalItems.Sequence
-                });
-            }
-
-            return result;
-        }
-        
-    }
-
-
-    /// <summary>
-    /// This deletes images, if "alreadyImages = true" it means that the content already contains only image name for example "aaaa-aaaa-aaaa-aaaa.pdf"
-    /// </summary>
-    /// <param name="content"></param>
-    /// <param name="alreadyImages"></param>
-    /// <returns></returns>
-    public async Task<bool> Delete(DeleteContent content, bool alreadyImages = false)
-    {
-        List<CDNDeleteImage> imagesToDelete = new List<CDNDeleteImage>();
-        if (!alreadyImages)
-        {
-            foreach (var contentToDelete in content.Items)
-            {
-                var extractedLinks = _imageExtractor.ExtractImageWithResource(contentToDelete.Content);
-                extractedLinks?.ForEach(e => imagesToDelete.Add(
-                    new CDNDeleteImage()
-                    {
-                        ImageName = e
-                    }));
-            }    
-        }
-        else
-        {
-            foreach (var alreadyExtractedImage in content.Items)
-            {
-                imagesToDelete.Add(new CDNDeleteImage()
-                {
-                    ImageName = alreadyExtractedImage.Content
-                });
-            }
-        }
-        
-        // If there is no items to delete then dont do it!
-        if (imagesToDelete.IsNullOrEmpty())
+        // If there are nothing to delete, then end
+        if (payload.IsNullOrEmpty())
         {
             Console.WriteLine("ImageStorageService: Delete() - no images to delete!");
             return true;
         }
         
-        Console.WriteLine($"ImageStorageService: Delete() - PENDING: deleting {imagesToDelete.Count} images");
-        var request = new HttpRequestMessage(HttpMethod.Delete, ImageStorageServiceConstants.DELETE_IMAGE)
+        Console.WriteLine($"ImageStorageService: Delete() - PENDING: deleting {payload.Count} images");
+        var result = _imageStorageExecutor.DeleteImages(payload);
+        if (result)
         {
-            Content = new StringContent(JsonConvert.SerializeObject(imagesToDelete), Encoding.UTF8, "application/json")
-        };
-        var response = await _httpClient.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            // Read the response content as a string.
-            var contentString = await response.Content.ReadAsStringAsync();
-
-            // Deserialize the content string to a boolean.
-            bool result = JsonSerializer.Deserialize<bool>(contentString);
-            Console.WriteLine($"ImageStorageService: Delete() - SUCCESS: deleting {imagesToDelete.Count} images!");
-            return result;
+            Console.WriteLine("ImageStorageService: Delete() - success!");
         }
         else
         {
-            Console.WriteLine($"ImageStorageService: Delete() - FAIL: deleting {imagesToDelete.Count} images!");
+            Console.WriteLine("ImageStorageService: Delete() - failure!");
+        }
+        return result;
+    }
+    public async Task<UpdateResult?> Update(UpdateContent data)
+    {
+        
+        var existingLinksDuplicate = new List<string>(data.ExistingImageLinks);
+        if (!data.ExistingImageLinks.IsNullOrEmpty())
+        {
+            // Remove all links which are present in the currently updated content
+            // if the link is empty in the end, then all the existing stuff is used
+            
+            // Reason for this is that: all the links which are associated with some entity (thumbnail, image, content images etc.)
+            // are stored in the list. So just checking if the links in new body are different from before is not possible.
+            // If the duplicated list is empty in the end it means all of the existing images are still used.
+            foreach (var updateItem in data.Items)
+            {
+                data.ExistingImageLinks.ForEach(existingLink =>
+                {
+                    if (updateItem.Content.Contains(existingLink))
+                    {
+                        existingLinksDuplicate.Remove(existingLink);
+                    }
+                });
+            }
+
+            var IsNeedToDeleteImages = existingLinksDuplicate.Count != 0;
+            if (IsNeedToDeleteImages)
+            {
+                var DeletePayload = new DeleteContent()
+                {
+                    Links = existingLinksDuplicate
+                };
+                var deleteResult = await Delete(DeletePayload);
+
+                if (deleteResult == false)
+                {
+                    // TODO: what to do here?
+                    // Show some error that the delete was not successful??
+                }
+            }
+        }
+
+        var saveContent = new SaveContent()
+        {
+            Items = data.Items.Select(updateItem =>
+            {
+                return new SaveItem()
+                {
+                    Sequence = updateItem.Sequence,
+                    Content = updateItem.Content,
+                    IsAlreadyBase64 = updateItem.IsAlreadyBase64
+                };
+            }).ToList()
+        };
+
+
+        var saveResult = await Save(saveContent);
+
+        if (saveResult != null)
+        {
+            var updateResult = new UpdateResult()
+            {
+                AddedLinks = saveResult.SavedLinks,
+                DeletedLinks = existingLinksDuplicate.IsNullOrEmpty() ? null : existingLinksDuplicate, // Here are the links which are deleted
+                Items = saveResult.Items.Select(e =>
+                { 
+                    return new UpdateResultItem()
+                    {
+                        Content = e.Content,
+                        Sequence = e.Sequence
+                    };
+                }).ToList()
+            };
+            return updateResult;   
+        }
+
+        // TODO: mõtle mis oleks parem nulli asemel
+        return null;
+    }
+    
+    // Helpers
+    
+    private bool IsSaveResultEmpty(List<CDNSaveResult> items)
+    {
+        foreach (var set in items)
+        {
+            if (!set.Items.IsNullOrEmpty()) return false;
+        }
+
+        return true;
+    }
+    
+    
+    private string CreateImageLink(string link)
+    {
+        return $"{IMAGE_PUBLIC_LOCATION}{link}";
+    }
+
+    private bool IsTagValueInBase64(HtmlNode imgTag)
+    {
+        var defaultValue = "DEF";
+        var value = imgTag.GetAttributeValue("src", defaultValue);
+        if (value == defaultValue)
+        {
+            Console.WriteLine("ImageStorageService: IsTagValueInBase64 - Failed to get 'src' attribute value");
             return false;
         }
+        return _imageExtractor.IsBase64String(value);
     }
+
+    private int GetLatestSequence(List<SaveImage> list)
+    {
+        if (list.Count == 0)
+        {
+            return 0;
+        }
+        int latestSequence = list.Max(image => image.Sequence) + 1;
+        return latestSequence;
+    }
+
+
 }

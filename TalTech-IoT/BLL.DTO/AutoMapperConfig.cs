@@ -79,5 +79,7 @@ public class AutoMapperConfig : Profile
         CreateMap<App.Domain.FeedPageCategory, BLL.DTO.V1.FeedPageCategoryWithoutPosts>().ReverseMap();
 
         CreateMap<App.Domain.OpenSourceSolution, BLL.DTO.V1.OpenSourceSolution>().ReverseMap();
+        CreateMap<DAL.DTO.V1.ImageResource, BLL.DTO.V1.ImageResource>().ReverseMap();
+        CreateMap<App.Domain.ImageResource, BLL.DTO.V1.ImageResource>().ReverseMap();
     }
 }

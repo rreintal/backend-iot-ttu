@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using App.BLL.Contracts.ImageStorageModels.Save;
 using App.BLL.Services.ImageStorageService.Models;
 using App.BLL.Services.ImageStorageService.Models.Delete;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace App.BLL.Services.ImageStorageService;
@@ -19,8 +20,59 @@ public class ImageExtractor
     /// </summary>
     private const string PATTERN_BASE64IMAGE = "<img src=\"data:image/(jpeg|png|jpg|webp);base64,([^\"]+)\">";
 
-    private const string PATTERN_THUMBNAIL = @"^data:image\/(jpeg|png|jpg|webp);base64,([\/+A-Za-z0-9]+={0,2})$";
+    private const string PATTERN_IMAGE_NAME_FROM_LINK = @"[^\/]+\.(\w+)$";
+    
+    
 
+    // ----------------- Katse 2
+    private const string PATTERN_BASE64 = @"^data:image\/(png|jpeg|jpg|webp);base64,([\/+A-Za-z0-9]+={0,2})$";
+
+
+    // TODO: nullable, but will never return null?
+    public ImageExtractorResult? CreatePayloadFromBase64(string base64)
+    {
+        Regex regex = new Regex(PATTERN_BASE64);
+        
+        Match match = regex.Match(base64);
+        
+        if (match.Success)
+        {
+            string format = match.Groups[1].Value;
+            string base64String = match.Groups[2].Value;
+
+            return new ImageExtractorResult()
+            {
+                FileFormat = format,
+                ImageContent = base64String
+            };
+
+        }
+        // TODO: add logger here that it failed
+        return null;
+    }
+
+    public bool IsBase64String(string data)
+    {
+        Regex regex = new Regex(PATTERN_BASE64);
+        return regex.IsMatch(data);
+    }
+
+    public string GetImageNameFromLink(string link)
+    {
+        Regex regex = new Regex(PATTERN_IMAGE_NAME_FROM_LINK);
+        Match match = regex.Match(link);
+        if (match.Success)
+        {
+            return match.Groups[0].Value;
+        }
+
+        throw new Exception($"ImageExtractor: GetImageNameFromLink({link}) did not find an image name!");  // TODO: what to do here?? 
+    }
+    
+    
+    
+    // ----------------- Katse 2
+    
     /// <summary>
     /// 
     /// </summary>

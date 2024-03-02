@@ -38,6 +38,8 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
 
     public DbSet<OpenSourceSolution> OpenSourceSolutions { get; set; } = default!;
 
+    public DbSet<ImageResource> ImageResources { get; set; } = default!;
+
     private const string TopicAreaUniqueNameExpression = "\"TopicAreaId\" IS NOT NULL";
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -47,12 +49,6 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        
-        
-        // Concurrency tokens
-        builder.Entity<Content>()
-            .Property(e => e.Version)
-            .IsRowVersion();
 
         // Identity
         // do not allow EF to create multiple FK-s, use existing RoleId and UserId
@@ -179,34 +175,11 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .HasMany(x => x.Content)
             .WithOne(x => x.OpenSourceSolution)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Entity<News>()
+            .HasMany(x => x.ImageResources)
+            .WithOne(x => x.News)
+            .OnDelete(DeleteBehavior.Cascade);
 
     }
-
-    /*
-     *
-     * {
-
-  "title": [
-    {
-      "value": "est",
-      "culture": "et"
-    },
-{
-      "value": "eng",
-      "culture": "en"
-    }
-  ],
-  "body": [
-    {
-      "value": "est",
-      "culture": "et"
-    },
-{
-      "value": "eng",
-      "culture": "en"
-    }  ],
-  "image": "string"
-}
-     */
-    
 }

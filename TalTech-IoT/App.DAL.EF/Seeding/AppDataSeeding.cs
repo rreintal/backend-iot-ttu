@@ -25,11 +25,11 @@ public static class AppDataSeeding
         using var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
         if (configuration.GetValue<bool>("DataInit:DropDatabase"))
         {
-            context!.Database.EnsureDeleted();
+            await context!.Database.EnsureDeletedAsync();
         }
         if (configuration.GetValue<bool>("DataInit:Migrate"))
         {
-            context!.Database.Migrate();
+            await context!.Database.MigrateAsync();
         }
         if (configuration.GetValue<bool>("DataInit:Seed"))
         {
