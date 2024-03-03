@@ -1,4 +1,5 @@
 using App.BLL.Contracts;
+using App.BLL.Contracts.ImageStorageModels.Save;
 using App.DAL.Contracts;
 using AutoMapper;
 using Base.BLL;
@@ -13,16 +14,25 @@ public class HomePageBannerService : BaseEntityService<HomePageBanner, Domain.Ho
 {
     private IAppUOW _uow;
     private IMapper _mapper;
+    private IImageStorageService _imageStorageService { get; set; }
 
     public HomePageBannerService(IAppUOW uow, IMapper<HomePageBanner, Domain.HomePageBanner> mapper, IMapper autoMapper) : base(uow.HomePageBannerRepository, mapper)
     {
         _uow = uow;
         _mapper = autoMapper;
+        _imageStorageService = new ImageStorageService.ImageStorageService();
     }
     // TODO: here do CDN magic!
     public async Task<IEnumerable<HomePageBanner>> AllAsync(string? languageCulture)
     {
         return (await _uow.HomePageBannerRepository.AllAsync(languageCulture)).Select(e => Mapper.Map(e));
+    }
+
+
+    public override HomePageBanner Add(HomePageBanner entity)
+    {
+        _imageStorageService.ProccessSave(entity);
+        return base.Add(entity);
     }
 
     public async Task<HomePageBanner?> FindAsync(Guid id, string? languageCulture)

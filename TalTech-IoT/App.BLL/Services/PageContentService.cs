@@ -13,9 +13,18 @@ public class PageContentService : BaseEntityService<global::BLL.DTO.V1.PageConte
     
     private IAppUOW Uow { get; set; }
     
+    private IImageStorageService _imageStorageService { get; }
+    
     public PageContentService( IAppUOW uow, IMapper<global::BLL.DTO.V1.PageContent, PageContent> mapper) : base(uow.PageContentRepository, mapper)
     {
         Uow = uow;
+        _imageStorageService = new ImageStorageService.ImageStorageService();
+    }
+
+    public override global::BLL.DTO.V1.PageContent Add(global::BLL.DTO.V1.PageContent entity)
+    {
+        _imageStorageService.ProccessSave(entity);
+        return base.Add(entity);
     }
 
     public async Task<global::BLL.DTO.V1.PageContent?> FindAsyncByIdentifierString(string identifier)
@@ -34,6 +43,7 @@ public class PageContentService : BaseEntityService<global::BLL.DTO.V1.PageConte
 
     public async Task<global::BLL.DTO.V1.PageContent?> UpdateAsync(global::BLL.DTO.V1.PageContent entity)
     {
+        _imageStorageService.ProccessUpdate(entity);
         var domainEntity = Mapper.Map(entity);
         var updatedDomainEntity = await Uow.PageContentRepository.UpdateAsync(domainEntity);
         return Mapper.Map(updatedDomainEntity);

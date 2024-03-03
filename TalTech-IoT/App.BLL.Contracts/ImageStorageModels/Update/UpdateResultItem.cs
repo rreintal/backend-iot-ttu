@@ -1,7 +1,7 @@
 namespace App.BLL.Contracts.ImageStorageModels.Update;
 
-public class UpdateResult
+public class UpdateResultItem
 {
     public int Sequence { get; set; } = default!;
-    public string NewContent { get; set; } = default!;
+    public string Content { get; set; } = default!;
 }

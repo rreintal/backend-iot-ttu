@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240210234143_initial")]
-    partial class initial
+    [Migration("20240224203349_imagersors")]
+    partial class imagersors
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -67,17 +67,14 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid?>("NewsId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("OpenSourceSolutionId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("PageContentId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("ProjectId")
                         .HasColumnType("uuid");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -95,6 +92,8 @@ namespace App.DAL.EF.Migrations
                         .IsUnique();
 
                     b.HasIndex("NewsId");
+
+                    b.HasIndex("OpenSourceSolutionId");
 
                     b.HasIndex("PageContentId");
 
@@ -360,6 +359,34 @@ namespace App.DAL.EF.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
+            modelBuilder.Entity("App.Domain.ImageResource", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ContentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("NewsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContentId");
+
+                    b.HasIndex("NewsId");
+
+                    b.ToTable("ImageResources");
+                });
+
             modelBuilder.Entity("App.Domain.News", b =>
                 {
                     b.Property<Guid>("Id")
@@ -383,6 +410,27 @@ namespace App.DAL.EF.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("News");
+                });
+
+            modelBuilder.Entity("App.Domain.OpenSourceSolution", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Private")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OpenSourceSolutions");
                 });
 
             modelBuilder.Entity("App.Domain.PageContent", b =>
@@ -620,7 +668,7 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.FeedPageCategory", "FeedPageCategory")
                         .WithMany("Content")
                         .HasForeignKey("FeedPageCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("App.Domain.FeedPagePost", "FeedPagePost")
                         .WithMany("Content")
@@ -640,6 +688,11 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.News", "News")
                         .WithMany("Content")
                         .HasForeignKey("NewsId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("App.Domain.OpenSourceSolution", "OpenSourceSolution")
+                        .WithMany("Content")
+                        .HasForeignKey("OpenSourceSolutionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("App.Domain.PageContent", "PageContent")
@@ -665,6 +718,8 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("LanguageString");
 
                     b.Navigation("News");
+
+                    b.Navigation("OpenSourceSolution");
 
                     b.Navigation("PageContent");
 
@@ -748,6 +803,21 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("AppUser");
                 });
 
+            modelBuilder.Entity("App.Domain.ImageResource", b =>
+                {
+                    b.HasOne("App.Domain.Content", null)
+                        .WithMany("ImageResource")
+                        .HasForeignKey("ContentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("App.Domain.News", "News")
+                        .WithMany("ImageResources")
+                        .HasForeignKey("NewsId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("News");
+                });
+
             modelBuilder.Entity("App.Domain.TopicArea", b =>
                 {
                     b.HasOne("App.Domain.Translations.LanguageString", "LanguageString")
@@ -817,6 +887,11 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("Content");
                 });
 
+            modelBuilder.Entity("App.Domain.Content", b =>
+                {
+                    b.Navigation("ImageResource");
+                });
+
             modelBuilder.Entity("App.Domain.FeedPage", b =>
                 {
                     b.Navigation("FeedPageCategories");
@@ -856,6 +931,13 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("Content");
 
                     b.Navigation("HasTopicAreas");
+
+                    b.Navigation("ImageResources");
+                });
+
+            modelBuilder.Entity("App.Domain.OpenSourceSolution", b =>
+                {
+                    b.Navigation("Content");
                 });
 
             modelBuilder.Entity("App.Domain.PageContent", b =>

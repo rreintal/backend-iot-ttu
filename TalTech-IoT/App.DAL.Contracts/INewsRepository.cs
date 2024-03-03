@@ -1,6 +1,7 @@
 using Base.DAL.EF.Contracts;
 using DAL.DTO.V1;
 using Public.DTO;
+using ImageResource = App.Domain.ImageResource;
 
 namespace App.DAL.Contracts;
 
@@ -21,6 +22,8 @@ public interface INewsRepository :IBaseTranslateableRepository<App.Domain.News>,
     public Domain.News? FindByIdWithAllTranslations(Guid id);
 
     public Task<News> AddAsync(News entity);
+
+    public Task<List<ImageResource>> GetImageResources(Guid id);
 }
 
 public interface INewsRepositoryCustom<TEntity>

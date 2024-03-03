@@ -24,7 +24,7 @@ public static class AppDataSeeding
         var context = scopedServices.GetRequiredService<AppDbContext>();
         if (configuration.GetValue<bool>("DataInit:DropDatabase"))
         {
-            context!.Database.EnsureDeleted();
+            await context!.Database.EnsureDeletedAsync();
         }
         if (configuration.GetValue<bool>("DataInit:Migrate"))
         {

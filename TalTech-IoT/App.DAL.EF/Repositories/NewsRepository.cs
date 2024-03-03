@@ -8,6 +8,7 @@ using DAL.DTO.V1;
 using Microsoft.EntityFrameworkCore;
 using Public.DTO;
 using Public.DTO.Content;
+using ImageResource = App.Domain.ImageResource;
 using News = DAL.DTO.V1.News;
 
 namespace App.DAL.EF.Repositories;
@@ -121,9 +122,15 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         return result;
     }
 
+    public Task<List<ImageResource>> GetImageResources(Guid id)
+    {
+        return DbContext.ImageResources.Where(x => x.NewsId == id).ToListAsync();
+    }
+
     public async Task<App.Domain.News?> FindByIdWithAllTranslationsAsync(Guid Id)
     {
         var query = await DbSet.Where(x => x.Id == Id)
+            .Include(x => x.ImageResources)
             .IncludeHasTopicAreasWithTranslation()
             .IncludeContentWithTranslation()
             .FirstOrDefaultAsync();
@@ -162,6 +169,8 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
          */
         var existingDomainObject = await FindByIdWithAllTranslationsAsyncTracking(dalEntity.Id);
         var newDomainObject = _mapper.Map<Domain.News>(dalEntity);
+
+        var entry = DbSet.Entry(existingDomainObject);
         
         // imagine its updated  
         if (existingDomainObject == null)
@@ -169,6 +178,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             return null;
         }
         
+        entry.Entity.ImageResources = dalEntity.ImageResources.Select(e => _mapper.Map<ImageResource>(e)).ToList();
         existingDomainObject!.Image = newDomainObject.Image;
         UpdateContentHelper.UpdateContent(existingDomainObject, newDomainObject);
         var result = Update(existingDomainObject);

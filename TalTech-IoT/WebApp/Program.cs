@@ -52,18 +52,17 @@ builder.Services.AddCors(options =>
     } );
 });
 
-// Add db 
-// TODO Identity
 //DockerDbConnection 
 //DevDbConnection
- 
 string? databaseUrl = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+
 var connectionString = "";
 if (string.IsNullOrWhiteSpace(databaseUrl))
 {
-    databaseUrl = "DevDbConnection";
-    connectionString = builder.Configuration.GetConnectionString(databaseUrl) ??
-                       throw new InvalidOperationException("Connection string not found");
+    //databaseUrl = "DevDbConnection";
+    //connectionString = builder.Configuration.GetConnectionString(databaseUrl) ??
+                       //throw new InvalidOperationException("Connection string not found");
+    //connectionString = "Server=localhost:5432;Database=iot-ttu;Username=postgres;Password=postgres;";
 }
 else
 {
@@ -183,15 +182,9 @@ app.UseSwaggerUI(options =>
 });
 
 app.UseHttpsRedirection();
-
 app.UseCors("develop");
-
-
 app.UseRouting();
-
-// Order counts!!!!
 app.UseAuthorization(); 
-
 app.UseStaticFiles();
 
 

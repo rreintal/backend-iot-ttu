@@ -73,12 +73,6 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid?>("ProjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ContactPersonId");
@@ -360,6 +354,39 @@ namespace App.DAL.EF.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("App.Domain.ImageResource", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("NewsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PageContentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NewsId");
+
+                    b.HasIndex("PageContentId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ImageResources");
                 });
 
             modelBuilder.Entity("App.Domain.News", b =>
@@ -778,6 +805,30 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("AppUser");
                 });
 
+            modelBuilder.Entity("App.Domain.ImageResource", b =>
+                {
+                    b.HasOne("App.Domain.News", "News")
+                        .WithMany("ImageResources")
+                        .HasForeignKey("NewsId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("App.Domain.PageContent", "PageContent")
+                        .WithMany("ImageResources")
+                        .HasForeignKey("PageContentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("App.Domain.Project", "Project")
+                        .WithMany("ImageResources")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("News");
+
+                    b.Navigation("PageContent");
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("App.Domain.TopicArea", b =>
                 {
                     b.HasOne("App.Domain.Translations.LanguageString", "LanguageString")
@@ -886,6 +937,8 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("Content");
 
                     b.Navigation("HasTopicAreas");
+
+                    b.Navigation("ImageResources");
                 });
 
             modelBuilder.Entity("App.Domain.OpenSourceSolution", b =>
@@ -896,11 +949,15 @@ namespace App.DAL.EF.Migrations
             modelBuilder.Entity("App.Domain.PageContent", b =>
                 {
                     b.Navigation("Content");
+
+                    b.Navigation("ImageResources");
                 });
 
             modelBuilder.Entity("App.Domain.Project", b =>
                 {
                     b.Navigation("Content");
+
+                    b.Navigation("ImageResources");
                 });
 
             modelBuilder.Entity("App.Domain.Translations.LanguageString", b =>

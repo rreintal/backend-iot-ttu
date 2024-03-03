@@ -1,15 +1,20 @@
 
 using App.BLL.Contracts.ImageStorageModels.Save;
 using App.BLL.Contracts.ImageStorageModels.Update;
+using App.BLL.Contracts.ImageStorageModels.Update.Result;
 using App.BLL.Services.ImageStorageService.Models.Delete;
 
 namespace App.BLL.Contracts;
 
 public interface IImageStorageService
 {
-    public Task<List<SaveResult>> Save(SaveContent data);
-    public Task<bool> Delete(DeleteContent content, bool alreadyImages = false);
+    public bool ProccessSave(Object entity);
 
-    public Task<List<UpdateResult>> Update(UpdateContent data);
+    public void ProccessUpdate(Object entity);
+    public void ProccessDelete(Object entity);
+    public SaveResult? Save(SaveContent data);
+    public bool Delete(DeleteContent content);
+
+    public UpdateResult? Update(UpdateContent data);
 
 }
