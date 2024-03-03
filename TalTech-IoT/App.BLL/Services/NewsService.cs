@@ -1,22 +1,13 @@
-using System.Text.RegularExpressions;
 using App.BLL.Contracts;
-using App.BLL.Contracts.ImageStorageModels.Save;
-using App.BLL.Contracts.ImageStorageModels.Update;
 using App.BLL.Services.ImageStorageService.Models.Delete;
 using App.DAL.Contracts;
 using App.Domain;
-using App.Domain.Constants;
 using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
-using BLL.DTO.V1;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.IdentityModel.Tokens;
 using Public.DTO;
-using Public.DTO.Content;
-using Content = App.Domain.Content;
 using ContentType = BLL.DTO.V1.ContentType;
-using ImageResource = BLL.DTO.V1.ImageResource;
 using News = BLL.DTO.V1.News;
 
 
