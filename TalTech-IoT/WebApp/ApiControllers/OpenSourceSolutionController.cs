@@ -167,7 +167,7 @@ public class OpenSourceSolutionController : ControllerBase
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    [HttpPost]
+    [HttpPost("RequestAccess")]
     public async Task<bool> GetResource(RequestOpenSourceSolutionAccess data)
     {
         // TODO: Move this to Mail controller!!
