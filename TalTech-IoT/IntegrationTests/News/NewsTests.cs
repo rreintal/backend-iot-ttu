@@ -66,11 +66,14 @@ namespace NUnitTests.News
                     {
                         Id = Guid.Parse(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID)
                     }
-                }
+                },
+                Image = "image stuff"
             };
 
             var client = _factory!.CreateClient();
             var response = await client.PostAsJsonAsync("/api/v1/News", payload);
+            var str = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(str);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
 
@@ -91,6 +94,7 @@ namespace NUnitTests.News
             var client = _factory!.CreateClient();
             var payload = new PostNewsDto()
             {
+                Image = "image stuff",
                 Author = "Richard Reintal",
                 Title = new List<ContentDto>()
                 {
@@ -133,6 +137,7 @@ namespace NUnitTests.News
             var languageCulture = LanguageCulture.EST;
             var payload = new PostNewsDto()
             {
+                Image = "image stuff",
                 Author = "Richard Reintal",
                 Title = new List<ContentDto>()
                 {
@@ -192,6 +197,7 @@ namespace NUnitTests.News
             var payload = new PostNewsDto()
             {
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -250,6 +256,7 @@ namespace NUnitTests.News
             var payload = new PostNewsDto()
             {
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -307,6 +314,7 @@ namespace NUnitTests.News
             var payload = new PostNewsDto()
             {
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -370,6 +378,7 @@ namespace NUnitTests.News
             var payload = new PostNewsDto()
             {
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -415,6 +424,7 @@ namespace NUnitTests.News
             {
                 Id = newsId,
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -475,6 +485,7 @@ namespace NUnitTests.News
             var payload = new PostNewsDto()
             {
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -520,6 +531,7 @@ namespace NUnitTests.News
             {
                 Id = newsId,
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -579,6 +591,7 @@ namespace NUnitTests.News
             var payload = new PostNewsDto()
             {
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -624,6 +637,7 @@ namespace NUnitTests.News
             {
                 Id = newsId,
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -683,6 +697,7 @@ namespace NUnitTests.News
             var payload = new PostNewsDto()
             {
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -728,6 +743,7 @@ namespace NUnitTests.News
             {
                 Id = newsId,
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -787,6 +803,7 @@ namespace NUnitTests.News
             var payload = new PostNewsDto()
             {
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -832,6 +849,7 @@ namespace NUnitTests.News
             {
                 Id = newsId,
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -884,6 +902,7 @@ namespace NUnitTests.News
             var payload = new PostNewsDto()
             {
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()
@@ -942,6 +961,7 @@ namespace NUnitTests.News
             var payload = new PostNewsDto()
             {
                 Author = "Richard Reintal",
+                Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
                     new ContentDto()

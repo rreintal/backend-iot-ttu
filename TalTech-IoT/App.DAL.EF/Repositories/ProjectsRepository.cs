@@ -40,13 +40,11 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
             if (isBodyValueChanged)
             {
                 existingDomainObject.SetContentTranslationValue(ContentTypes.BODY, lang, newBodyValue);
-                existingDomainObject.SetBaseLanguage(ContentTypes.BODY, newBodyValue);
             }
             
             if (isTitleContentChanged)
             {
                 existingDomainObject.SetContentTranslationValue(ContentTypes.TITLE, lang, newTitleValue);
-                existingDomainObject.SetBaseLanguage(ContentTypes.TITLE, newBodyValue);
             }
         }
         // TODO: map to domain object and then add or smth!

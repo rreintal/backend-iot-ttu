@@ -33,11 +33,4 @@ public class Project : DomainEntityIdMetaData, IContentEntity
         
         result.TranslationValue = value;
     }
-
-    public void SetBaseLanguage(string contentType, string value)
-    {
-        var result = Content.First(c => c.ContentType!.Name == contentType)
-            .LanguageString;
-        result.Value = value;
-    }
 }

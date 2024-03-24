@@ -60,7 +60,6 @@ public class CreatePageContentMapper
         var bodyLangStr = new LanguageString()
         {
             Id = bodyLangStrId,
-            Value = estBody.Value
         };
         var bodyContent = new App.Domain.Content()
         {
@@ -76,7 +75,6 @@ public class CreatePageContentMapper
         var titleLangStr = new LanguageString()
         {
             Id = titleLangStrId,
-            Value = estTitle.Value
         };
 
         var titleContent = new App.Domain.Content()

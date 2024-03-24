@@ -17,7 +17,6 @@ public static class UpdateContentHelper
                 if (isBodyValueChanged)
                 {
                     SetContentTranslationValue(existingEntity, ContentTypes.BODY, lang, newBodyValue);
-                    SetBaseLanguage(existingEntity, ContentTypes.BODY, newBodyValue);
                 }   
             }
 
@@ -29,7 +28,6 @@ public static class UpdateContentHelper
                 if (isTitleContentChanged)
                 {
                     SetContentTranslationValue(existingEntity, ContentTypes.TITLE, lang, newTitleValue);
-                    SetBaseLanguage(existingEntity, ContentTypes.TITLE, newTitleValue);
                 }   
             }
             
@@ -52,13 +50,6 @@ public static class UpdateContentHelper
             .Where(translation => translation.LanguageCulture == languageCulture).First();
         
         result.TranslationValue = value;
-    }
-    
-    public static void SetBaseLanguage(IContentEntity entity, string contentType, string value)
-    {
-        var result = entity.Content.First(c => c.ContentType!.Name == contentType)
-            .LanguageString;
-        result.Value = value;
     }
     
     

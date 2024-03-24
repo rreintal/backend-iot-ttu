@@ -39,7 +39,6 @@ public static class DomainFactory
                 ContentTypeId = AppDataSeeding.GetContentTypeId(contentType),
                 NewsId = news.Id
             },
-            Value = baseLanguageContent
         };
 
         List<LanguageStringTranslation> translations = new List<LanguageStringTranslation>();
@@ -108,7 +107,6 @@ public static class DomainFactory
         {
             Id = t1StrId,
             TopicAreaId = t1Id,
-            Value = etValue
         };
         var t1Est = new LanguageStringTranslation()
         {

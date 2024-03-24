@@ -61,7 +61,9 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .HasOne(x => x.AppRole)
             .WithMany(x => x!.UserRoles)
             .HasForeignKey(x => x.RoleId);
-
+        
+        builder.Entity<LanguageStringTranslation>()
+            .HasKey(e => new { e.LanguageStringId, e.LanguageCulture });
 
         // Define that Content has LanguageString and LanguageString might not have Content!
         builder.Entity<Content>()
@@ -97,20 +99,6 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
         builder.Entity<FeedPage>()
             .HasIndex(x => x.FeedPageName)
             .IsUnique();
-        
-        // Set index that when TopicAreaId is present, then the value must be unique
-        // Explanation: 
-        // Migrations generates code for SQL Server, in SQL server where clause is with [], but in Postgres its with " ".
-        // Thats why we use "TopicAreaId" instead of [TopicAreaId] as shown in the officaly documentation.
-        
-        // TODO - kas filter peaks kehtima ainult neile topicutele, millel pole ParentTopicId?
-        // TODO - seda checki service tasandil, kas selline eksisteerib juba
-        builder.Entity<LanguageString>()
-            .HasIndex(x => x.Value)
-            .IsUnique()
-            .HasFilter(TopicAreaUniqueNameExpression);
-        
-        
 
         // disable cascade delete
         foreach (var relationship in builder.Model

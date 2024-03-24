@@ -32,18 +32,5 @@ public class News : DomainEntityIdMetaData, IHasTopicAreaEntity, IContentEntity
         
         result.TranslationValue = value;
     }
-
-    public void SetBaseLanguage(string contentType, string value)
-    {
-        var result = Content.First(c => c.ContentType!.Name == contentType)
-            .LanguageString;
-        result.Value = value;
-    }
     
-    public string GetBaseLanguageContent(string contentType)
-    {
-        var result = Content.First(c => c.ContentType!.Name == contentType)
-            .LanguageString;
-        return result.Value;
-    }
 }

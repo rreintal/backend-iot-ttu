@@ -68,14 +68,12 @@ public class PageContentRepository : EFBaseRepository<App.Domain.PageContent, Ap
             {
                 Console.WriteLine($"Old value: {oldBodyValue}, new value: {newBodyValue}");
                 existingObject.SetContentTranslationValue(ContentTypes.BODY, lang, newBodyValue);
-                existingObject.SetBaseLanguage(ContentTypes.BODY, newBodyValue);
             }
             
             if (isTitleContentChanged)
             {
                 Console.WriteLine($"Old value: {oldTitleValue}, new value: {newTitleValue}");
                 existingObject.SetContentTranslationValue(ContentTypes.TITLE, lang, newTitleValue);
-                existingObject.SetBaseLanguage(ContentTypes.TITLE, newBodyValue);
             }
         }
 
