@@ -7,4 +7,5 @@ public class GetFeedPageCategoryPostTranslated : DomainEntityId
     public Guid FeedPageCategoryId { get; set; }
     public string Title { get; set; } = default!;
     public string Body { get; set; } = default!;
+    public DateTime CreatedAt { get; set; }
 }

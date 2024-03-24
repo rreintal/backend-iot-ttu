@@ -19,7 +19,7 @@ public class PageContentRepository : EFBaseRepository<App.Domain.PageContent, Ap
         {
             DbContext.Attach(content.ContentType);
         }
-
+        
         return base.Add(entity);
     }
 

@@ -18,7 +18,8 @@ public class FeedPagePostMapper
             Id = entity.Id,
             Body = ContentHelper.GetContentValue(entity, ContentTypes.BODY, languageCulture),
             Title = ContentHelper.GetContentValue(entity, ContentTypes.TITLE, languageCulture),
-            FeedPageCategoryId = entity.FeedPageCategoryId
+            FeedPageCategoryId = entity.FeedPageCategoryId,
+            CreatedAt = entity.CreatedAt
         };
     }
     public static BLL.DTO.V1.FeedPagePost Map(Public.DTO.V1.FeedPage.FeedPagePost entity, List<ContentType> contentTypes)
@@ -30,6 +31,9 @@ public class FeedPagePostMapper
             ContentHelper.EContentHelperEntityType.FeedPagePost);
         var bodyContent = ContentHelper.CreateContent(entity.Body, bodyContentType, postId,
             ContentHelper.EContentHelperEntityType.FeedPagePost);
+
+        var date = (DateTime)entity.CreatedAt;
+        
         return new BLL.DTO.V1.FeedPagePost()
         {
             Id = postId,
@@ -37,7 +41,7 @@ public class FeedPagePostMapper
             Content = new List<BLL.DTO.V1.Content>()
             {
                 titleContent, bodyContent
-            },
+            }
         };
     }
 
