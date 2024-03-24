@@ -9,4 +9,6 @@ public interface IMailService
     public void SendForgotPassword(string recipentMail, string password);
 
     public void SendContactUs(ContactForm data);
+
+    public void AccessResource(string recipentMail, string resourceName, string link, string languageCulture);
 }

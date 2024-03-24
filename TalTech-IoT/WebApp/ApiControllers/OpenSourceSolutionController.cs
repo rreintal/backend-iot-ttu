@@ -1,11 +1,13 @@
 using System.Net;
 using App.BLL.Contracts;
+using App.Domain;
 using App.Domain.Constants;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1.Mappers;
 using Public.DTO.V1.OpenSourceSolution;
+using OpenSourceSolution = Public.DTO.V1.OpenSourceSolution.OpenSourceSolution;
 
 namespace WebApp.ApiControllers;
 
@@ -158,5 +160,24 @@ public class OpenSourceSolutionController : ControllerBase
     {
         return await _bll.OpenSourceSolutionService.GetCount();
     }
-    
+
+
+    /// <summary>
+    /// Access OSS link via Mail
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    [HttpPost]
+    public async Task<bool> GetResource(RequestOpenSourceSolutionAccess data)
+    {
+        // TODO: Move this to Mail controller!!
+        var openSourceSolution = await _bll.OpenSourceSolutionService.FindAsync(data.SolutionId);
+        
+        // TODO: tee eraldi DTO + meetod selle jaoks
+        var titleName = openSourceSolution!.Content.First(x => x.ContentType!.Name == "TITLE");
+        var name = titleName.LanguageString.LanguageStringTranslations.First().TranslationValue;
+        _bll.MailService.AccessResource(data.Email, name, openSourceSolution.Link, LanguageCulture.ENG);
+
+        return true;
+    }
 }
