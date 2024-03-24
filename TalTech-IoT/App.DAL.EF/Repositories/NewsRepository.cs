@@ -220,6 +220,9 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             var result = (await query
                 .IncludeHasTopicAreasWithTranslation(languageCulture)
                 .IncludeContentWithTitlesTranslation(languageCulture)
+                .OrderByDescending(x => x.CreatedAt)
+                .Skip(filterSet.Page.Value * filterSet.Size.Value)
+                .Take(filterSet.Size.Value)
                 .ToListAsync()).Select(e => _mapper.Map<App.Domain.News>(e));
             return result;
         }
