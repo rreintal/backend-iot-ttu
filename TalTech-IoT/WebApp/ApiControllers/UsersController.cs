@@ -622,8 +622,8 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="register"></param>
     /// <returns></returns>
-    [HttpPost("RegisterUnknown")]
-    public async Task<ActionResult> AdminRegister([FromBody] RegisterUnknown register)
+    [HttpPost("{languageCulture}/RegisterUnknown")]
+    public async Task<ActionResult> AdminRegister([FromBody] RegisterUnknown register, string languageCulture)
     {
         var RandomUserPassword = Guid.NewGuid().ToString();
         var user = await _context.Users.Where(x => x.UserName == register.Username || x.Email == register.Email)
@@ -704,7 +704,7 @@ public class UsersController : ControllerBase
             // TODO: send email, if email is valid then saveChanges!!
             // TODO: does it save user even before saving changes?
             
-            _bll.MailService.SendRegistration(register.Email, register.Username, RandomUserPassword);
+            _bll.MailService.SendRegistration(register.Email, register.Username, RandomUserPassword, languageCulture);
             await _context.SaveChangesAsync();
             Console.WriteLine($"user random password = {RandomUserPassword}");
             

@@ -1,10 +1,12 @@
+using Public.DTO.V1;
+
 namespace App.BLL.Contracts;
 
 public interface IMailService
 {
-    public void SendEmail(string recipentEmail, string subject, string body);
-
-    public void SendRegistration(string recipentMail, string username, string password);
+    public void SendRegistration(string recipentMail, string username, string password, string languageCulture);
 
     public void SendForgotPassword(string recipentMail, string password);
+
+    public void SendContactUs(ContactForm data);
 }
