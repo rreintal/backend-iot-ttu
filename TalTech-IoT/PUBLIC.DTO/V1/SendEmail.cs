@@ -9,8 +9,6 @@ public class SendEmail
 
     [Required(ErrorMessage = RestApiErrorMessages.MissingMailRecipent)]
     public string RecipentEmail { get; set; } = default!;
-    
-    [Required]
 
-    public string ProjectId { get; set; } = default!;
+    public string Link { get; set; } = default!;
 }

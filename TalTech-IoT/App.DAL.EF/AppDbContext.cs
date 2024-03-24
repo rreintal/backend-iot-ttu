@@ -62,6 +62,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .WithMany(x => x!.UserRoles)
             .HasForeignKey(x => x.RoleId);
         
+        // Composite key for translations (languageStringId, "et")
         builder.Entity<LanguageStringTranslation>()
             .HasKey(e => new { e.LanguageStringId, e.LanguageCulture });
 
@@ -168,6 +169,5 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .HasMany(x => x.ImageResources)
             .WithOne(x => x.News)
             .OnDelete(DeleteBehavior.Cascade);
-
     }
 }

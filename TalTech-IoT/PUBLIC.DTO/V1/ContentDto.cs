@@ -9,7 +9,7 @@ public class ContentDto
 {
     [Required]
     [MinLength(1)]
-    //[MaxLength(10000)] // TODO: mis on max length? kas base64 loeb?  
+    [MaxLength(10000000)] // TODO: mis on max length? kas base64 loeb?  
     public string Value { get; set; } = default!;
     
     [Required]

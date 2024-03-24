@@ -10,7 +10,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
         var builder = new DbContextOptionsBuilder<AppDbContext>();
         // this is needed for creation and migrations
         // Dev db connection
-        builder.UseNpgsql("Server=localhost:5432;Database=iot-ttu;Username=postgres;Password=postgres;");
+        builder.UseNpgsql(Environment.GetEnvironmentVariable("DB_CONNECTION_STRING"));
         
         
         //test db connection

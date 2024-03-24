@@ -33,12 +33,13 @@ public class MailController : ControllerBase
     public async Task<string> Send([FromBody] SendEmail data, string languageCulture)
     {
         // TODO
+        
         var estBody = $"Tere, {data.RecipentEmail}! Olete avaldanud alla laadida $PROJECT_NAME seotud failid. $LINK?";
         var engBody =
             $"Hi, {data.RecipentEmail}! You have sent a request to download related files to $PROJECT_NAME. $LINK?";
 
         var body = languageCulture == LanguageCulture.ENG ? engBody : estBody;
-        _Bll.MailService.SendEmail(data.RecipentEmail, "TODO", body);
+        _Bll.MailService.SendEmail(data.RecipentEmail, "YouTube", data.Link);
         return $"Sent message to {data.RecipentEmail}";
     }
 
