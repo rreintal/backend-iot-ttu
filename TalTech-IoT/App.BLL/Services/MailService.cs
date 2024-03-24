@@ -50,6 +50,7 @@ public class MailService : IMailService
         mail.To.Add(recipentMail);
         mail.Subject = subjectTemplate;
         mail.Body = MakeRegistrationBody(password, bodyTemplate);
+        mail.IsBodyHtml = true;
         SmtpClient.Send(mail);
     }
 
