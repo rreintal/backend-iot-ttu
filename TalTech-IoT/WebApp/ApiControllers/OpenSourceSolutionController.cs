@@ -167,8 +167,8 @@ public class OpenSourceSolutionController : ControllerBase
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    [HttpPost("RequestAccess")]
-    public async Task<bool> GetResource(RequestOpenSourceSolutionAccess data)
+    [HttpPost("{languageCulture}/RequestAccess")]
+    public async Task<bool> GetResource(RequestOpenSourceSolutionAccess data, string languageCulture)
     {
         // TODO: Move this to Mail controller!!
         var openSourceSolution = await _bll.OpenSourceSolutionService.FindAsync(data.SolutionId);
@@ -176,7 +176,7 @@ public class OpenSourceSolutionController : ControllerBase
         // TODO: tee eraldi DTO + meetod selle jaoks
         var titleName = openSourceSolution!.Content.First(x => x.ContentType!.Name == "TITLE");
         var name = titleName.LanguageString.LanguageStringTranslations.First().TranslationValue;
-        _bll.MailService.AccessResource(data.Email, name, openSourceSolution.Link, LanguageCulture.ENG);
+        _bll.MailService.AccessResource(data.Email, name, openSourceSolution.Link, languageCulture);
 
         return true;
     }
