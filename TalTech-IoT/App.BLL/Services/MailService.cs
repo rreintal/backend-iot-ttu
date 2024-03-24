@@ -86,6 +86,7 @@ public class MailService : IMailService
         mail.To.Add(recipentMail);
         mail.Subject = subjectTemplate;
         mail.Body = MakeRequestResourceBody(bodyTemplate, recipentMail, resourceName, link);
+        mail.IsBodyHtml = true;
         SmtpClient.Send(mail);
     }
 
