@@ -67,12 +67,10 @@ public static class AppDataSeeding
                     .SetValues("Arvutivõrgud", "Networking");
                 var t3Child = DomainFactory
                     .TopicArea()
-                    .SetValues("4G", "4G")
-                    .SetParent(t3);
+                    .SetValues("4G", "4G");
                 var t3child2 = DomainFactory
                     .TopicArea()
-                    .SetValues("5G", "5G")
-                    .SetParent(t3);
+                    .SetValues("5G", "5G");
                 context.TopicAreas.AddRangeAsync(new List<TopicArea>() { t1, t2, t3, t3child2, t3Child });
             }
 

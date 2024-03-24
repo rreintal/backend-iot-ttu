@@ -14,20 +14,6 @@ public class TopicAreaMapper
             {
                 Id = parent.Id,
             };
-            
-            if (parent.ChildrenTopicAreas != null)
-            {
-                foreach (var child in parent.ChildrenTopicAreas)
-                {
-                    var childDto = new BLL.DTO.V1.TopicArea()
-                    {
-                        Id = child.Id,
-                        ParentTopicAreaId = parent.Id,
-                        ParentTopicArea = parentDto
-                    };
-                    res.Add(childDto);
-                }   
-            }
             res.Add(parentDto);
         }
 
@@ -41,36 +27,9 @@ public class TopicAreaMapper
         var res = new List<Public.DTO.V1.TopicArea>();
         foreach (var children in bllTopicAreas)
         {
-            if (children.ParentTopicArea != null)
-            {
-                var parent = children.ParentTopicArea;
-                if (dict.ContainsKey(parent.Id))
-                {
-                    var childrenDto = new Public.DTO.V1.TopicArea()
-                    {
-                        Id = children.Id,
-                        Name = children.GetName()
-                    };
-                    var parentDto = dict[parent.Id];
-                    
-                    // Without this if, it produces a weird bug
-                    if (parentDto.ChildrenTopicAreas == null)
-                    {
-                        parentDto.ChildrenTopicAreas = new List<TopicArea>() { childrenDto };
-                    }
-                    else
-                    {
-                        parentDto.ChildrenTopicAreas.Add(childrenDto);
-                    }
-                }
-                if (!dict.ContainsKey(parent.Id))
-                {
-                    var mappedParent = MapParent(parent, children);
-                    dict.Add(mappedParent.Id, mappedParent);
-                }
-            }
-            else
-            {
+            
+            
+            
                 if (!dict.ContainsKey(children.Id))
                 {
                     var parent = new TopicArea()
@@ -80,32 +39,11 @@ public class TopicAreaMapper
                     };
                     dict.Add(parent.Id, parent);
                 }
-
-            }
+                
         }
         
         res.AddRange(dict.Values);
 
         return res;
     }
-
-    private static Public.DTO.V1.TopicArea MapParent(BLL.DTO.V1.TopicArea parent, BLL.DTO.V1.TopicArea children)
-    {
-        var childrenDto = new Public.DTO.V1.TopicArea()
-        {
-            Id = children.Id,
-            Name = children.GetName()
-        };
-        var parentDto = new Public.DTO.V1.TopicArea()
-        {
-            Id = parent.Id,
-            Name = parent.GetName(),
-            ChildrenTopicAreas = new List<TopicArea>()
-            {
-                childrenDto
-            }
-        };
-        return parentDto;
-    }
-    
 }

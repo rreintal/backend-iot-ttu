@@ -3,7 +3,6 @@ using App.DAL.Contracts;
 using Base.BLL;
 using Base.Contracts;
 using BLL.DTO.V1;
-using DAL.DTO.V1.FilterObjects;
 
 
 namespace App.BLL.Services;
@@ -18,72 +17,6 @@ public class TopicAreaService : BaseEntityService<TopicArea, Domain.TopicArea, I
         Uow = uow;
     }
 
-    public async Task<IEnumerable<TopicAreaWithCount>> GetTopicAreaWithCount(TopicAreaCountFilter filter, string languageCulture)
-    {
-        
-        var domainObjects = await Uow.TopicAreaRepository.GetHasTopicArea(filter, languageCulture);
-        
-        var bufferDict = new Dictionary<Guid, TopicAreaWithCount>();
-        var result = new List<TopicAreaWithCount>();
-        
-        foreach (var hta in domainObjects)
-        {
-            if (hta.TopicArea!.HasParentTopicArea())
-            {
-                var parent = hta.TopicArea!.ParentTopicArea;
-                var child = new TopicAreaWithCount()
-                {
-                    Id = hta.TopicArea.Id,
-                    Count = 1,
-                    Name = hta.TopicArea.GetName()
-                };
-                
-                if (bufferDict.ContainsKey(parent!.Id))
-                {
-                    var existingParentDto = bufferDict[parent.Id];
-                    // if child already exists, then just increment count
-                    if (ChildAlreadyExists(existingParentDto, child.Id))
-                    {
-                        var existingChild = existingParentDto.Children.Where(x => x.Id == child.Id).First();
-                        existingParentDto.Count++;
-                        existingChild.Count++;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Adding child!");
-                        // if child does not exist then add!
-                        existingParentDto.Children!.Add(child);
-                        existingParentDto.Count++;   
-                    }
-                }
-                else
-                {
-                    // If its not in the dictionary, then add
-                    var parentDto = new TopicAreaWithCount()
-                    {
-                        Id = parent.Id,
-                        Name = parent.GetName(),
-                        Count = 1,
-                        Children = new List<TopicAreaWithCount>()
-                        {
-                            child
-                        }
-                    };
-                    
-                    bufferDict.Add(parent.Id, parentDto);
-                }
-            }
-            
-        }
-
-        foreach (var item in bufferDict)
-        {
-            result.Add(item.Value);
-        }
-
-        return result;
-    }
-
     public async Task<IEnumerable<TopicArea>> AllAsync()
     {
         return (await Uow.TopicAreaRepository.AllAsync()).Select(e => Mapper.Map(e));
@@ -93,23 +26,15 @@ public class TopicAreaService : BaseEntityService<TopicArea, Domain.TopicArea, I
     {
         return (await Uow.TopicAreaRepository.AllAsync(languageCulture)).Select(e => Mapper.Map(e));
     }
-
-
-    private bool ChildAlreadyExists(TopicAreaWithCount parent, Guid childId)
-    {
-        // TODO - optimize
-        foreach (var children in parent.Children!)
-        {
-            if (children.Id == childId)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    
     public Task<TopicArea?> FindAsync(Guid id, string? languageCulture)
     {
         throw new NotImplementedException();
+    }
+
+
+    public Task<IEnumerable<TopicAreaWithCount>> GetTopicAreasWithCount(string languageCulture)
+    {
+        return Uow.TopicAreaRepository.GetTopicAreasWithCount(languageCulture);
     }
 }

@@ -128,12 +128,6 @@ public static class DomainFactory
         topicArea.LanguageString = t1Str;
         return topicArea;
     }
-
-    public static TopicArea SetParent(this TopicArea topicArea, TopicArea Parent)
-    {
-        topicArea.ParentTopicAreaId = Parent.Id;
-        return topicArea;
-    }
     
     
     

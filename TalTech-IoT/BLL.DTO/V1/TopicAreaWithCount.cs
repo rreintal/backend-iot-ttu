@@ -9,5 +9,4 @@ public class TopicAreaWithCount : DomainEntityId
     
     // Count with how many Projects/News its associated!
     public int Count { get; set; } = default!;
-    public List<TopicAreaWithCount>? Children { get; set; }
 }

@@ -35,10 +35,6 @@ public class AutoMapperConfig : Profile
         CreateMap<App.Domain.HasTopicArea, DAL.DTO.V1.TopicArea>()
             .ForMember(dest => dest.Id,
                 src => src.MapFrom(x => x.TopicAreaId))
-            .ForMember(dest => dest.ParentTopicAreaId, 
-                src => src.MapFrom(x => x.TopicArea!.ParentTopicAreaId))
-            .ForMember(d => d.ParentTopicArea,
-                s => s.MapFrom(x => x.TopicArea!.ParentTopicArea))
             .ForMember(d => d.LanguageString,
                 s => s.MapFrom(x => x.TopicArea!.LanguageString))
             .ForMember(d => d.LanguageStringId,

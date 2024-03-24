@@ -9,7 +9,6 @@ public class TopicAreaWithCountMapper
             Id = entity.Id,
             Count = entity.Count,
             Name = entity.Name,
-            Children = entity.Children?.Select(x => Map(x)).ToList()
         };
     }
 }

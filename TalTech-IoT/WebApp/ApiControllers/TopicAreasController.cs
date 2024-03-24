@@ -2,9 +2,8 @@ using System.Net;
 using System.Net.Mime;
 using App.BLL.Contracts;
 using App.DAL.EF.DbExceptions;
+using App.Domain.Constants;
 using Asp.Versioning;
-using AutoMapper;
-using DAL.DTO.V1.FilterObjects;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1;
@@ -21,13 +20,11 @@ namespace WebApp.ApiControllers;
 public class TopicAreasController : ControllerBase
 {
     private readonly IAppBLL _bll;
-    private readonly IMapper _mapper;
-
+    
     /// <inheritdoc />
-    public TopicAreasController(IAppBLL bll, IMapper mapper)
+    public TopicAreasController(IAppBLL bll)
     {
         _bll = bll;
-        this._mapper = mapper;
     }
 
     /// <summary>
@@ -105,22 +102,43 @@ public class TopicAreasController : ControllerBase
     }
 
     /// <summary>
-    /// Get TopicAreas based on filter.
+    /// Delete topic area
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpDelete]
+    public async Task<ActionResult> Delete(Guid id)
+    {
+        var entity = await _bll.TopicAreaService.FindAsync(id);
+        if (entity == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
+        _bll.TopicAreaService.Remove(entity);
+        await _bll.SaveChangesAsync();
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// Get all Topic areas with count of how many news are associated
     /// </summary>
     /// <param name="languageCulture"></param>
-    /// <param name="News"></param>
-    /// <param name="Projects"></param>
     /// <returns></returns>
-    [HttpGet]
-    public async Task<IEnumerable<TopicAreaWithCount>> GetWithCount(string languageCulture, bool? News, bool? Projects)
+    [HttpGet("WithCount")]
+    public async Task<IEnumerable<TopicAreaWithCount>> GetAllWithCount(string languageCulture)
     {
-        var filter = new TopicAreaCountFilter()
+        var bllResult = await _bll.TopicAreaService.GetTopicAreasWithCount(languageCulture);
+
+        return bllResult.Select(e => new TopicAreaWithCount()
         {
-            News = News,
-            Projects = Projects
-        };
-        
-        var result = await _bll.TopicAreaService.GetTopicAreaWithCount(filter, languageCulture);
-        return result.Select(e => TopicAreaWithCountMapper.Map(e));
+            Id = e.Id,
+            Name = e.Name,
+            Count = e.Count
+        });
     }
 }

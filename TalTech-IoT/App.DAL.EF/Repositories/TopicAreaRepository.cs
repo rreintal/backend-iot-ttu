@@ -4,9 +4,7 @@ using App.Domain;
 using AutoMapper;
 using Base.DAL.EF;
 using BLL.DTO.V1;
-using DAL.DTO.V1.FilterObjects;
 using Microsoft.EntityFrameworkCore;
-using News = BLL.DTO.V1.News;
 using TopicArea = App.Domain.TopicArea;
 
 namespace App.DAL.EF.Repositories;
@@ -72,32 +70,26 @@ public class TopicAreaRepository : EFBaseRepository<App.Domain.TopicArea, AppDbC
         return base.Add(entity);
     }
 
-    public async Task<IEnumerable<HasTopicArea>> GetHasTopicArea(TopicAreaCountFilter filter, string languageCulture)
+    public async Task<IEnumerable<TopicAreaWithCount>> GetTopicAreasWithCount(string languageCulture)
     {
-        // Võiks olla eraldi repo, aga ühe meetodi jaoks, ei näe vajadust.
-        
-        var query = DbContext.HasTopicAreas
-            .Include(x => x.TopicArea)
-                .ThenInclude(x => x!.LanguageString)
-                    .ThenInclude(x => x!.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
-            .Include(x => x.TopicArea)
-                .ThenInclude(x => x!.ParentTopicArea)
-                    .ThenInclude(x => x!.LanguageString)
-                        .ThenInclude(x => x!.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
-            .AsQueryable();
+        var topicAreasWithCount = await DbContext.TopicAreas
+            .Include(x => x.LanguageString)
+            .ThenInclude(x => x!.LanguageStringTranslations.Where(x => x.LanguageCulture == languageCulture))
+            .Select(ta => new 
+            { 
+                TopicArea = ta, 
+                Count = DbContext.HasTopicAreas
+                    .Count(hta => hta.TopicAreaId == ta.Id && hta.NewsId.HasValue) 
+            })
+            .Select(ta => new TopicAreaWithCount
+            {
+                Id = ta.TopicArea.Id,
+                Name = ta!.TopicArea!.LanguageString!.LanguageStringTranslations
+                    .FirstOrDefault(lst => lst.LanguageCulture == languageCulture)!.TranslationValue,
+                Count = ta.Count
+            })
+            .ToListAsync();
 
-        if (filter.News == true)
-        {
-            return await query
-                .Where(x => x.NewsId != null)
-                .ToListAsync();
-        }
-
-        if (filter.Projects == true)
-        {
-            // TODO - projects not implemented yet
-        }
-
-        return new List<HasTopicArea>();
+        return topicAreasWithCount;
     }
 }
