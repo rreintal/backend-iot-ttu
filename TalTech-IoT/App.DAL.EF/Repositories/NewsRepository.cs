@@ -214,12 +214,12 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             query = query.Where(x => x.HasTopicAreas.Any(hta => hta.TopicAreaId == filterSet.TopicAreaId));
         }
 
-        if (filterSet.IncludeBody.HasValue)
+        if (filterSet.IncludeBody.HasValue && !filterSet.IncludeBody.Value)
         {
             
             var result = (await query
-                .IncludeHasTopicAreasWithTranslation()
-                .IncludeContentWithTitlesTranslation()
+                .IncludeHasTopicAreasWithTranslation(languageCulture)
+                .IncludeContentWithTitlesTranslation(languageCulture)
                 .ToListAsync()).Select(e => _mapper.Map<App.Domain.News>(e));
             return result;
         }
