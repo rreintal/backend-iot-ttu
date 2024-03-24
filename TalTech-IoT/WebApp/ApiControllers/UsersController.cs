@@ -427,6 +427,15 @@ public class UsersController : ControllerBase
         var userRefreshTokens = await _context.AppRefreshTokens
             .Where(x => x.AppUserId == userId)
             .ToListAsync();
+
+        if (userRefreshTokens.Count == 0)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Status = HttpStatusCode.BadRequest,
+                Message = RestApiErrorMessages.UserGeneralError
+            });
+        }
         
         _context.AppRefreshTokens.RemoveRange(userRefreshTokens);
 
@@ -444,8 +453,16 @@ public class UsersController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(typeof(JWTResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(RestApiResponse), 400)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordModel model)
     {
+        // TODO: ei tööta kuna see pole [Authorized], me ei saa useri ID kätte
+        // Alternatiiv, lisame userID ka query paramiga kaasa, et parooli vahetada.
+        // Meil tuleks : www.iot.ttu.ee/et/changePassword/?id=userId
+        
+        // Minu eelistus - Alternatiiv 2 -
+        // Kasutajale saadetakse parool, ta peab sisse logima ja parooli ära vahetama ise
+        // nii saame kasutada [Authorize] siin endpointil
         var userId = User.GetUserId();
         var user = await _userManager.FindByIdAsync(userId.ToString());
 
