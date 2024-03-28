@@ -780,4 +780,28 @@ public class UsersController : ControllerBase
         await _bll.SaveChangesAsync();
         return Ok();
     }
+
+    /// <summary>
+    /// Delete account
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    [HttpPost("Delete")]
+    public async Task<ActionResult> DeleteAccount(UserIdDto data)
+    {
+        var user = await _userManager.FindByIdAsync(data.UserId.ToString());
+        if (user == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Status = HttpStatusCode.NotFound,
+                Message = RestApiErrorMessages.GeneralNotFound
+            });
+        }
+        var roles = await _userManager.GetRolesAsync(user);
+        await _userManager.RemoveFromRolesAsync(user, roles);
+        await _userManager.DeleteAsync(user);
+        await _bll.SaveChangesAsync();
+        return Ok();
+    }
 }

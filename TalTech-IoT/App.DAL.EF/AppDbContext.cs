@@ -38,6 +38,8 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
 
     public DbSet<OpenSourceSolution> OpenSourceSolutions { get; set; } = default!;
 
+    public DbSet<EmailRecipents> EmailRecipents { get; set; } = default!;
+
     public DbSet<ImageResource> ImageResources { get; set; } = default!;
 
     private const string TopicAreaUniqueNameExpression = "\"TopicAreaId\" IS NOT NULL";
