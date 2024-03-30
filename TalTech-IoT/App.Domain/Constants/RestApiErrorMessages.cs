@@ -19,6 +19,11 @@ public static class RestApiErrorMessages
     public const string MissingMailRecipent = "MISSING_MAIL_RECIPENT";
 
     /// <summary>
+    /// TopicArea
+    /// </summary>
+    public const string TopicAreaHasAssociatedNews = "TOPICAREA_HAS_NEWS";
+
+    /// <summary>
     /// Projects
     /// </summary>
     public const string MissingProjectManager = "MISING_PROJECT_MANAGER"; // TODO: kas vajalik?

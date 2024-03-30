@@ -118,10 +118,22 @@ public class TopicAreasController : ControllerBase
                 Status = HttpStatusCode.NotFound
             });
         }
-        _bll.TopicAreaService.Remove(entity);
-        await _bll.SaveChangesAsync();
 
-        return Ok();
+        try
+        {
+            _bll.TopicAreaService.Remove(entity);
+            await _bll.SaveChangesAsync();
+
+            return Ok();
+        }
+        catch (TopicAreaDeleteConstraintViolationException exception)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Status = HttpStatusCode.BadRequest,
+                Message = RestApiErrorMessages.TopicAreaHasAssociatedNews
+            });
+        }
     }
 
     /// <summary>

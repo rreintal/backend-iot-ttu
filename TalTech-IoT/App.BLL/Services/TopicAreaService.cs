@@ -1,5 +1,6 @@
 using App.BLL.Contracts;
 using App.DAL.Contracts;
+using App.DAL.EF.DbExceptions;
 using Base.BLL;
 using Base.Contracts;
 using BLL.DTO.V1;
@@ -36,5 +37,10 @@ public class TopicAreaService : BaseEntityService<TopicArea, Domain.TopicArea, I
     public Task<IEnumerable<TopicAreaWithCount>> GetTopicAreasWithCount(string languageCulture)
     {
         return Uow.TopicAreaRepository.GetTopicAreasWithCount(languageCulture);
+    }
+
+    public override TopicArea Remove(TopicArea entity)
+    {
+        return base.Remove(entity);
     }
 }

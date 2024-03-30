@@ -1,10 +1,10 @@
 using App.DAL.Contracts;
 using App.DAL.EF.DbExceptions;
-using App.Domain;
 using AutoMapper;
 using Base.DAL.EF;
 using BLL.DTO.V1;
 using Microsoft.EntityFrameworkCore;
+using Public.DTO;
 using TopicArea = App.Domain.TopicArea;
 
 namespace App.DAL.EF.Repositories;
@@ -16,7 +16,7 @@ public class TopicAreaRepository : EFBaseRepository<App.Domain.TopicArea, AppDbC
         
     }
 
-    public async override Task<IEnumerable<TopicArea>> AllAsync()
+    public override async Task<IEnumerable<TopicArea>> AllAsync()
     {
         var res = await DbSet
             .Include(x => x.LanguageString)
@@ -91,5 +91,15 @@ public class TopicAreaRepository : EFBaseRepository<App.Domain.TopicArea, AppDbC
             .ToListAsync();
 
         return topicAreasWithCount;
+    }
+
+    public override TopicArea Remove(TopicArea entity)
+    {
+        var hasAssociatedNews = DbContext.HasTopicAreas.Count(e => e.TopicAreaId == entity.Id);
+        if (hasAssociatedNews > 0)
+        {
+            throw new TopicAreaDeleteConstraintViolationException();
+        }
+        return base.Remove(entity);
     }
 }
