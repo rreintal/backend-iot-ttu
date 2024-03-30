@@ -12,6 +12,7 @@ public static class RestApiErrorMessages
     public const string GeneralInvalidLanguageCulture = "INVALID_TRANSLATION_LANGUAGE_CULTURE"; // if contains invalid language culture
     public const string GeneralMissingAuthor = "MISSING_AUTHOR";
     public const string GeneralMissingTopicArea = "MISISNG_TOPIC_AREA";
+    public const string InvalidEmail = "INVALID_EMAIL";
 
     /// <summary>
     /// Mail service

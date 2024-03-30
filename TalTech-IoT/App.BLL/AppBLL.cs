@@ -95,4 +95,8 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
 
     private IOpenSourceSolutionService? _openSourceSolutionService;
 
+    public IEmailValidationService EmailValidationService =>
+        _emailValidationService ??= new EmailValidationService();
+    private IEmailValidationService? _emailValidationService;
+
 }

@@ -103,6 +103,10 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .HasIndex(x => x.FeedPageName)
             .IsUnique();
 
+        builder.Entity<EmailRecipents>()
+            .HasIndex(e => e.Email)
+            .IsUnique();
+
         // disable cascade delete
         foreach (var relationship in builder.Model
                      .GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
