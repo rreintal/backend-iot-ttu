@@ -145,7 +145,7 @@ public class TopicAreasController : ControllerBase
     /// </summary>
     /// <param name="languageCulture"></param>
     /// <returns></returns>
-    [HttpGet("WithCount")]
+    [HttpGet("{languageCulture}/WithCount")]
     public async Task<IEnumerable<TopicAreaWithCount>> GetAllWithCount(string languageCulture)
     {
         var bllResult = await _bll.TopicAreaService.GetTopicAreasWithCount(languageCulture);
