@@ -121,6 +121,16 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
         return result > 0;
     }
 
+    public async Task IncrementViewCount(Guid id)
+    {
+        var entity = await FindAsync(id);
+        if (entity != null)
+        {
+            entity.ViewCount++;
+            DbSet.Update(entity);
+        }
+    }
+
     public async Task<global::DAL.DTO.V1.Project?> FindByIdAsyncWithAllTranslations(Guid id)
     {
         var domainEntity = await DbSet.Where(e => e.Id == id)

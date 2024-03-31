@@ -240,6 +240,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         var entity = await Uow.NewsRepository.FindByIdWithAllTranslationsAsync(id);
         return _mapper.Map<News>(entity);
     }
+    
 
     public async Task<IEnumerable<News>> AllAsync(string? languageCulture)
     {
@@ -256,7 +257,12 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     {
         return await Uow.NewsRepository.FindNewsTotalCount(TopicAreaId);
     }
-    
+
+    public async Task IncrementViewCount(Guid id)
+    {
+        await Uow.NewsRepository.IncrementViewCount(id);
+    }
+
     // TODO: Move this to another repository
     public async Task<List<ContentType>> GetContentTypes()
     {

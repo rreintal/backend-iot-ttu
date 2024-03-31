@@ -12,6 +12,8 @@ public class Project : DomainEntityId, IContentEntity
     public DateTime CreatedAt { get; set; }
     public bool IsOngoing { get; set; }
     public List<Content> Content { get; set; } = default!;
+
+    public int ViewCount { get; set; }
     
     public string GetContentValue(string contentType)
     {

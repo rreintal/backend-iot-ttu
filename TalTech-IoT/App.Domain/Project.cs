@@ -16,6 +16,8 @@ public class Project : DomainEntityIdMetaData, IContentEntity
 
     // title, content
     public ICollection<Content> Content { get; set; } = default!;
+
+    public int ViewCount { get; set; }
     
     public string GetContentValue(string contentType, string languageCulture)
     {

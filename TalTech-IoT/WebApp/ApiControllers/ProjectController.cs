@@ -100,7 +100,6 @@ public class ProjectController : ControllerBase
     [HttpGet("{languageCulture}/{id}")]
     public async Task<ActionResult<GetProject>> Get(string languageCulture, Guid id)
     {
-        //var entity = await _bll.ProjectService.FindAsync(id, languageCulture);
         var entity = await _bll.ProjectService.FindAsync(id, languageCulture);
         if (entity == null)
         {
@@ -111,8 +110,19 @@ public class ProjectController : ControllerBase
             });
         }
 
+        await IncreaseViewCount(id);
         var result = GetProjectMapper.Map(entity);
         return result;
+    }
+    
+    private async Task IncreaseViewCount(Guid id)
+    {
+        var isClientHeaderPresent = HttpContext.Request.Headers.ContainsKey("IOT-App");
+        if (isClientHeaderPresent)
+        {
+            await _bll.ProjectService.IncrementViewCount(id);
+            await _bll.SaveChangesAsync();
+        }
     }
 
     /// <summary>

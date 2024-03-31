@@ -688,7 +688,7 @@ public class UsersController : ControllerBase
             {
                 new Claim(ClaimTypes.GivenName, appUser.Firstname),
                 new Claim(ClaimTypes.Surname, appUser.Lastname),
-                new Claim(ClaimTypes.Role, IdentityRolesConstants.ROLE_USER)
+                //new Claim(ClaimTypes.Role, IdentityRolesConstants.ROLE_USER)
             });
 
             if (!result.Succeeded)

@@ -276,4 +276,14 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             .CountAsync();
 
     }
+
+    public async Task IncrementViewCount(Guid id)
+    {
+        var entity = await FindAsync(id);
+        if (entity != null)
+        {
+            entity.ViewCount++;
+            DbSet.Update(entity);
+        }
+    }
 }

@@ -30,4 +30,6 @@ public interface INewsRepositoryCustom<TEntity>
 {
     // here methods which are shared between repo and service!
     public Task<int> FindNewsTotalCount(Guid? TopicAreaId);
+    
+    public Task IncrementViewCount(Guid id);
 }

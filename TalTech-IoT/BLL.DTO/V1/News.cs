@@ -18,6 +18,8 @@ public class News : DomainEntityId, IContainsContent, IContentEntity, IContainsI
 
     public string ThumbnailImage { get; set; } = default!;
 
+    public int ViewCount { get; set; }
+
     public string GetContentValue(string contentType)
     {
         try

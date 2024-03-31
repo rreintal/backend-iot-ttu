@@ -87,6 +87,8 @@ public class NewsController : ControllerBase
     public async Task<ActionResult<News>> GetById(Guid id, string languageCulture)
     {
         var bllEntity = await _bll.NewsService.FindAsync(id, languageCulture);
+        await IncreaseViewCount(id);
+        
         if (bllEntity == null)
         {
             return NotFound(new RestApiResponse()
@@ -96,8 +98,19 @@ public class NewsController : ControllerBase
             });
             
         }
+        
         var res = ReturnNewsMapper.Map(bllEntity);
         return Ok(res);
+    }
+
+    private async Task IncreaseViewCount(Guid id)
+    {
+        var isClientHeaderPresent = HttpContext.Request.Headers.ContainsKey("IOT-App");
+        if (isClientHeaderPresent)
+        {
+            await _bll.NewsService.IncrementViewCount(id);
+            await _bll.SaveChangesAsync();
+        }
     }
 
     /// <summary>

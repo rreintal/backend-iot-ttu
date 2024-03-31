@@ -1,7 +1,6 @@
 using System.Text;
 using App.BLL;
 using App.BLL.Contracts;
-using App.BLL.Services;
 using App.BLL.Services.ImageStorageService;
 using App.DAL.Contracts;
 using App.DAL.EF;
@@ -10,10 +9,7 @@ using App.Domain;
 using App.Domain.Identity;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Server.HttpSys;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -56,23 +52,15 @@ builder.Services.AddCors(options =>
 //DevDbConnection
 string? databaseUrl = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 
-var connectionString = "";
-if (string.IsNullOrWhiteSpace(databaseUrl))
+if (databaseUrl == null)
 {
-    //databaseUrl = "DevDbConnection";
-    //connectionString = builder.Configuration.GetConnectionString(databaseUrl) ??
-                       //throw new InvalidOperationException("Connection string not found");
-    //connectionString = "Server=localhost:5432;Database=iot-ttu;Username=postgres;Password=postgres;";
-}
-else
-{
-    connectionString = databaseUrl;
+    throw new InvalidOperationException("Database connection string is null.");
 }
 
 builder.Services
     .AddDbContext<AppDbContext>(options =>
     {
-        options.UseNpgsql(connectionString, options =>
+        options.UseNpgsql(databaseUrl, options =>
         {
             options.CommandTimeout(60);
         }).EnableSensitiveDataLogging();
@@ -185,8 +173,6 @@ app.UseCors("develop");
 app.UseRouting();
 app.UseAuthorization(); 
 app.UseStaticFiles();
-
-
 
 
 
