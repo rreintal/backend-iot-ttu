@@ -19,7 +19,6 @@ namespace WebApp.ApiControllers;
 [ApiVersion("1")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class PartnerImageController : ControllerBase
 {
     private readonly IAppBLL _bll;
