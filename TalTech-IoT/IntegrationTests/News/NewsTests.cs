@@ -9,6 +9,7 @@ using TopicArea = Public.DTO.V1.TopicArea;
 
 namespace NUnitTests.News
 {
+    // TODO: Test viewCount
     public class NewsTests
     {
         private const string BASE_URL = $"api/{VERSION}News";

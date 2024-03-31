@@ -48,10 +48,7 @@ builder.Services.AddCors(options =>
     } );
 });
 
-//DockerDbConnection 
-//DevDbConnection
-string? databaseUrl = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
-
+string? databaseUrl = Environment.GetEnvironmentVariable(EnvironmentVariableConstants.DB_CONNECTION);
 if (databaseUrl == null)
 {
     throw new InvalidOperationException("Database connection string is null.");
@@ -72,6 +69,14 @@ builder.Services.AddIdentity<AppUser, AppRole>(
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
+var JWT_ISSUER = Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER);
+var JWT_AUDIENCE = Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE);
+var JWT_KEY = Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY);
+
+if (JWT_AUDIENCE == null || JWT_ISSUER == null || JWT_KEY == null)
+{
+    throw new InvalidOperationException("JWT Environemnt variables are missing");
+}
 
 // Authentication
 // ----------------------------
@@ -83,10 +88,10 @@ builder.Services
         options.SaveToken = false;
         options.TokenValidationParameters = new TokenValidationParameters()
         {
-            ValidIssuer = builder.Configuration.GetValue<string>(StartupConfigConstants.JWT_ISSUER),
-            ValidAudience = builder.Configuration.GetValue<string>(StartupConfigConstants.JWT_AUDIENCE),
+            ValidIssuer = JWT_ISSUER,
+            ValidAudience = JWT_AUDIENCE,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>(StartupConfigConstants.JWT_KEY)!)),
+                Encoding.UTF8.GetBytes(JWT_KEY)),
             ClockSkew = TimeSpan.Zero
         };
     });
