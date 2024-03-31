@@ -99,7 +99,7 @@ public static class AppDataSeeding
                 },
                 new AppRole()
                 {
-                    Name = IdentityRolesConstants.ROLE_USER
+                    Name = IdentityRolesConstants.ROLE_MODERATOR
                 }
             };
             foreach (var role in roles)
@@ -135,7 +135,7 @@ public static class AppDataSeeding
                 };
                 
                 await userManager.CreateAsync(userUser, "user");
-                await userManager.AddToRoleAsync(userUser, IdentityRolesConstants.ROLE_USER);
+                await userManager.AddToRoleAsync(userUser, IdentityRolesConstants.ROLE_MODERATOR);
                 
             }
 

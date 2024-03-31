@@ -41,7 +41,7 @@ public class Identity
             // Resolve the RoleManager<AppRole> service
             var _roleManager = scope.ServiceProvider.GetService<RoleManager<App.Domain.Identity.AppRole>>();
             var client = _factory!.CreateClient();
-            var userRole = await _roleManager!.FindByNameAsync(IdentityRolesConstants.ROLE_USER);
+            var userRole = await _roleManager!.FindByNameAsync(IdentityRolesConstants.ROLE_MODERATOR);
             Assert.NotNull(userRole);
         
             var registerModel = new Register
@@ -170,7 +170,7 @@ public class Identity
             var client = _factory!.CreateClient();
         
             // Create new account to lock
-            var userRole = await roleManager!.FindByNameAsync(IdentityRolesConstants.ROLE_USER);
+            var userRole = await roleManager!.FindByNameAsync(IdentityRolesConstants.ROLE_MODERATOR);
             Assert.NotNull(userRole);
         
             var registerModel = new Register
@@ -212,7 +212,7 @@ public class Identity
             var client = _factory!.CreateClient();
         
             // Create new account to lock
-            var userRole = await roleManager!.FindByNameAsync(IdentityRolesConstants.ROLE_USER);
+            var userRole = await roleManager!.FindByNameAsync(IdentityRolesConstants.ROLE_MODERATOR);
             Assert.NotNull(userRole);
         
             var registerModel = new Register

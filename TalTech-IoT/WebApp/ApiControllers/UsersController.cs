@@ -9,6 +9,7 @@ using App.Domain.Constants;
 using App.Domain.Identity;
 using Asp.Versioning;
 using Helpers;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -132,7 +133,7 @@ public class UsersController : ControllerBase
             {
                 new Claim(ClaimTypes.GivenName, appUser.Firstname),
                 new Claim(ClaimTypes.Surname, appUser.Lastname),
-                new Claim(ClaimTypes.Role, IdentityRolesConstants.ROLE_USER)
+                new Claim(ClaimTypes.Role, IdentityRolesConstants.ROLE_MODERATOR)
             });
 
             if (!result.Succeeded)
@@ -149,10 +150,10 @@ public class UsersController : ControllerBase
             var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
             var jwt = IdentityHelpers.GenerateJwt(
                 claimsPrincipal.Claims,
-                _Configuration.GetValue<string>(StartupConfigConstants.JWT_KEY)!,
-                _Configuration.GetValue<string>(StartupConfigConstants.JWT_ISSUER)!,
-                _Configuration.GetValue<string>(StartupConfigConstants.JWT_AUDIENCE)!,
-                _Configuration.GetValue<int>(StartupConfigConstants.JWT_EXPIRATION_TIME)
+                Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY)!,
+                Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER)!,
+                Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE)!,
+                600 // TODO: add to env variable
 
             );
 
@@ -230,10 +231,10 @@ public class UsersController : ControllerBase
         // generate JWT
         var jwt = IdentityHelpers.GenerateJwt(
             claimsPrincipal.Claims,
-            _Configuration.GetValue<string>(StartupConfigConstants.JWT_KEY)!,
-            _Configuration.GetValue<string>(StartupConfigConstants.JWT_ISSUER)!,
-            _Configuration.GetValue<string>(StartupConfigConstants.JWT_AUDIENCE)!,
-            _Configuration.GetValue<int>(StartupConfigConstants.JWT_EXPIRATION_TIME)
+            Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY)!,
+            Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER)!,
+            Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE)!,
+            600
         );
 
         var userRoles = await _roleManager.Roles
@@ -288,12 +289,11 @@ public class UsersController : ControllerBase
             });
         }
         
-        // validate JWT, is it correct?
         if (!IdentityHelpers.ValidateToken(
                 refreshTokenModel.Jwt,
-                _Configuration.GetValue<string>(StartupConfigConstants.JWT_KEY)!,
-                _Configuration.GetValue<string>(StartupConfigConstants.JWT_ISSUER)!,
-                _Configuration.GetValue<string>(StartupConfigConstants.JWT_AUDIENCE)!))
+                Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY)!,
+                Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER)!,
+                Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE)!))
         {
             return BadRequest(new RestApiResponse()
             {
@@ -355,10 +355,10 @@ public class UsersController : ControllerBase
         
         var jwt = IdentityHelpers.GenerateJwt(
             claimsPrincipal.Claims,
-            _Configuration[StartupConfigConstants.JWT_KEY]!,
-            _Configuration[StartupConfigConstants.JWT_ISSUER]!,
-            _Configuration[StartupConfigConstants.JWT_AUDIENCE]!,
-            _Configuration.GetValue<int>(StartupConfigConstants.JWT_EXPIRATION_TIME)
+            Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY)!,
+            Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER)!,
+            Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE)!,
+            600
             );
 
         
@@ -541,10 +541,10 @@ public class UsersController : ControllerBase
         var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
         var jwt = IdentityHelpers.GenerateJwt(
             claimsPrincipal.Claims,
-            _Configuration.GetValue<string>(StartupConfigConstants.JWT_KEY)!,
-            _Configuration.GetValue<string>(StartupConfigConstants.JWT_ISSUER)!,
-            _Configuration.GetValue<string>(StartupConfigConstants.JWT_AUDIENCE)!,
-            _Configuration.GetValue<int>(StartupConfigConstants.JWT_EXPIRATION_TIME)
+            Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY)!,
+            Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER)!,
+            Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE)!,
+            600
         );
         var res = new JWTResponse()
         {
@@ -561,6 +561,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("Roles")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IEnumerable<Public.DTO.Identity.AppRole>> GetAllRoles()
     {
         return (await _roleManager.Roles.ToListAsync()).Select(e => GetAppRoleMapper.Map(e));
@@ -570,8 +571,8 @@ public class UsersController : ControllerBase
     /// Gets all users
     /// </summary>
     /// <returns></returns>
-    //[Authorize]
     [HttpGet]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IEnumerable<Public.DTO.Identity.AppUser>> GetAllUsers(bool deleted)
     {
         return (await _bll.UsersService.AllAsyncFiltered(deleted)).Select(e => GetUsersMapper.Map(e));
@@ -582,10 +583,18 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "ADMIN")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = IdentityRolesConstants.ROLE_ADMIN)]
     [HttpPost("role")]
     public async Task<ActionResult<RestApiResponse>> AddRole([FromBody] AddRole data)
     {
+        if (User.GetUserId() == data.UserId)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Status = HttpStatusCode.BadRequest,
+                Message = "cant change its own roles"
+            });
+        }
         var role = await _roleManager.FindByIdAsync(data.RoleId.ToString());
         if (role == null)
         {
@@ -623,6 +632,7 @@ public class UsersController : ControllerBase
     /// <param name="register"></param>
     /// <returns></returns>
     [HttpPost("{languageCulture}/RegisterUnknown")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = IdentityRolesConstants.ROLE_ADMIN)]
     public async Task<ActionResult> AdminRegister([FromBody] RegisterUnknown register, string languageCulture)
     {
         var RandomUserPassword = Guid.NewGuid().ToString();
@@ -688,7 +698,7 @@ public class UsersController : ControllerBase
             {
                 new Claim(ClaimTypes.GivenName, appUser.Firstname),
                 new Claim(ClaimTypes.Surname, appUser.Lastname),
-                //new Claim(ClaimTypes.Role, IdentityRolesConstants.ROLE_USER)
+                //new Claim(ClaimTypes.Role, IdentityRolesConstants.ROLE_MODERATOR)
             });
 
             if (!result.Succeeded)
@@ -711,84 +721,23 @@ public class UsersController : ControllerBase
             return Ok();
     }
 
-
-    /// <summary>
-    /// Unlock account (set 'Deleted' to false) 
-    /// </summary>
-    /// <param name="userId"></param>
-    /// <param name="data"></param>
-    /// <returns></returns>
-    [HttpPost("Lock")]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = IdentityRolesConstants.ROLE_ADMIN)]
-    public async Task<ActionResult> LockAccount([FromBody] UserIdDto data)
-    {
-        var user = await _userManager.Users
-            .Where(user => user.Id == data.UserId)
-            .FirstOrDefaultAsync();
-        if (user == null)
-        {
-            return NotFound(new RestApiResponse()
-            {
-                Message = RestApiErrorMessages.GeneralNotFound,
-                Status = HttpStatusCode.NotFound
-            });
-        }
-
-        if (user.Deleted)
-        {
-            return BadRequest(new RestApiResponse()
-            {
-                Message = RestApiErrorMessages.UserAlreadyLocked,
-                Status = HttpStatusCode.BadRequest
-            });
-        }
-
-        user.Deleted = true;
-        await _bll.SaveChangesAsync();
-        return Ok();
-    }
-    
-    /// <summary>
-    /// Unlock account (set 'Deleted' to false) 
-    /// </summary>
-    /// <param name="data"></param>
-    /// <returns></returns>
-    [HttpPost("Unlock")]
-    public async Task<ActionResult> UnlockAccount([FromBody] UserIdDto data)
-    {
-        var user = await _userManager.Users.Where(user => user.Id == data.UserId).FirstOrDefaultAsync();
-        if (user == null)
-        {
-            return NotFound(new RestApiResponse()
-            {
-                Message = RestApiErrorMessages.GeneralNotFound,
-                Status = HttpStatusCode.NotFound
-            });
-        }
-        if (user.Deleted == false)
-        {
-            return BadRequest(new RestApiResponse()
-            {
-                Status = HttpStatusCode.BadRequest,
-                Message = RestApiErrorMessages.UserAlreadyLocked
-            });
-        }
-        
-        user.Deleted = false;
-
-        
-        await _bll.SaveChangesAsync();
-        return Ok();
-    }
-
     /// <summary>
     /// Delete account
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost("Delete")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = IdentityRolesConstants.ROLE_ADMIN)]
     public async Task<ActionResult> DeleteAccount(UserIdDto data)
     {
+        if (User.GetUserId() == data.UserId)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Status = HttpStatusCode.BadRequest,
+                Message = RestApiErrorMessages.UserDeleteHimselfError
+            });
+        }
         var user = await _userManager.FindByIdAsync(data.UserId.ToString());
         if (user == null)
         {

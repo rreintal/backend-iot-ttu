@@ -2,6 +2,8 @@ using System.Net;
 using App.BLL.Contracts;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1.FeedPage;
@@ -52,6 +54,7 @@ public class FeedPagePostController : ControllerBase
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<FeedPagePost> Post(FeedPagePost entity)
     {
         var contentTypes = await _bll.NewsService.GetContentTypes();
@@ -68,6 +71,7 @@ public class FeedPagePostController : ControllerBase
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpPut]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<FeedPagePost>> Update(FeedPagePost entity)
     {
         var isEntityFound = await _bll.FeedPagePostService.FindAsync(entity.Id) != null;
@@ -93,6 +97,7 @@ public class FeedPagePostController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
         var result = await _bll.FeedPagePostService.RemoveAsync(id);
@@ -108,29 +113,4 @@ public class FeedPagePostController : ControllerBase
         await _bll.SaveChangesAsync();
         return Ok();
     }
-    
-    /// <summary>
-    /// Get Feed Page Post by id translated
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="languageCulture"></param>
-    /// <returns></returns>
-    /*
-    [HttpGet("{languageCulture}/{id}")]
-    public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPagePost>> Get(Guid id, string languageCulture)
-    {
-        var bllEntity = await _bll.FeedPagePostService.FindAsync(id, languageCulture);
-        if (bllEntity == null)
-        {
-            return NotFound(new RestApiResponse()
-            {
-                Message = RestApiErrorMessages.GeneralNotFound,
-                Status = HttpStatusCode.NotFound
-            });
-        }
-
-        var result = FeedPagePostMapper.Map(bllEntity, languageCulture); 
-        return Ok(result);
-    }
-    */
 }

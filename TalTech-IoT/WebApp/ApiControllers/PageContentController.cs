@@ -2,6 +2,8 @@ using System.Net;
 using App.BLL.Contracts;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1;
@@ -31,6 +33,7 @@ public class PageContentController : ControllerBase
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<PageContent>> Add(PageContent entity)
     {
         var isUnique = await _bll.PageContentService.FindAsyncByIdentifierString(entity.PageIdentifier) == null;
@@ -103,6 +106,7 @@ public class PageContentController : ControllerBase
     /// <param name="pageIdentifier"></param>
     /// <exception cref="NotImplementedException"></exception>
     [HttpPut("{pageIdentifier}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Update(string pageIdentifier, PageContent content)
     {
         

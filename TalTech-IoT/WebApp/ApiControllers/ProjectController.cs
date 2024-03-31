@@ -2,6 +2,8 @@ using System.Net;
 using App.BLL.Contracts;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1;
@@ -33,6 +35,7 @@ public class ProjectController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<Public.DTO.V1.PostProjectSuccessDto>> Create([FromBody] Public.DTO.V1.PostProjectDto data)
     {
         var types = await _bll.NewsService.GetContentTypes(); // TODO - tee eraldi service ehk?
@@ -61,6 +64,7 @@ public class ProjectController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.ProjectService.FindAsync(id);
@@ -132,6 +136,7 @@ public class ProjectController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpPut]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Update([FromBody] UpdateProject data)
     {
         var bllEntity = UpdateProjectMapper.Map(data);
@@ -171,6 +176,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPost("Ongoing")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> ToggleProjectStatus(Guid id, bool isOngoing)
     {
         var result = await _bll.ProjectService.ChangeProjectStatus(id, isOngoing);

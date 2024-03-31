@@ -3,6 +3,8 @@ using App.BLL.Contracts;
 using App.Domain;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1.Mappers;
@@ -35,6 +37,7 @@ public class OpenSourceSolutionController : ControllerBase
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<OpenSourceSolution>> Create([FromBody] OpenSourceSolution entity)
     {
         var types = await _bll.NewsService.GetContentTypes();
@@ -51,6 +54,7 @@ public class OpenSourceSolutionController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.OpenSourceSolutionService.FindAsync(id);
@@ -133,6 +137,7 @@ public class OpenSourceSolutionController : ControllerBase
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpPut]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Update([FromBody] OpenSourceSolution entity)
     {
         var entityExists = await _bll.OpenSourceSolutionService.FindAsync(entity.Id) != null;

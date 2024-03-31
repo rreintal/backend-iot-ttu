@@ -3,6 +3,8 @@ using System.Net.Mime;
 using App.BLL.Contracts;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1;
@@ -38,6 +40,7 @@ public class NewsController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<News>> Add([FromBody] PostNewsDto payload)
     {
         var types = await _bll.NewsService.GetContentTypes();
@@ -119,6 +122,7 @@ public class NewsController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPut]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<News>> Update([FromBody] Public.DTO.V1.UpdateNews data)
     {
         // TODO - updating is with both languages!!!
@@ -145,6 +149,7 @@ public class NewsController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.NewsService.FindByIdAllTranslationsAsync(id);

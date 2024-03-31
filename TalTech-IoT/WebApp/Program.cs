@@ -6,6 +6,7 @@ using App.DAL.Contracts;
 using App.DAL.EF;
 using App.DAL.EF.Seeding;
 using App.Domain;
+using App.Domain.Constants;
 using App.Domain.Identity;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
@@ -95,8 +96,6 @@ builder.Services
             ClockSkew = TimeSpan.Zero
         };
     });
-
-builder.Services.AddAuthorization();
 
 // ----------------------------
 // Automapper

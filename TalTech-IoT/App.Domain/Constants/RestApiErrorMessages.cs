@@ -47,6 +47,7 @@ public static class RestApiErrorMessages
     public const string UserAlreadyUnlocked = "USER_ALREADY_UNLOCKED";
     public const string UserAlreadyLocked = "USER_ALREADY_LOCKED";
     public const string UserGeneralError = "USERNAME_PASSWORD_PROBLEM"; // this is general, as if password/email is wrong. not saying which because of security
+    public const string UserDeleteHimselfError = "USER_CANT_DELETE_ITSELF";
 
     /// <summary>
     /// Roles

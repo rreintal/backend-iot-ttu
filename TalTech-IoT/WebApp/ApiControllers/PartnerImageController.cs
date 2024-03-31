@@ -3,6 +3,8 @@ using App.BLL.Contracts;
 using App.BLL.Mappers;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1;
@@ -17,6 +19,7 @@ namespace WebApp.ApiControllers;
 [ApiVersion("1")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class PartnerImageController : ControllerBase
 {
     private readonly IAppBLL _bll;
@@ -36,6 +39,7 @@ public class PartnerImageController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<PartnerImage>> Add([FromBody] PartnerImage data)
     {
         var bllEntity = PartnerImageMapper.Map(data);
@@ -75,6 +79,7 @@ public class PartnerImageController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
         // TODO: sequence number unique?
