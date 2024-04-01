@@ -27,22 +27,13 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
     public DbSet<TopicArea> TopicAreas { get; set; } = default!;
     public DbSet<HasTopicArea> HasTopicAreas { get; set; } = default!;
     public DbSet<AppRefreshToken> AppRefreshTokens { get; set; } = default!;
-    
     public DbSet<PageContent> PageContents { get; set; } = default!;
-
     public DbSet<PartnerImage> PartnerImages { get; set; } = default!;
-
     public DbSet<HomePageBanner> HomePageBanners { get; set; } = default!;
-
     public DbSet<ContactPerson> ContactPersons { get; set; } = default!;
-
     public DbSet<OpenSourceSolution> OpenSourceSolutions { get; set; } = default!;
-
     public DbSet<EmailRecipents> EmailRecipents { get; set; } = default!;
-
     public DbSet<ImageResource> ImageResources { get; set; } = default!;
-
-    private const string TopicAreaUniqueNameExpression = "\"TopicAreaId\" IS NOT NULL";
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
         
