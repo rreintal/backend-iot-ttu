@@ -1,4 +1,5 @@
-﻿using App.Domain;
+﻿using App.DAL.EF.Example;
+using App.Domain;
 using App.Domain.Identity;
 using App.Domain.Translations;
 using Microsoft.AspNetCore.Identity;
@@ -34,6 +35,11 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
     public DbSet<OpenSourceSolution> OpenSourceSolutions { get; set; } = default!;
     public DbSet<EmailRecipents> EmailRecipents { get; set; } = default!;
     public DbSet<ImageResource> ImageResources { get; set; } = default!;
+
+
+    public DbSet<Person> Persons { get; set; } = default!;
+    public DbSet<Phone> Phones { get; set; } = default!;
+
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
         

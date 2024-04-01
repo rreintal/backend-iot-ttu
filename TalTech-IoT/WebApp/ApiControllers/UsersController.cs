@@ -394,7 +394,8 @@ public class UsersController : ControllerBase
             JWT = jwt,
             RefreshToken = newRefreshToken.RefreshToken,
             Username = appUser.UserName,
-            RoleIds =  new List<Guid>() {userRole!.Id}
+            RoleIds =  new List<Guid>() {userRole!.Id},
+            AppUserId = appUser.Id.ToString()
         };
 
         return Ok(res);
