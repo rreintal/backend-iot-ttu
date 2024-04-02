@@ -33,4 +33,6 @@ public interface IAppBLL : IBaseUOW
     IOpenSourceSolutionService OpenSourceSolutionService { get; }
     IEmailValidationService EmailValidationService { get; }
     
+    IAccessDetailsService AccessDetailsService { get; }
+    
 }

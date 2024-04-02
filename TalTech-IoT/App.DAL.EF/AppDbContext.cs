@@ -34,6 +34,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
     public DbSet<OpenSourceSolution> OpenSourceSolutions { get; set; } = default!;
     public DbSet<EmailRecipents> EmailRecipents { get; set; } = default!;
     public DbSet<ImageResource> ImageResources { get; set; } = default!;
+    public DbSet<AccessDetails> AccessDetails { get; set; } = default!;
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
         
@@ -130,6 +131,13 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .HasOne<News>(x => x.News)
             .WithMany(x => x.HasTopicAreas)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<OpenSourceSolution>()
+            .HasMany(s => s.AccessDetails) 
+            .WithOne(ad => ad.OpenSourceSolution)
+            .HasForeignKey(ad => ad.OpenSourceSolutionId)
+            .OnDelete(DeleteBehavior.Cascade);
+            
         
         // adding cascade delete for Project
         builder.Entity<Project>()

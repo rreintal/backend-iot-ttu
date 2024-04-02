@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace DAL.DTO;
 
@@ -46,6 +47,7 @@ public class AutoMapperConfig : Profile
 
         CreateMap<App.Domain.OpenSourceSolution, DAL.DTO.V1.OpenSourceSolution>().ReverseMap();
         CreateMap<App.Domain.ImageResource, DAL.DTO.V1.ImageResource>().ReverseMap();
-
+        CreateMap<App.Domain.AccessDetails, DAL.DTO.V1.AccessDetails>().ReverseMap();
+        
     }
 }

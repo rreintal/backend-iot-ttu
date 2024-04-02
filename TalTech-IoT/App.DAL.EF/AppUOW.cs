@@ -75,4 +75,9 @@ public class AppUOW : EFBaseUOW<AppDbContext>, IAppUOW
 
     private IOpenSourceSolutionRepository? _openSourceSolutionRepository;
 
+    public IAccessDetailsRepository AccessDetailsRepository =>
+        _accessDetailsRepository ??= new AccessDetailsRepository(UowDbContext, _mapper);
+
+    private IAccessDetailsRepository? _accessDetailsRepository;
+
 }

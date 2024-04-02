@@ -97,6 +97,12 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
 
     public IEmailValidationService EmailValidationService =>
         _emailValidationService ??= new EmailValidationService();
+    
     private IEmailValidationService? _emailValidationService;
+
+    public IAccessDetailsService AccessDetailsService =>
+        _accessDetailsService ??= new AccessDetailsService(Uow, new BaseMapper<AccessDetails, App.Domain.AccessDetails>(_mapper));
+
+    private IAccessDetailsService? _accessDetailsService;
 
 }

@@ -77,5 +77,7 @@ public class AutoMapperConfig : Profile
         CreateMap<App.Domain.OpenSourceSolution, BLL.DTO.V1.OpenSourceSolution>().ReverseMap();
         CreateMap<DAL.DTO.V1.ImageResource, BLL.DTO.V1.ImageResource>().ReverseMap();
         CreateMap<App.Domain.ImageResource, BLL.DTO.V1.ImageResource>().ReverseMap();
+        CreateMap<DAL.DTO.V1.AccessDetails, BLL.DTO.V1.AccessDetails>().ReverseMap();
+        CreateMap<App.Domain.AccessDetails, BLL.DTO.V1.AccessDetails>().ReverseMap();
     }
 }
