@@ -188,16 +188,10 @@ public class OpenSourceSolutionController : ControllerBase
         var name = titleName.LanguageString.LanguageStringTranslations.First().TranslationValue;
         _bll.MailService.AccessResource(data.Email, name, openSourceSolution.Link, languageCulture);
         
+        // TODO: lisa alles siis kui mail on successful!
         
-        // TODO: mapi!
-        var entity = new AccessDetails()
-        {
-            Date = DateTime.UtcNow,
-            Email = data.Email,
-            OpenSourceSolutionId = data.SolutionId
-        };
-
-        _bll.AccessDetailsService.Add(entity);
+        var bllEntity = AccessDetailsMapper.Map(data);
+        _bll.AccessDetailsService.Add(bllEntity);
         await _bll.SaveChangesAsync();
 
         return true;

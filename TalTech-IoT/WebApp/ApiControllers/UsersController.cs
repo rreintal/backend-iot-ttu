@@ -754,4 +754,29 @@ public class UsersController : ControllerBase
         await _bll.SaveChangesAsync();
         return Ok();
     }
+
+    [HttpPost("ResetPassword")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+        Roles = IdentityRolesConstants.ROLE_ADMIN)]
+    public async Task<ActionResult> ResetPassword(UserIdDto data)
+    {
+        var user = await _userManager.FindByIdAsync(data.UserId.ToString());
+        if (user == null)
+        {
+            return NotFound(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.GeneralNotFound,
+                Status = HttpStatusCode.NotFound
+            });
+        }
+        
+        await _userManager.UpdateSecurityStampAsync(user);
+
+        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var newPassword = Guid.NewGuid().ToString();
+        await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
+        _bll.MailService.SendForgotPassword(user.Email, newPassword);
+        await _bll.SaveChangesAsync();
+        return Ok();
+    }
 }
