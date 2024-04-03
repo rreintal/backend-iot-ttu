@@ -80,7 +80,7 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
     private IFeedPageCategoryService? _feedPageCategoryService;
 
     public IFeedPagePostService FeedPagePostService => _feedPagePostService ??=
-        new FeedPagePostService(Uow, new BaseMapper<FeedPagePost, Domain.FeedPagePost>(_mapper));
+        new FeedPagePostService(Uow, new BaseMapper<FeedPagePost, Domain.FeedPagePost>(_mapper), _imageStorageService);
 
     private IFeedPagePostService? _feedPagePostService;
 
