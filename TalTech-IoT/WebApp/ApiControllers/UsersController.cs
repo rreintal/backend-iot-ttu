@@ -413,6 +413,7 @@ public class UsersController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(RestApiResponse), 400)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status401Unauthorized)]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> LogOut([FromBody] Logout logoutModel)
     {
@@ -664,16 +665,18 @@ public class UsersController : ControllerBase
             }
         }
         // Register account
-        var refreshToken = new AppRefreshToken();
+        
+        // refreshToken not needed?
+        //var refreshToken = new AppRefreshToken();
         var appUser = new AppUser()
         {
             Firstname = register.Firstname,
             Lastname = register.Lastname,
             Email = register.Email,
             UserName = register.Username,
-            AppRefreshTokens = new List<AppRefreshToken>() {refreshToken}
+            //AppRefreshTokens = new List<AppRefreshToken>() {refreshToken}
         };
-        refreshToken.AppUser = appUser;
+        //refreshToken.AppUser = appUser;
         
         
         var result = await _userManager.CreateAsync(appUser, RandomUserPassword);
@@ -701,7 +704,6 @@ public class UsersController : ControllerBase
             {
                 new Claim(ClaimTypes.GivenName, appUser.Firstname),
                 new Claim(ClaimTypes.Surname, appUser.Lastname),
-                //new Claim(ClaimTypes.Role, IdentityRolesConstants.ROLE_MODERATOR)
             });
 
             if (!result.Succeeded)
@@ -719,8 +721,6 @@ public class UsersController : ControllerBase
             
             _bll.MailService.SendRegistration(register.Email, register.Username, RandomUserPassword, languageCulture);
             await _context.SaveChangesAsync();
-            Console.WriteLine($"user random password = {RandomUserPassword}");
-            
             return Ok();
     }
 

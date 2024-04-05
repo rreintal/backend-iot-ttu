@@ -14,22 +14,6 @@ namespace Integration;
 public class CustomWebAppFactory<TStartup> : WebApplicationFactory<TStartup>
 where TStartup : class
 {
-    //private readonly IConfiguration _configuration;
-
-    public CustomWebAppFactory()
-    {
-        // TODO: how to drop Db every time before running tests?
-        
-        /*
-        var projectRootDirectory = AppContext.BaseDirectory;   
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(projectRootDirectory)
-            .AddJsonFile("appsettings.json") // Use a test-specific configuration file
-            .Build();
-        _configuration = configuration;
-        */
-    }
-
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         
@@ -71,7 +55,13 @@ where TStartup : class
                 try
                 {
                     AppDataSeeding.SetupAppData(scopedServices, configuration).Wait();
+                    
+                    // TODO: seed test users!
+                    AppDataSeeding.SeedTestUsers(scopedServices).Wait();
                     db.Database.Migrate();
+                    
+                    
+                    
                 }
                 catch (Exception ex)
                 {

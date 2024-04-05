@@ -106,6 +106,19 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
         
+        // Identity cascade delete
+        builder.Entity<AppUser>()
+            .HasMany<IdentityUserClaim<Guid>>() 
+            .WithOne()
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<AppUser>()
+            .HasMany<AppRefreshToken>()
+            .WithOne()
+            .HasForeignKey(e => e.AppUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
         // adding cascade delete 
         builder.Entity<News>()
             .HasMany(x => x.Content)

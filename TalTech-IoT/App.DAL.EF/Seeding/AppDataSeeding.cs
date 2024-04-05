@@ -142,6 +142,39 @@ public static class AppDataSeeding
             await context.SaveChangesAsync();
         }
     }
+
+    public static async Task SeedTestUsers(IServiceProvider serviceProvider)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var scopedServices = scope.ServiceProvider;
+        var context = scopedServices.GetRequiredService<AppDbContext>();
+        
+        var userManager = scopedServices.GetService<UserManager<AppUser>>()!;
+        var testAdminUser = new AppUser()
+        {
+            Firstname = "TestAdminFirstName",
+            Lastname = "TestAdminLastName",
+            Email = TestConstants.TestAdminEmail,
+            UserName = "testAdmin",
+        };
+        
+        
+        var testModeratorUser = new AppUser()
+        {
+            Firstname = "TestModeratorFirstName",
+            Lastname = "TestModeratorLastName",
+            Email = TestConstants.TestModeratorEmail,
+            UserName = "testUser"
+        };
+                
+        await userManager.CreateAsync(testModeratorUser, TestConstants.TestModeratorPassword);
+        await userManager.AddToRoleAsync(testModeratorUser, IdentityRolesConstants.ROLE_MODERATOR);
+        
+        await userManager.CreateAsync(testAdminUser, TestConstants.TestAdminPassword);
+        await userManager.AddToRoleAsync(testAdminUser, IdentityRolesConstants.ROLE_ADMIN);
+
+        await context.SaveChangesAsync();
+    }
     
     public static Guid GetContentTypeId(string contentType)
     {

@@ -4,7 +4,6 @@ public static class GetUsersMapper
 {
     public static Public.DTO.Identity.AppUser Map(BLL.DTO.Identity.AppUser bll)
     {
-        Console.WriteLine($"DELETED = {bll.Deleted}");
         return new Public.DTO.Identity.AppUser()
         {
             Id = bll.Id,
