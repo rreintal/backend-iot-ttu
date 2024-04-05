@@ -317,7 +317,9 @@ public class UsersController : ControllerBase
         
         // Check if refreshToken exists
 
-        var refreshTokenFromDatabase = await _context.AppRefreshTokens.Where(t => t.RefreshToken == refreshTokenModel.RefreshToken)
+        var refreshTokenFromDatabase = await _context
+            .AppRefreshTokens
+            .Where(t => t.RefreshToken == refreshTokenModel.RefreshToken)
             .FirstOrDefaultAsync();
 
         if (refreshTokenFromDatabase == null)
@@ -426,7 +428,7 @@ public class UsersController : ControllerBase
         }
         
         var userRefreshTokens = await _context.AppRefreshTokens
-            .Where(x => x.AppUserId == userId)
+            .Where(x => x.AppUserId == userId && x.RefreshToken == logoutModel.RefreshToken)
             .ToListAsync();
 
         if (userRefreshTokens.Count == 0)
