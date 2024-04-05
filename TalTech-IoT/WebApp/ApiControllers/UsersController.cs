@@ -153,7 +153,7 @@ public class UsersController : ControllerBase
                 Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY)!,
                 Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER)!,
                 Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE)!,
-                600 // TODO: add to env variable
+                10 // TODO: add to env variable
 
             );
 
@@ -234,7 +234,7 @@ public class UsersController : ControllerBase
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY)!,
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER)!,
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE)!,
-            600
+            10
         );
 
         var userRoles = await _roleManager.Roles
@@ -358,7 +358,7 @@ public class UsersController : ControllerBase
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY)!,
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER)!,
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE)!,
-            600
+            10
             );
 
         
@@ -545,7 +545,7 @@ public class UsersController : ControllerBase
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY)!,
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER)!,
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE)!,
-            600
+            10
         );
         var res = new JWTResponse()
         {
