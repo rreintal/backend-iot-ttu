@@ -44,7 +44,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         foreach (var bllTopicArea in entity.TopicAreas)
         {
             var hasTopicAreaId = Guid.NewGuid();
-            var hasTopicArea = new App.Domain.HasTopicArea()
+            var hasTopicArea = new HasTopicArea()
             {
                 Id = hasTopicAreaId,
                 NewsId = domainEntity.Id,
@@ -97,24 +97,14 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         foreach (var bllTopicArea in entity.TopicAreas)
         {
             var hasTopicAreaId = Guid.NewGuid();
-            var hasTopicArea = new App.Domain.HasTopicArea()
+            var hasTopicArea = new HasTopicArea()
             {
                 Id = hasTopicAreaId,
                 NewsId = domainEntity.Id,
                 TopicAreaId = bllTopicArea.Id,
             };
 
-            if (domainEntity.HasTopicAreas == null)
-            {
-                domainEntity.HasTopicAreas = new List<HasTopicArea>()
-                {
-                    hasTopicArea
-                };
-            }
-            else
-            {
-                domainEntity.HasTopicAreas.Add(hasTopicArea);
-            }
+            domainEntity.HasTopicAreas.Add(hasTopicArea);
         }
 
         var dalResult = Add(domainEntity);
@@ -142,51 +132,73 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         
         return query;
     }
-
-    public async Task<Domain.News?> FindByIdWithAllTranslationsAsyncNoTracking(Guid Id)
-    {
-        var query = await DbSet.Where(x => x.Id == Id)
-            .IncludeHasTopicAreasWithTranslation()
-            .IncludeContentWithTranslation()
-            .FirstOrDefaultAsync();
-
-        if (query == null)
-        {
-            return null;
-        }
-        
-        return query;
-    }
-
+    
+    
     public async Task<App.Domain.News?> Update(News dalEntity)
     {
-        /*
-         var existingDomainObject = FindByIdWithAllTranslations(entity.Id);
-        var newDomainObject = _mapper.Map<Domain.News>(existingDomainObject);
-        existingDomainObject!.Image = newDomainObject.Image;
-        UpdateContentHelper.UpdateContent(existingDomainObject, newDomainObject);
-        return base.Update(existingDomainObject);
-         */
         var existingDomainObject = await FindByIdWithAllTranslationsAsyncTracking(dalEntity.Id);
-        var newDomainObject = _mapper.Map<Domain.News>(dalEntity);
-
-        var entry = DbSet.Entry(existingDomainObject);
-        
-        // imagine its updated  
         if (existingDomainObject == null)
         {
             return null;
         }
-        
-        entry.Entity.ImageResources = dalEntity.ImageResources.Select(e => _mapper.Map<ImageResource>(e)).ToList();
-        existingDomainObject!.Image = newDomainObject.Image;
+        var newDomainObject = _mapper.Map<Domain.News>(dalEntity);
         UpdateContentHelper.UpdateContent(existingDomainObject, newDomainObject);
-        var result = Update(existingDomainObject);
-        return result;
-    }
+        
+        // Update properties
+        existingDomainObject.Author = newDomainObject.Author;
+        
 
+        var newTopicAreaIds = dalEntity.TopicAreas.Select(ta => ta.Id).ToList();
+
+        var toRemove = existingDomainObject.HasTopicAreas
+            .Where(hta => !newTopicAreaIds.Contains(hta.TopicAreaId))
+            .ToList();
+        
+        foreach (var removeItem in toRemove)
+        {
+            DbContext.HasTopicAreas.Remove(removeItem);
+        }
+
+        var currentTopicAreaIds = existingDomainObject.HasTopicAreas.Select(hta => hta.TopicAreaId).ToList();
+        var toAdd = newTopicAreaIds.Except(currentTopicAreaIds).ToList();
+        foreach (var addId in toAdd)
+        {
+            
+            var newItem = new HasTopicArea()
+            {
+                TopicAreaId = addId,
+                NewsId = existingDomainObject.Id
+            };
+            DbContext.HasTopicAreas.Entry(newItem).State = EntityState.Added;
+            existingDomainObject.HasTopicAreas.Add(newItem);
+        }
+
+        return existingDomainObject;
+    }
+    
+    
+    /*
+    public async Task<App.Domain.News?> Update(News dalEntity)
+    {
+        var existingDomainObject = await FindByIdWithAllTranslationsAsyncTracking(dalEntity.Id);
+        if (existingDomainObject == null)
+        {
+            return null;
+        }
+
+        var newEntity = _mapper.Map<Domain.News>(dalEntity);
+        UpdateContentHelper.UpdateContent(existingDomainObject, newEntity);
+
+        // Assume _mapper.Map has been configured to appropriately handle all necessary properties, including collections.
+        //_mapper.Map(dalEntity, existingDomainObject);
+        
+        return existingDomainObject;
+    }
+    */
+    
     public async Task<App.Domain.News?> FindByIdWithAllTranslationsAsyncTracking(Guid Id)
     {
+        // This is used leverage the EF tracking functionality to update LanguageString just by modifying the properties.
         var query = await DbSet.Where(x => x.Id == Id)
             .AsTracking()
             .IncludeHasTopicAreasWithTranslation()
@@ -203,7 +215,6 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     
     public async Task<IEnumerable<App.Domain.News>> AllAsyncFiltered(NewsFilterSet filterSet, string languageCulture)
     {
-        // TODO - optimize!!!!
         filterSet.Size ??= DEFAULT_PAGE_SIZE;
         filterSet.Page ??= 0;
         IQueryable<App.Domain.News> query = DbSet;

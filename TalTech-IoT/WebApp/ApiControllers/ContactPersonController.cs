@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
-using Public.DTO.Identity;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
 

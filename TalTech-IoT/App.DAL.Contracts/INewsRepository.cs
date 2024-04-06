@@ -13,8 +13,6 @@ public interface INewsRepository :IBaseTranslateableRepository<App.Domain.News>,
 
     public Task<App.Domain.News?> FindByIdWithAllTranslationsAsync(Guid Id);
     
-    public Task<App.Domain.News?> FindByIdWithAllTranslationsAsyncNoTracking(Guid Id);
-
     public Task<App.Domain.News?> Update(News dalEntity);
 
     public News Add(News entity);

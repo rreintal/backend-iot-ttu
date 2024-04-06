@@ -140,21 +140,31 @@ public class NewsController : ControllerBase
     public async Task<ActionResult<News>> Update([FromBody] Public.DTO.V1.UpdateNews data)
     {
         // TODO - updating is with both languages!!!
-        // TODO: TopicArea update not working!
-        var contentTypes = await _bll.NewsService.GetContentTypes();
-        var bllEntity = UpdateNewsMapper.Map(data, contentTypes);
-        var result =  await _bll.NewsService.UpdateAsync(bllEntity);
-        if (result == null)
+        try
         {
-            return NotFound(new RestApiResponse()
+            var contentTypes = await _bll.NewsService.GetContentTypes();
+            var bllEntity = UpdateNewsMapper.Map(data, contentTypes);
+            var result =  await _bll.NewsService.UpdateAsync(bllEntity);
+            if (result == null)
             {
-                Message = RestApiErrorMessages.GeneralNotFound,
-                Status = HttpStatusCode.NotFound
+                return NotFound(new RestApiResponse()
+                {
+                    Message = RestApiErrorMessages.GeneralNotFound,
+                    Status = HttpStatusCode.NotFound
+                });
+            }
+
+            await _bll.SaveChangesAsync();
+            return Ok();   
+        }
+        catch (TopicAreasNotUnique ex)
+        {
+            return Conflict(new RestApiResponse()
+            {
+                Message = "TOPIC_AREAS_NOT_UNIQUE",
+                Status = HttpStatusCode.Conflict
             });
         }
-
-        await _bll.SaveChangesAsync();
-        return Ok();
     }
 
     /// <summary>

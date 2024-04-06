@@ -6,7 +6,7 @@ namespace App.Domain;
 public class News : DomainEntityIdMetaData, IHasTopicAreaEntity, IContentEntity
 {
     public ICollection<Content> Content { get; set; } = default!;
-    public ICollection<HasTopicArea> HasTopicAreas { get; set; } = default!;
+    public ICollection<HasTopicArea> HasTopicAreas { get; set; } = new List<HasTopicArea>();
 
     public string? Image { get; set; }
     public string ThumbnailImage { get; set; } = default!;

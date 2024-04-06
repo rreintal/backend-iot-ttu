@@ -49,5 +49,16 @@ public class AutoMapperConfig : Profile
         CreateMap<App.Domain.ImageResource, DAL.DTO.V1.ImageResource>().ReverseMap();
         CreateMap<App.Domain.AccessDetails, DAL.DTO.V1.AccessDetails>().ReverseMap();
         
+        CreateMap<App.Domain.News, DAL.DTO.V1.News>()
+            .ForMember(dest => dest.TopicAreas,
+                opt => opt.MapFrom(src => src.HasTopicAreas.Select(ha => ha.TopicAreaId)));
+        
+        CreateMap<App.Domain.HasTopicArea, DAL.DTO.V1.TopicArea>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.TopicAreaId));
+        
+        CreateMap<App.Domain.News, DAL.DTO.V1.News>()
+            .ForMember(dest => dest.TopicAreas,
+                opt => opt.MapFrom(src => src.HasTopicAreas)); 
+        
     }
 }
