@@ -44,7 +44,7 @@ public class ImageStorageExecutor : IIMageStorageExecutor
                 string imageName = Guid.NewGuid().ToString();
                 string path = $"{IMAGES_DIRECTORY}{imageName}.{item.FileFormat}"; // TTÜ
                 byte[] imageByteArray = Convert.FromBase64String(item.ImageContent);
-                System.IO.File.WriteAllBytes(path, imageByteArray);
+                File.WriteAllBytes(path, imageByteArray);
 
                 var saveResultItem = new CDNSaveResultItem()
                 {

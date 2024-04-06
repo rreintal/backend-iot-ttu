@@ -146,6 +146,14 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         
         // Update properties
         existingDomainObject.Author = newDomainObject.Author;
+
+        // If image is not null. then thumbnail is also updated in service level
+        if (dalEntity.Image != null)
+        {
+            existingDomainObject.Image = newDomainObject.Image;
+            existingDomainObject.ThumbnailImage = newDomainObject.ThumbnailImage;
+        }
+        
         
 
         var newTopicAreaIds = dalEntity.TopicAreas.Select(ta => ta.Id).ToList();
