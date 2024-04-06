@@ -20,8 +20,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     private IAppUOW Uow { get; }
     private IMapper _mapper { get; }
     private IImageStorageService _imageStorageService { get; }
-    
-    private IThumbnailService ThumbnailService { get; }
+    private IThumbnailService _thumbnailService { get; }
     
     // need Add, Remove jne on basic operationid
     // kui vaja tagastada DTO siis seda tehakse custom meetoditega!!
@@ -29,7 +28,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     {
         Uow = uow;
         _mapper = autoMapper;
-        ThumbnailService = thumbnailService;
+        _thumbnailService = thumbnailService;
         _imageStorageService = imageStorageService;
     }
     
@@ -49,8 +48,23 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             return null;
         }
-        var thumbNail = entity.ThumbnailImage == null ? existingEntity.ThumbnailImage : entity.ThumbnailImage;
+
+        if (entity.Image != null)
+        {
+            if (_imageStorageService.IsBase64(entity.Image))
+            {
+                try
+                {
+                    entity.ThumbnailImage = _thumbnailService.Compress(entity.Image);
+                }
+                catch (Exception e)
+                {
+                    entity.ThumbnailImage = "Thumbnailservice threw an exception";
+                }
+            }
+        }
         _imageStorageService.ProccessUpdate(entity);
+        
         
         // TODO: IMAGERESOURCES
         
@@ -123,7 +137,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         }
         try
         {
-            entity.ThumbnailImage = ThumbnailService.Compress(entity.Image);
+            entity.ThumbnailImage = _thumbnailService.Compress(entity.Image);
         }
         catch (Exception e)
         {
@@ -165,7 +179,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         // TODO: thumbnail!
         try
         {
-            entity.ThumbnailImage = ThumbnailService.Compress(entity.Image);
+            entity.ThumbnailImage = _thumbnailService.Compress(entity.Image);
         }
         catch (Exception e)
         {

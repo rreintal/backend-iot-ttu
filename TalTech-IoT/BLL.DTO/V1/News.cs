@@ -14,9 +14,9 @@ public class News : DomainEntityId, IContainsContent, IContentEntity, IContainsI
 
     public DateTime CreatedAt { get; set; }
     public string Author { get; set; } = default!;
-    public string Image { get; set; } = default!;
+    public string? Image { get; set; }
 
-    public string ThumbnailImage { get; set; } = default!;
+    public string? ThumbnailImage { get; set; }
 
     public int ViewCount { get; set; }
 

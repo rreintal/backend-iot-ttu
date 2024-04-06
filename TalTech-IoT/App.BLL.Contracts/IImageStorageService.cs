@@ -12,9 +12,8 @@ public interface IImageStorageService
 
     public void ProccessUpdate(Object entity);
     public void ProccessDelete(Object entity);
-    public SaveResult? Save(SaveContent data);
     public bool Delete(DeleteContent content);
 
-    public UpdateResult? Update(UpdateContent data);
+    public bool IsBase64(string content);
 
 }

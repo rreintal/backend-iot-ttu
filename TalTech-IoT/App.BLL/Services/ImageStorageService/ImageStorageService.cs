@@ -426,6 +426,12 @@ public class ImageStorageService : IImageStorageService
         }
         return result;
     }
+
+    public bool IsBase64(string content)
+    {
+        return _imageExtractor.IsBase64String(content);
+    }
+
     public UpdateResult? Update(UpdateContent data)
     {
         var existingLinksDuplicate = new List<string>();
