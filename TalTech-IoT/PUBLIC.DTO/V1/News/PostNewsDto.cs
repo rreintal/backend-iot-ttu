@@ -4,7 +4,6 @@ using Public.DTO.ValidationAttributes;
 
 namespace Public.DTO.V1;
 
-// TODO parem nimi create/update on sama
 public class PostNewsDto
 {
     //[IncludesAllCultures]

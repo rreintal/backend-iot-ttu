@@ -33,6 +33,7 @@ public class OpenSourceSolutionsTests
     {
         var payload = CreateOpenSourceSolution();
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, payload);
         Assert.NotNull(response);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -43,6 +44,7 @@ public class OpenSourceSolutionsTests
     {
         var payload = CreateOpenSourceSolution(link: null);
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, payload);
         Assert.NotNull(response);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
@@ -53,6 +55,7 @@ public class OpenSourceSolutionsTests
     {
         var payload = CreateOpenSourceSolution();
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var postResponse = await client.PostAsJsonAsync(BASE_URL, payload);
         Assert.NotNull(postResponse);
         Assert.That(postResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -67,6 +70,7 @@ public class OpenSourceSolutionsTests
     public async Task DeleteOSS_invalidId_ReturnsNotFound()
     {
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var deleteResponse = await client.DeleteAsync($"{BASE_URL}/{Guid.NewGuid()}");
         Assert.NotNull(deleteResponse);
         Assert.That(deleteResponse.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
@@ -76,6 +80,7 @@ public class OpenSourceSolutionsTests
     public async Task PreviewOSS_invalidId_ReturnsNotFound()
     {
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var previewResponse = await client.GetAsync($"{BASE_URL}{PREVIEW}/{Guid.NewGuid()}");
         Assert.NotNull(previewResponse);
         Assert.That(previewResponse.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
@@ -85,6 +90,7 @@ public class OpenSourceSolutionsTests
     public async Task PreviewOSS_ValidId_ReturnsCorrectData()
     {
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var titleEt = "estonian title";
         var titleEn = "english title";
         var bodyEt = "estonian body";
@@ -110,16 +116,16 @@ public class OpenSourceSolutionsTests
         
         var previewData = await previewResponse.Content.ReadFromJsonAsync<OpenSourceSolution>();
         Assert.NotNull(previewData);
-        var responseBodyEt = previewData!.Body.Where(x => x.Culture == LanguageCulture.EST).FirstOrDefault();
-        var responseBodyEn = previewData.Body.Where(x => x.Culture == LanguageCulture.ENG).FirstOrDefault();
-        var responseTitleEt = previewData.Title.Where(x => x.Culture == LanguageCulture.EST).FirstOrDefault();
-        var responseTitleEn = previewData.Title.Where(x => x.Culture == LanguageCulture.ENG).FirstOrDefault();
+        var responseBodyEt = previewData!.Body.FirstOrDefault(x => x.Culture == LanguageCulture.EST);
+        var responseBodyEn = previewData.Body.FirstOrDefault(x => x.Culture == LanguageCulture.ENG);
+        var responseTitleEt = previewData.Title.FirstOrDefault(x => x.Culture == LanguageCulture.EST);
+        var responseTitleEn = previewData.Title.FirstOrDefault(x => x.Culture == LanguageCulture.ENG);
         Assert.NotNull(responseBodyEt);
         Assert.NotNull(responseBodyEn);
         Assert.NotNull(responseTitleEt);
         Assert.NotNull(responseTitleEn);
         
-        Assert.That(previewData!.Link, Is.EqualTo(link));
+        Assert.That(previewData.Link, Is.EqualTo(link));
         Assert.That(previewData.Private, Is.EqualTo(isPrivate));
         Assert.That(responseBodyEt!.Value, Is.EqualTo(bodyEt));
         Assert.That(responseBodyEn!.Value, Is.EqualTo(bodyEn));
@@ -131,6 +137,7 @@ public class OpenSourceSolutionsTests
     public async Task GetOSS_Et_ReturnsCorrectTitle()
     {
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var languageCulture = LanguageCulture.EST;
         var estonianTitle = "this is really cool title in estonian";
         var payload = CreateOpenSourceSolution(estonianTitle: estonianTitle);
@@ -154,6 +161,7 @@ public class OpenSourceSolutionsTests
     public async Task GetOSS_Et_ReturnsCorrectBody()
     {
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var languageCulture = LanguageCulture.EST;
         var estonianBody = "this is really cool body in estonian";
         var payload = CreateOpenSourceSolution(estonianBody: estonianBody);
@@ -177,6 +185,7 @@ public class OpenSourceSolutionsTests
     public async Task GetOSS_En_ReturnsCorrectTitle()
     {
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var languageCulture = LanguageCulture.ENG;
         var englishTitle = "this is really cool title in english";
         var payload = CreateOpenSourceSolution(englishTitle: englishTitle);
@@ -200,6 +209,7 @@ public class OpenSourceSolutionsTests
     public async Task GetOSS_En_ReturnsCorrectBody()
     {
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var languageCulture = LanguageCulture.ENG;
         var englishBody = "this is really cool body in english";
         var payload = CreateOpenSourceSolution(englishBody: englishBody);
@@ -223,6 +233,7 @@ public class OpenSourceSolutionsTests
     public async Task UpdateOSS_Et_ReturnsCorrectData()
     {
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var languageCulture = LanguageCulture.EST;
         var titleEt = "this is title in et";
         var bodyEt = "this is body in et";
@@ -253,15 +264,16 @@ public class OpenSourceSolutionsTests
         Assert.NotNull(updateData);
         
         Assert.That(titleEt, Is.EqualTo(updatedData!.Title));
-        Assert.That(bodyEt, Is.EqualTo(updatedData!.Body));
-        Assert.That(link, Is.EqualTo(updatedData!.Link));
-        Assert.That(isPrivate, Is.EqualTo(updatedData!.Private));
+        Assert.That(bodyEt, Is.EqualTo(updatedData.Body));
+        Assert.That(link, Is.EqualTo(updatedData.Link));
+        Assert.That(isPrivate, Is.EqualTo(updatedData.Private));
     }
     
     [Test, Order(11)]
     public async Task UpdateOSS_En_ReturnsCorrectData()
     {
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var languageCulture = LanguageCulture.ENG;
         var titleEn = "this is title in en";
         var bodyEn = "this is body in en";
@@ -292,12 +304,12 @@ public class OpenSourceSolutionsTests
         Assert.NotNull(updateData);
         
         Assert.That(titleEn, Is.EqualTo(updatedData!.Title));
-        Assert.That(bodyEn, Is.EqualTo(updatedData!.Body));
-        Assert.That(link, Is.EqualTo(updatedData!.Link));
-        Assert.That(isPrivate, Is.EqualTo(updatedData!.Private));
+        Assert.That(bodyEn, Is.EqualTo(updatedData.Body));
+        Assert.That(link, Is.EqualTo(updatedData.Link));
+        Assert.That(isPrivate, Is.EqualTo(updatedData.Private));
     }
 
-    private Public.DTO.V1.OpenSourceSolution.OpenSourceSolution CreateOpenSourceSolution(
+    private OpenSourceSolution CreateOpenSourceSolution(
         string? link = "www.cool-link.com",
         string? estonianTitle = "title in estonian",
         string? estonianBody = "body in estonian",
@@ -308,33 +320,17 @@ public class OpenSourceSolutionsTests
     {
         return new OpenSourceSolution()
         {
-            Private = Private.Value,
-            Link = link,
+            Private = Private!.Value,
+            Link = link!,
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = estonianTitle
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = englishTitle
-                },
+                new(culture: LanguageCulture.EST, value: estonianTitle!),
+                new(culture: LanguageCulture.ENG, value: englishTitle!),
             },
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = estonianBody
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = englishBody
-                },
+                new(culture: LanguageCulture.EST, value: estonianBody!),
+                new(culture: LanguageCulture.ENG, value: englishBody!),
             },
         };
     }

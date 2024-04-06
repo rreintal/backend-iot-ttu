@@ -1,6 +1,5 @@
 using App.DAL.EF;
 using App.DAL.EF.Seeding;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +33,9 @@ where TStartup : class
             services.AddDbContext<AppDbContext>(options =>
             {
                 // Use the in-memory database
-                options.UseInMemoryDatabase("InMemoryAppDb");
+                options.UseInMemoryDatabase("InMemoryAppDb");    
+
+                
             });
 
             // Optionally, you can seed the in-memory database here if needed
@@ -42,66 +43,32 @@ where TStartup : class
             using (var scope = sp.CreateScope())
             {
                 var scopedServices = scope.ServiceProvider;
-                //var app = scopedServices.GetRequiredService<IApplicationBuilder>();
-                //var env = scopedServices.GetRequiredService<IWebHostEnvironment>();
-                var configuration = scopedServices.GetRequiredService<IConfiguration>();
                 var db = scopedServices.GetRequiredService<AppDbContext>();
+                var configuration = scopedServices.GetRequiredService<IConfiguration>();
                 var logger = scopedServices.GetRequiredService<ILogger<CustomWebAppFactory<TStartup>>>();
 
                 // Ensure the database is created
+                //db.Database.EnsureCreatedAsync().Wait();
                 db.Database.EnsureCreated();
 
                 // Seed the database with test data
                 try
                 {
-                    AppDataSeeding.SetupAppData(scopedServices, configuration).Wait();
-                    
-                    // TODO: seed test users!
                     AppDataSeeding.SeedTestUsers(scopedServices).Wait();
-                    db.Database.Migrate();
+                    
+                    //AppDataSeeding.SetupAppData(scopedServices, configuration).Wait();
+                    // TODO: seed test users!
+                    
                     
                     
                     
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "An error occurred seeding the DB with test messages. Error: {Message}", ex.Message);
+                    logger.LogError(ex, "An error occurred seeding the DB with test data. Error: {Message}", ex.Message);
                 }
             };
         });
-        /*
-        builder.ConfigureServices(services =>
-        {
-            // find DbContext
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType ==
-                     typeof(DbContextOptions<AppDbContext>));
-
-            // if found - remove
-            if (descriptor != null)
-            {
-                services.Remove(descriptor);
-            }
-            
-            var connectionString = _configuration.GetConnectionString("TestDbConnection") ??
-                                   throw new InvalidOperationException("Connection string not found");
-            // and new DbContext
-            services.AddDbContext<AppDbContext>(options =>
-            {
-                options.UseNpgsql(connectionString);
-            });
-            // data seeding
-            
-            
-            // create db and seed data
-            var sp = services.BuildServiceProvider();
-            using var scope = sp.CreateScope();
-            var scopedServices = scope.ServiceProvider;
-            var db = scopedServices.GetRequiredService<AppDbContext>();
-            var logger = scopedServices
-                .GetRequiredService<ILogger<CustomWebAppFactory<TStartup>>>();
-        });
-        */
     }
 
 }

@@ -3,6 +3,7 @@ using System;
 using App.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240406100408_c12")]
+    partial class c12
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -273,6 +276,9 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid>("AppUserId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("AppUserId1")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("ExpirtationDT")
                         .HasColumnType("timestamp with time zone");
 
@@ -284,6 +290,8 @@ namespace App.DAL.EF.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
+
+                    b.HasIndex("AppUserId1");
 
                     b.ToTable("AppRefreshTokens");
                 });
@@ -827,11 +835,15 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("App.Domain.Identity.AppRefreshToken", b =>
                 {
-                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
-                        .WithMany("AppRefreshTokens")
+                    b.HasOne("App.Domain.Identity.AppUser", null)
+                        .WithMany()
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("App.Domain.Identity.AppUser", "AppUser")
+                        .WithMany("AppRefreshTokens")
+                        .HasForeignKey("AppUserId1");
 
                     b.Navigation("AppUser");
                 });

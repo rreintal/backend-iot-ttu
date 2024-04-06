@@ -3,7 +3,6 @@ using App.Domain;
 using System.Net;
 using System.Net.Http.Json;
 using Integration;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Public.DTO.V1;
 using TopicArea = Public.DTO.V1.TopicArea;
 
@@ -31,7 +30,7 @@ namespace NUnitTests.News
         [Test, Order(0)]
         public async Task AddNews_ValidData_ReturnsOk()
         {
-
+            
             var payload = new PostNewsDto()
             {
                 Author = "Richard Reintal",
@@ -72,9 +71,9 @@ namespace NUnitTests.News
             };
 
             var client = _factory!.CreateClient();
+
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
             var response = await client.PostAsJsonAsync("/api/v1/News", payload);
-            var str = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(str);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
 
@@ -124,7 +123,7 @@ namespace NUnitTests.News
                     }
                 }
             };
-
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
             var response = await client.PostAsJsonAsync("/api/v1/News", payload);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
@@ -134,6 +133,7 @@ namespace NUnitTests.News
         public async Task AddNews_Et_ReturnsCorrectBody()
         {
             var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
             var bodyString = Guid.NewGuid().ToString();
             var languageCulture = LanguageCulture.EST;
             var payload = new PostNewsDto()
@@ -193,6 +193,7 @@ namespace NUnitTests.News
         public async Task AddNews_En_ReturnsCorrectBody()
         {
             var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
             var bodyString = Guid.NewGuid().ToString();
             var languageCulture = LanguageCulture.ENG;
             var payload = new PostNewsDto()
@@ -252,6 +253,7 @@ namespace NUnitTests.News
         public async Task AddNews_Et_ReturnsCorrectTitle()
         {
             var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
             var titleString = Guid.NewGuid().ToString();
             var languageCulture = LanguageCulture.EST;
             var payload = new PostNewsDto()
@@ -310,6 +312,7 @@ namespace NUnitTests.News
         public async Task AddNews_En_ReturnsCorrectTitle()
         {
             var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
             var titleString = Guid.NewGuid().ToString();
             var languageCulture = LanguageCulture.ENG;
             var payload = new PostNewsDto()
@@ -369,6 +372,7 @@ namespace NUnitTests.News
         public async Task UpdateNews_Et_ReturnsCorrectTitle()
         {
             var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
             var languageCulture = LanguageCulture.EST;
             var titleET = "pealkiri eesti keeles";
             var titleEN = "title in english";
@@ -476,6 +480,7 @@ namespace NUnitTests.News
         public async Task UpdateNews_En_ReturnsCorrectTitle()
         {
             var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
             var languageCulture = LanguageCulture.ENG;
             var titleET = "pealkiri eesti keeles";
             var titleEN = "title in english";
@@ -582,6 +587,7 @@ namespace NUnitTests.News
         public async Task UpdateNews_Et_ReturnsCorrectBody()
         {
             var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
             var languageCulture = LanguageCulture.EST;
             var titleET = "pealkiri eesti keeles";
             var titleEN = "title in english";
@@ -688,6 +694,7 @@ namespace NUnitTests.News
         public async Task UpdateNews_En_ReturnsCorrectBody()
         {
             var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
             var languageCulture = LanguageCulture.ENG;
             var titleET = "pealkiri eesti keeles";
             var titleEN = "title in english";
@@ -794,6 +801,7 @@ namespace NUnitTests.News
         public async Task UpdateNews_InvalidId_ReturnsNotFound()
         {
             var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
             var languageCulture = LanguageCulture.ENG;
             var titleET = "pealkiri eesti keeles";
             var titleEN = "title in english";
@@ -894,6 +902,7 @@ namespace NUnitTests.News
         public async Task DeleteNews_CorrectId_ReturnsOk()
         {
             var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
             var languageCulture = LanguageCulture.ENG;
             var titleET = "pealkiri eesti keeles";
             var titleEN = "title in english";
@@ -953,6 +962,7 @@ namespace NUnitTests.News
         public async Task DeleteNews_InvalidId_ReturnsNotFound()
         {
             var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
             var languageCulture = LanguageCulture.ENG;
             var titleET = "pealkiri eesti keeles";
             var titleEN = "title in english";

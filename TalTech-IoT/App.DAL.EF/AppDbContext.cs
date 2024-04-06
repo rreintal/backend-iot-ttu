@@ -108,7 +108,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
         
         // Identity cascade delete
         builder.Entity<AppUser>()
-            .HasMany<IdentityUserClaim<Guid>>() 
+            .HasMany<IdentityUserClaim<Guid>>()
             .WithOne()
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.Cascade);
@@ -118,6 +118,11 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .WithOne()
             .HasForeignKey(e => e.AppUserId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Entity<AppRefreshToken>()
+            .HasOne(rt => rt.AppUser) 
+            .WithMany(u => u.AppRefreshTokens)
+            .HasForeignKey(rt => rt.AppUserId);
         
         // adding cascade delete 
         builder.Entity<News>()

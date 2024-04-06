@@ -29,6 +29,7 @@ public class ContactPersonTests
     {
         var data = GetContactPerson();
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.NotNull(response);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -55,6 +56,7 @@ public class ContactPersonTests
         };
         
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
@@ -67,6 +69,7 @@ public class ContactPersonTests
         var BodyInEstonain = "This is body in estonian";
         var data = GetContactPerson(Name, BodyInEnglish, BodyInEstonain);
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.ContactPerson>();
@@ -90,6 +93,7 @@ public class ContactPersonTests
         var BodyInEstonain = "This is body in estonian";
         var data = GetContactPerson(Name, BodyInEnglish, BodyInEstonain);
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.ContactPerson>();
@@ -123,6 +127,7 @@ public class ContactPersonTests
         var BodyInEstonain = "This is body in estonian";
         var data = GetContactPerson(Name, BodyInEnglish, BodyInEstonain);
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         
@@ -155,6 +160,7 @@ public class ContactPersonTests
         var BodyInEstonain = "This is body in estonian";
         var data = GetContactPerson(Name, BodyInEnglish, BodyInEstonain);
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         
@@ -186,6 +192,7 @@ public class ContactPersonTests
         var BodyInEstonain = "This is body in estonian";
         var data = GetContactPerson(Name, BodyInEnglish, BodyInEstonain);
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         

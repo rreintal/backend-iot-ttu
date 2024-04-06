@@ -104,7 +104,6 @@ public static class AppDataSeeding
             };
             foreach (var role in roles)
             {
-                // TODO: logger if roleManager is null!
                 if (!await roleManager!.RoleExistsAsync(role.Name))
                 {
                     await roleManager.CreateAsync(role);
@@ -122,6 +121,7 @@ public static class AppDataSeeding
                     Email = "admin@email.ee",
                     UserName = "admin",
                 };
+                
 
                 await userManager.CreateAsync(adminUser, "admin");
                 await userManager.AddToRoleAsync(adminUser, IdentityRolesConstants.ROLE_ADMIN);
@@ -149,29 +149,102 @@ public static class AppDataSeeding
         var scopedServices = scope.ServiceProvider;
         var context = scopedServices.GetRequiredService<AppDbContext>();
         
+        // Content Types
+        var t1 = new ContentType()
+        {
+            Id = GetContentTypeId(ContentTypes.BODY),
+            Name = ContentTypes.BODY
+        };
+        var t2 = new ContentType()
+        {
+            Id = GetContentTypeId(ContentTypes.TITLE),
+            Name = ContentTypes.TITLE
+        };
+        context.ContentTypes.Add(t1);
+        context.ContentTypes.Add(t2);
+        
+        
+        // Topic Areas
+        var ta1 = DomainFactory
+            .TopicArea()
+            .SetValues("Tehnoloogia", "Technology", Guid.Parse(TOPIC_AREA_TECHNOLOGY_ID));
+        var ta2 = DomainFactory
+            .TopicArea()
+            .SetValues("Robootika", "Robotics", Guid.Parse(TOPIC_AREA_ROBOTICS_ID));
+        var t3 = DomainFactory
+            .TopicArea()
+            .SetValues("Arvutivõrgud", "Networking");
+        var t3Child = DomainFactory
+            .TopicArea()
+            .SetValues("4G", "4G");
+        var t3child2 = DomainFactory
+            .TopicArea()
+            .SetValues("5G", "5G");
+        await context.TopicAreas.AddRangeAsync(new List<TopicArea>() { ta1, ta2, t3, t3child2, t3Child });
+        
+        // Feed pages
+        
+        var hardware = new FeedPage()
+        {
+            FeedPageName = "HARDWARE"
+        };
+        var research = new FeedPage()
+        {
+            FeedPageName = "RESEARCH"
+        };
+
+        context.AddRange(new List<FeedPage>() { hardware, research });
+        
+        // Identity
+        
+        using var roleManager = scopedServices.GetService<RoleManager<AppRole>>();
+            
+        var roles = new List<AppRole>()
+        {
+            new AppRole()
+            {
+                Name = IdentityRolesConstants.ROLE_ADMIN
+            },
+            new AppRole()
+            {
+                Name = IdentityRolesConstants.ROLE_MODERATOR
+            }
+        };
+
+        foreach (var role in roles)
+        {
+            await roleManager!.CreateAsync(role);
+        }
+
+        await context.SaveChangesAsync();
+        
         var userManager = scopedServices.GetService<UserManager<AppUser>>()!;
-        var testAdminUser = new AppUser()
-        {
-            Firstname = "TestAdminFirstName",
-            Lastname = "TestAdminLastName",
-            Email = TestConstants.TestAdminEmail,
-            UserName = "testAdmin",
-        };
+        var usersCount = (await userManager.Users.ToListAsync()).Count;
+        if (usersCount == 0)
+        {  
+            var testAdminUser = new AppUser()
+            {
+                Firstname = "TestAdminFirstName",
+                Lastname = "TestAdminLastName",
+                Email = TestConstants.TestAdminEmail,
+                UserName = "testAdmin",
+            };
         
+            await userManager.CreateAsync(testAdminUser, TestConstants.TestAdminPassword);
+            await userManager.AddToRoleAsync(testAdminUser, IdentityRolesConstants.ROLE_ADMIN);
         
-        var testModeratorUser = new AppUser()
-        {
-            Firstname = "TestModeratorFirstName",
-            Lastname = "TestModeratorLastName",
-            Email = TestConstants.TestModeratorEmail,
-            UserName = "testUser"
-        };
-                
-        await userManager.CreateAsync(testModeratorUser, TestConstants.TestModeratorPassword);
-        await userManager.AddToRoleAsync(testModeratorUser, IdentityRolesConstants.ROLE_MODERATOR);
+            var testModeratorUser = new AppUser()
+            {
+                Firstname = "TestModeratorFirstName",
+                Lastname = "TestModeratorLastName",
+                Email = TestConstants.TestModeratorEmail,
+                UserName = "testUser"
+            };
         
-        await userManager.CreateAsync(testAdminUser, TestConstants.TestAdminPassword);
-        await userManager.AddToRoleAsync(testAdminUser, IdentityRolesConstants.ROLE_ADMIN);
+            await userManager.CreateAsync(testModeratorUser, TestConstants.TestModeratorPassword);
+            await userManager.AddToRoleAsync(testModeratorUser, IdentityRolesConstants.ROLE_MODERATOR);
+        }
+        
 
         await context.SaveChangesAsync();
     }

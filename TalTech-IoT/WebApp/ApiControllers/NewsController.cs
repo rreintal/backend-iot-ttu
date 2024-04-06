@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
+using Public.DTO.ApiExceptions;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
 using Public.DTO.V1;
@@ -38,17 +39,30 @@ public class NewsController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(News), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(RestApiResponse), StatusCodes.Status409Conflict)]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<News>> Add([FromBody] PostNewsDto payload)
     {
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
-        var bllResult = await _bll.NewsService.AddAsync(bllEntity);
-        var result = ReturnNewsMapper.Map(bllResult);
-        await _bll.SaveChangesAsync();
-        return Ok(result) ;
+        try
+        {
+            var bllResult = await _bll.NewsService.AddAsync(bllEntity);
+            var result = ReturnNewsMapper.Map(bllResult);
+            await _bll.SaveChangesAsync();
+            return Ok(result);
+        }
+        catch (TopicAreasNotUnique ex)
+        {
+            return Conflict(new RestApiResponse()
+            {
+                Message = "TOPIC_AREAS_NOT_UNIQUE",
+                Status = HttpStatusCode.Conflict
+            });
+        }
+        
     }
 
     /// <summary>

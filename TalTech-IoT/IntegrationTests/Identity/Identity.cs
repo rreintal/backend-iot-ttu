@@ -17,17 +17,12 @@ public class Identity
 {
     private CustomWebAppFactory<Program>? _factory;
     private const string VERSION = "v1";
-    
-    private const string AdminUserEmail = "admin@email.ee"; // TODO: LOE NEED ENV MUUTUJAST!
-    private const string AdminPassword = "admin";
     private string BASE_URL => $"api/{VERSION}/Users";
 
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
         _factory = new CustomWebAppFactory<Program>();
-        
-        // Create a scope to resolve services
     }
     
     
@@ -151,14 +146,16 @@ public class Identity
         var loginModel = new Login
         {
             Email = "john.doe@example.com",
-            Password = "IncorrectPassword" // Assuming this is an incorrect password
+            Password = "Johndoe123.22"  // Assuming this is an incorrect password
         };
 
         // Act
         var response = await client.PostAsJsonAsync($"{BASE_URL}/Login", loginModel);
+        var responseStr = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(responseStr);
 
         // Assert
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
 
     /*

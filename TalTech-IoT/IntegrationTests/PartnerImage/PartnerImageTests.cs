@@ -32,6 +32,7 @@ public class PartnerImageTests
         };
         
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.NotNull(response);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -46,6 +47,7 @@ public class PartnerImageTests
         };
         
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.NotNull(response);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
@@ -60,6 +62,7 @@ public class PartnerImageTests
         };
         
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.NotNull(response);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
@@ -69,6 +72,7 @@ public class PartnerImageTests
     public async Task DeletePartnerImage_InvalidId_ReturnsNotFound()
     {
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var deleteResponse = await client.DeleteAsync($"{BASE_URL}/{Guid.NewGuid()}");
         Assert.NotNull(deleteResponse);
         Assert.That(deleteResponse!.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
@@ -84,6 +88,7 @@ public class PartnerImageTests
         };
         
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.NotNull(response);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));

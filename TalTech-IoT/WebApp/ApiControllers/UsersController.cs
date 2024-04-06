@@ -4,12 +4,10 @@ using System.Net.Mime;
 using System.Security.Claims;
 using App.BLL.Contracts;
 using App.DAL.EF;
-using App.Domain;
 using App.Domain.Constants;
 using App.Domain.Identity;
 using Asp.Versioning;
 using Helpers;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -153,7 +151,7 @@ public class UsersController : ControllerBase
                 Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY)!,
                 Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER)!,
                 Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE)!,
-                10 // TODO: add to env variable
+                _Configuration.GetValue<int>(AppSettingsConstants.JWT_EXPERIATION_TIME)
 
             );
 
@@ -194,7 +192,7 @@ public class UsersController : ControllerBase
         var result = await _signInManager.CheckPasswordSignInAsync(appUser, login.Password, false);
         if (!result.Succeeded)
         {
-            return NotFound(new RestApiResponse()
+            return BadRequest(new RestApiResponse()
             {
                 Status = HttpStatusCode.NotFound,
                 Message = RestApiErrorMessages.UserGeneralError // TODO: for testing!
@@ -234,7 +232,7 @@ public class UsersController : ControllerBase
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY)!,
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER)!,
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE)!,
-            10
+            _Configuration.GetValue<int>(AppSettingsConstants.JWT_EXPERIATION_TIME)
         );
 
         var userRoles = await _roleManager.Roles
@@ -303,7 +301,7 @@ public class UsersController : ControllerBase
         }
         
         
-            var userEmail = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
+        var userEmail = jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
         if (userEmail == null)
         {
             return BadRequest(new RestApiResponse()
@@ -360,14 +358,16 @@ public class UsersController : ControllerBase
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY)!,
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER)!,
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE)!,
-            10
+            _Configuration.GetValue<int>(AppSettingsConstants.JWT_EXPERIATION_TIME)
             );
 
         
         // add new refreshtoken!
-        var newRefreshToken = new AppRefreshToken();
-        newRefreshToken.AppUserId = appUser.Id;
-        
+        var newRefreshToken = new AppRefreshToken
+        {
+            AppUserId = appUser.Id
+        };
+
         // add new token to db (kas on vaja või see handlib kuidagi ise??)
         await _context.AppRefreshTokens.AddAsync(newRefreshToken);
         
@@ -460,13 +460,6 @@ public class UsersController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordModel model)
     {
-        // TODO: ei tööta kuna see pole [Authorized], me ei saa useri ID kätte
-        // Alternatiiv, lisame userID ka query paramiga kaasa, et parooli vahetada.
-        // Meil tuleks : www.iot.ttu.ee/et/changePassword/?id=userId
-        
-        // Minu eelistus - Alternatiiv 2 -
-        // Kasutajale saadetakse parool, ta peab sisse logima ja parooli ära vahetama ise
-        // nii saame kasutada [Authorize] siin endpointil
         var userId = User.GetUserId();
         var user = await _userManager.FindByIdAsync(userId.ToString());
 
@@ -548,7 +541,7 @@ public class UsersController : ControllerBase
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY)!,
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER)!,
             Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE)!,
-            10
+            _Configuration.GetValue<int>(AppSettingsConstants.JWT_EXPERIATION_TIME)
         );
         var res = new JWTResponse()
         {
@@ -589,6 +582,8 @@ public class UsersController : ControllerBase
     /// <returns></returns>
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = IdentityRolesConstants.ROLE_ADMIN)]
     [HttpPost("role")]
+    [ProducesResponseType(typeof(void), 200)]
+    [ProducesResponseType(typeof(RestApiResponse), 400)]
     public async Task<ActionResult<RestApiResponse>> AddRole([FromBody] AddRole data)
     {
         if (User.GetUserId() == data.UserId)
@@ -627,16 +622,18 @@ public class UsersController : ControllerBase
         await _bll.SaveChangesAsync();
         return Ok();
     }
-    
-    
-    
+
+
     /// <summary>
     /// Register user for unknown person. User details will be sent on email. (mail server not functioning yet)
     /// </summary>
     /// <param name="register"></param>
+    /// <param name="languageCulture">Language culture</param>
     /// <returns></returns>
     [HttpPost("{languageCulture}/RegisterUnknown")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = IdentityRolesConstants.ROLE_ADMIN)]
+    [ProducesResponseType(typeof(void), 200)]
+    [ProducesResponseType(typeof(RestApiResponse), 404)]
     public async Task<ActionResult> AdminRegister([FromBody] RegisterUnknown register, string languageCulture)
     {
         var RandomUserPassword = Guid.NewGuid().ToString();
@@ -660,24 +657,19 @@ public class UsersController : ControllerBase
                     new RestApiResponse()
                     {
                         Status = HttpStatusCode.BadRequest,
-                        Message =  RestApiErrorMessages.UserUsernameAlreadyExists  // "Username already registered!"
+                        Message =  RestApiErrorMessages.UserUsernameAlreadyExists 
                     });
             }
         }
         // Register account
         
-        // refreshToken not needed?
-        //var refreshToken = new AppRefreshToken();
         var appUser = new AppUser()
         {
             Firstname = register.Firstname,
             Lastname = register.Lastname,
             Email = register.Email,
             UserName = register.Username,
-            //AppRefreshTokens = new List<AppRefreshToken>() {refreshToken}
         };
-        //refreshToken.AppUser = appUser;
-        
         
         var result = await _userManager.CreateAsync(appUser, RandomUserPassword);
         if (!result.Succeeded)
@@ -731,6 +723,9 @@ public class UsersController : ControllerBase
     /// <returns></returns>
     [HttpPost("Delete")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = IdentityRolesConstants.ROLE_ADMIN)]
+    [ProducesResponseType(typeof(void), 200)]
+    [ProducesResponseType(typeof(RestApiResponse), 400)]
+    [ProducesResponseType(typeof(RestApiResponse), 404)]
     public async Task<ActionResult> DeleteAccount(UserIdDto data)
     {
         if (User.GetUserId() == data.UserId)
@@ -757,9 +752,15 @@ public class UsersController : ControllerBase
         return Ok();
     }
 
+    /// <summary>
+    /// Reset user password
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
     [HttpPost("ResetPassword")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-        Roles = IdentityRolesConstants.ROLE_ADMIN)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = IdentityRolesConstants.ROLE_ADMIN)]
+    [ProducesResponseType(typeof(void), 200)]
+    [ProducesResponseType(typeof(RestApiResponse), 404)]
     public async Task<ActionResult> ResetPassword(UserIdDto data)
     {
         var user = await _userManager.FindByIdAsync(data.UserId.ToString());

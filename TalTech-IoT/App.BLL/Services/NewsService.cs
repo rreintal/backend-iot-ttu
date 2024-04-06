@@ -1,3 +1,4 @@
+using System.Drawing.Printing;
 using App.BLL.Contracts;
 using App.BLL.Services.ImageStorageService.Models.Delete;
 using App.DAL.Contracts;
@@ -7,6 +8,7 @@ using Base.BLL;
 using Base.Contracts;
 using Microsoft.IdentityModel.Tokens;
 using Public.DTO;
+using Public.DTO.ApiExceptions;
 using ContentType = BLL.DTO.V1.ContentType;
 using News = BLL.DTO.V1.News;
 
@@ -54,6 +56,16 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
     public async Task<News> AddAsync(News entity)
     {
+        var isDuplicateTopicAreas = entity.TopicAreas
+            .GroupBy(e => e.Id)
+            .Any(group => group.Count() > 1);
+
+        Console.WriteLine($"IS DUPLICATE: {isDuplicateTopicAreas}");
+        if (isDuplicateTopicAreas)
+        {
+            throw new TopicAreasNotUnique();
+        }
+        
         try
         {
             entity.ThumbnailImage = ThumbnailService.Compress(entity.Image);
