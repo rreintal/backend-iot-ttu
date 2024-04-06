@@ -168,7 +168,7 @@ public class NewsController : ControllerBase
     }
 
     /// <summary>
-    /// Delete news by id
+    /// ProcessDelete news by id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

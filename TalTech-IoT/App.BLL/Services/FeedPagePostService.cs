@@ -36,7 +36,7 @@ public class FeedPagePostService : BaseEntityService<global::BLL.DTO.V1.FeedPage
     public async override Task<global::BLL.DTO.V1.FeedPagePost?> RemoveAsync(Guid id)
     {
         var entity = await _uow.FeedPagePostRepository.FindAsync(id);
-        _imageStorageService.ProccessDelete(entity);
+        //_imageStorageService.ProccessDelete(entity);
         return await base.RemoveAsync(id);
     }
 

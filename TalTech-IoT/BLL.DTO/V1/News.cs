@@ -5,12 +5,12 @@ using Contracts;
 
 namespace BLL.DTO.V1;
 
-public class News : DomainEntityId, IContainsContent, IContentEntity, IContainsImage, IContainsThumbnail
+public class News : DomainEntityId, IContainsContent, IContentEntity, IContainsImage, IContainsImageResource, IContainsThumbnail
 {
     public List<BLL.DTO.V1.Content> Content { get; set; } = default!;
     public List<BLL.DTO.V1.TopicArea> TopicAreas { get; set; } = default!;
 
-    public List<BLL.DTO.V1.ImageResource> ImageResources { get; set; } = default!;
+    public List<BLL.DTO.V1.ImageResource> ImageResources { get; set; } = new List<ImageResource>();
 
     public DateTime CreatedAt { get; set; }
     public string Author { get; set; } = default!;

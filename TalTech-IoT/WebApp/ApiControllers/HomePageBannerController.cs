@@ -53,7 +53,7 @@ public class HomePageBannerController : ControllerBase
     }
 
     /// <summary>
-    /// Delete Home Page Banner by id
+    /// ProcessDelete Home Page Banner by id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

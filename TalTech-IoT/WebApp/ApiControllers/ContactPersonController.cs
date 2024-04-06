@@ -45,7 +45,7 @@ public class ContactPersonController : ControllerBase
     }
 
     /// <summary>
-    /// Delete contact person by id
+    /// ProcessDelete contact person by id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

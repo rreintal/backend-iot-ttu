@@ -73,7 +73,7 @@ public class PartnerImageController : ControllerBase
     */
 
     /// <summary>
-    /// Delete PartnerImage by id
+    /// ProcessDelete PartnerImage by id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

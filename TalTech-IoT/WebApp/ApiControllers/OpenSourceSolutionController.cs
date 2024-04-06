@@ -54,7 +54,7 @@ public class OpenSourceSolutionController : ControllerBase
     }
 
     /// <summary>
-    /// Delete OpenSourceSolution by id
+    /// ProcessDelete OpenSourceSolution by id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

@@ -7,10 +7,10 @@ using App.BLL.Services.ImageStorageService.Models.Delete;
 using App.Domain;
 using BLL.DTO.ContentHelper;
 using BLL.DTO.Contracts;
+using BLL.DTO.ImageService;
 using HtmlAgilityPack;
 using Microsoft.IdentityModel.Tokens;
 using Public.DTO.Content;
-using News = BLL.DTO.V1.News;
 
 namespace App.BLL.Services.ImageStorageService;
 
@@ -24,7 +24,6 @@ public class ImageStorageService : IImageStorageService
 
     public ImageStorageService()
     {
-        // TODO: use env variable
         var imagesLocation = Environment.GetEnvironmentVariable("IMAGES_LOCATION");
         if (imagesLocation.IsNullOrEmpty())
         {
@@ -36,7 +35,7 @@ public class ImageStorageService : IImageStorageService
         _imageStorageExecutor = new ImageStorageExecutor();
     }
 
-    public bool ProccessSave(object entity)
+    public SaveImageResources? ProccessSave(object entity)
     {
         var isContentEntity = InstanceOf(entity, typeof(IContentEntity));
         var isImageEntity = InstanceOf(entity, typeof(IContainsImage));
@@ -128,27 +127,18 @@ public class ImageStorageService : IImageStorageService
                 {
                     thumbnailEntity.ThumbnailImage = thumbnail;
                 }
-
             }
-
-            
-
-            // TODO: imageResources
-            // TODO: imageResources
-            // TODO: imageResources
-            // TODO: imageResources
-            // TODO: imageResources
-            // TODO: imageResources
-            // TODO: imageResources
-            // TODO: imageResources
-
+            return new SaveImageResources()
+            {
+                SavedLinks = result.SavedLinks
+            };
         }
 
 
-        return true; // TODO: when to return false :)
+        return null; // TODO: when to return false :)
     }
 
-    public void ProccessUpdate(object entity)
+    public UpdateImageResources? ProccessUpdate(object entity)
     {
         var data = new UpdateContent()
         {
@@ -157,6 +147,10 @@ public class ImageStorageService : IImageStorageService
         var isContentEntity = InstanceOf(entity, typeof(IContentEntity));
         var isImageEntity = InstanceOf(entity, typeof(IContainsImage));
         var isThumbnailEntity = InstanceOf(entity, typeof(IContainsThumbnail));
+        if (entity is IContainsImageResource imageResourceEntity)
+        {
+            data.ExistingImageLinks = imageResourceEntity.ImageResources.Select(e => e.Link).ToList();
+        }
         if (isContentEntity)
         {
             var bodyEntity = entity as IContentEntity;
@@ -200,7 +194,7 @@ public class ImageStorageService : IImageStorageService
             }
         }
 
-        if (isThumbnailEntity)
+        if (isThumbnailEntity) // If thumbnail is null, then its false!!
         {
             var thumbnailEntity = entity as IContainsThumbnail;
             var thumbnail = thumbnailEntity!.ThumbnailImage;
@@ -222,6 +216,7 @@ public class ImageStorageService : IImageStorageService
         }
 
         var result = Update(data);
+        
         if (result != null && !result.IsEmpty())
         {
             if (isContentEntity)
@@ -260,14 +255,16 @@ public class ImageStorageService : IImageStorageService
                 }
 
             }
+
+            return new UpdateImageResources()
+            {
+                SavedLinks = result.AddedLinks,
+                DeletedLinks = result.DeletedLinks
+            };
         }
 
+        return null;
 
-    }
-
-    public void ProccessDelete(object entity)
-    {
-        throw new NotImplementedException();
     }
 
     public SaveResult? Save(SaveContent data)
@@ -395,7 +392,7 @@ public class ImageStorageService : IImageStorageService
         return result;
     }
 
-    public bool Delete(DeleteContent content)
+    public bool ProcessDelete(DeleteContent content)
     {
         var payload = new List<CDNDeleteImage>();
 
@@ -410,19 +407,19 @@ public class ImageStorageService : IImageStorageService
         // If there are nothing to delete, then end
         if (payload.IsNullOrEmpty())
         {
-            Console.WriteLine("ImageStorageService: Delete() - no images to delete!");
+            Console.WriteLine("ImageStorageService: ProcessDelete() - no images to delete!");
             return true;
         }
         
-        Console.WriteLine($"ImageStorageService: Delete() - PENDING: deleting {payload.Count} images");
+        Console.WriteLine($"ImageStorageService: ProcessDelete() - PENDING: deleting {payload.Count} images");
         var result = _imageStorageExecutor.DeleteImages(payload);
         if (result)
         {
-            Console.WriteLine("ImageStorageService: Delete() - success!");
+            Console.WriteLine("ImageStorageService: ProcessDelete() - success!");
         }
         else
         {
-            Console.WriteLine("ImageStorageService: Delete() - failure!");
+            Console.WriteLine("ImageStorageService: ProcessDelete() - failure!");
         }
         return result;
     }
@@ -432,7 +429,7 @@ public class ImageStorageService : IImageStorageService
         return _imageExtractor.IsBase64String(content);
     }
 
-    public UpdateResult? Update(UpdateContent data)
+    private UpdateResult? Update(UpdateContent data)
     {
         var existingLinksDuplicate = new List<string>();
         if (!data.ExistingImageLinks.IsNullOrEmpty())
@@ -444,6 +441,8 @@ public class ImageStorageService : IImageStorageService
             // Reason for this is that: all the links which are associated with some entity (thumbnail, image, content images etc.)
             // are stored in the list. So just checking if the links in new body are different from before is not possible.
             // If the duplicated list is empty in the end it means all of the existing images are still used.
+            
+            /* OLD - Issue that modifying collection while iterating over
             foreach (var updateItem in data.Items)
             {
                 data.ExistingImageLinks.ForEach(existingLink =>
@@ -454,7 +453,28 @@ public class ImageStorageService : IImageStorageService
                     }
                 });
             }
+            */
+            
+            // NEW SOLUTION DOWN
+            List<string> linksToRemove = new List<string>();
 
+            foreach (var updateItem in data.Items)
+            {
+                data.ExistingImageLinks.ForEach(existingLink =>
+                {
+                    if (updateItem.Content.Contains(existingLink))
+                    {
+                        // Instead of removing immediately, add to the list of links to remove
+                        linksToRemove.Add(existingLink);
+                    }
+                });
+            }
+            foreach (var linkToRemove in linksToRemove)
+            {
+                existingLinksDuplicate.Remove(linkToRemove);
+            }
+            
+            // NEW SOLUTION UP
             var IsNeedToDeleteImages = existingLinksDuplicate.Count != 0;
             if (IsNeedToDeleteImages)
             {
@@ -462,7 +482,7 @@ public class ImageStorageService : IImageStorageService
                 {
                     Links = existingLinksDuplicate
                 };
-                var deleteResult = Delete(DeletePayload);
+                var deleteResult = ProcessDelete(DeletePayload);
 
                 if (deleteResult == false)
                 {

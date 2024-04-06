@@ -50,7 +50,7 @@ public class FeedPageCategoryController : ControllerBase
     }
 
     /// <summary>
-    /// Delete FeedPageCategory (fails if Feed Page Category has Feed Page Posts) 
+    /// ProcessDelete FeedPageCategory (fails if Feed Page Category has Feed Page Posts) 
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

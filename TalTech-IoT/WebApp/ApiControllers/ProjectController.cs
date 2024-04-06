@@ -60,7 +60,7 @@ public class ProjectController : ControllerBase
     }
 
     /// <summary>
-    /// Delete Project
+    /// ProcessDelete Project
     /// </summary>
     /// <returns></returns>
     [HttpDelete("{id}")]

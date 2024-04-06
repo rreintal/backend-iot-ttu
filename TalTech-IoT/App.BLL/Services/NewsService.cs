@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Public.DTO;
 using Public.DTO.ApiExceptions;
 using ContentType = BLL.DTO.V1.ContentType;
+using ImageResource = BLL.DTO.V1.ImageResource;
 using News = BLL.DTO.V1.News;
 
 
@@ -43,12 +44,15 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             throw new TopicAreasNotUnique();
         }
+        
+        
         var existingEntity = await Uow.NewsRepository.FindByIdWithAllTranslationsAsync(entity.Id);
         if (existingEntity == null)
         {
             return null;
         }
 
+        entity.ThumbnailImage = existingEntity.ThumbnailImage;
         if (entity.Image != null)
         {
             if (_imageStorageService.IsBase64(entity.Image))
@@ -63,10 +67,37 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
                 }
             }
         }
-        _imageStorageService.ProccessUpdate(entity);
+
+        entity.ImageResources = existingEntity.ImageResources.Select(e => new ImageResource()
+        {
+            NewsId = e.NewsId,
+            Link = e.Link
+        }).ToList();
         
         
-        // TODO: IMAGERESOURCES
+        var updateResult = _imageStorageService.ProccessUpdate(entity);
+        if (updateResult != null)
+        {
+            entity.ImageResources = entity.ImageResources
+                .Where(image => updateResult.DeletedLinks == null || !updateResult.DeletedLinks.Contains(image.Link))
+                .ToList();
+
+            // Add the SavedLinks
+            if (updateResult.SavedLinks != null)
+            {
+                foreach (var link in updateResult.SavedLinks)
+                {
+                    entity.ImageResources.Add(new global::BLL.DTO.V1.ImageResource() { Link = link, NewsId = entity.Id});
+                }
+            }
+
+            if (updateResult.DeletedLinks != null)
+            {
+                DeleteContent data = new DeleteContent();
+                data.Links = updateResult.DeletedLinks;
+                _imageStorageService.ProcessDelete(data);
+            }
+        }
         
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var updatedDalEntity =  await Uow.NewsRepository.Update(dalEntity);
@@ -145,7 +176,14 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
         var serviceResult = _imageStorageService.ProccessSave(entity);
-        Console.WriteLine("ImageService result: " + serviceResult);
+        if (serviceResult != null)
+        {
+            entity.ImageResources = serviceResult.SavedLinks.Select(e => new ImageResource()
+            {
+                NewsId = entity.Id,
+                Link = e
+            }).ToList();
+        }
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var dalResult = await Uow.NewsRepository.AddAsync(dalEntity);
         var result = _mapper.Map<News>(dalResult);
@@ -162,12 +200,12 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
         if (!data.Links.IsNullOrEmpty())
         {
-            var response = _imageStorageService.Delete(data);
+            var response = _imageStorageService.ProcessDelete(data);
         
             // What to do if it fails?? notify user?
             if (response == false)
             {
-                Console.WriteLine("NewsService: Delete to CDN failed!");            
+                Console.WriteLine("NewsService: ProcessDelete to CDN failed!");            
             }   
         }
         var dalResult = await Uow.NewsRepository.RemoveAsync(entity.Id);

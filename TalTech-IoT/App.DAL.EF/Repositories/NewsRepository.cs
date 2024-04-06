@@ -120,9 +120,9 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     public async Task<App.Domain.News?> FindByIdWithAllTranslationsAsync(Guid Id)
     {
         var query = await DbSet.Where(x => x.Id == Id)
-            .Include(x => x.ImageResources)
             .IncludeHasTopicAreasWithTranslation()
             .IncludeContentWithTranslation()
+            .Include(e => e.ImageResources)
             .FirstOrDefaultAsync();
 
         if (query == null)
@@ -151,10 +151,12 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         if (dalEntity.Image != null)
         {
             existingDomainObject.Image = newDomainObject.Image;
-            existingDomainObject.ThumbnailImage = newDomainObject.ThumbnailImage;
         }
-        
-        
+
+        if (dalEntity.ThumbnailImage != null)
+        {
+            existingDomainObject.ThumbnailImage = dalEntity.ThumbnailImage;
+        } 
 
         var newTopicAreaIds = dalEntity.TopicAreas.Select(ta => ta.Id).ToList();
 
@@ -180,6 +182,60 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             DbContext.HasTopicAreas.Entry(newItem).State = EntityState.Added;
             existingDomainObject.HasTopicAreas.Add(newItem);
         }
+
+        // Update ImageResources
+        /*
+        if (existingDomainObject.ImageResources != null && newDomainObject.ImageResources != null)
+        {
+            existingDomainObject.ImageResources.Clear();
+            foreach (var imageResource in newDomainObject.ImageResources)
+            {
+                var item = new ImageResource()
+                {
+                    NewsId = existingDomainObject.Id,
+                    Link = imageResource.Link,
+                    CreatedAt = imageResource.CreatedAt
+                };
+                DbContext.Entry(item).State = EntityState.Added;
+            }
+        }
+        */
+        if (newDomainObject.ImageResources != null)
+        {
+            if (existingDomainObject.ImageResources != null)
+            {
+                // Mark as deleted, because just clearing removes the NewsId but its still in the DB!
+                DbContext.ImageResources.RemoveRange(existingDomainObject.ImageResources);
+                
+                
+                foreach (var imageResource in newDomainObject.ImageResources)
+                {
+                    var item = new ImageResource()
+                    {
+                        NewsId = existingDomainObject.Id,
+                        Link = imageResource.Link,
+                        CreatedAt = imageResource.CreatedAt
+                    };
+                    DbContext.Entry(item).State = EntityState.Added;
+                    existingDomainObject.ImageResources.Add(item);
+                }
+            }
+            else
+            {
+                existingDomainObject.ImageResources = new List<ImageResource>();
+                foreach (var imageResource in newDomainObject.ImageResources)
+                {
+                    var item = new ImageResource()
+                    {
+                        NewsId = existingDomainObject.Id,
+                        Link = imageResource.Link,
+                        CreatedAt = imageResource.CreatedAt
+                    };
+                    DbContext.Entry(item).State = EntityState.Added;
+                }
+            }
+        }
+        
 
         return existingDomainObject;
     }
@@ -211,6 +267,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             .AsTracking()
             .IncludeHasTopicAreasWithTranslation()
             .IncludeContentWithTranslation()
+            .Include(e => e.ImageResources)
             .FirstOrDefaultAsync();
 
         if (query == null)

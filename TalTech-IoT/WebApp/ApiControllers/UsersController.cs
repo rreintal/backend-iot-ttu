@@ -717,11 +717,11 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Delete account
+    /// ProcessDelete account
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    [HttpPost("Delete")]
+    [HttpPost("ProcessDelete")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = IdentityRolesConstants.ROLE_ADMIN)]
     [ProducesResponseType(typeof(void), 200)]
     [ProducesResponseType(typeof(RestApiResponse), 400)]

@@ -105,7 +105,7 @@ public class TopicAreasController : ControllerBase
     }
 
     /// <summary>
-    /// Delete topic area
+    /// ProcessDelete topic area
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

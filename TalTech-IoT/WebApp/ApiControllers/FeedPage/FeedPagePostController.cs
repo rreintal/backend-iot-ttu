@@ -92,7 +92,7 @@ public class FeedPagePostController : ControllerBase
     }
 
     /// <summary>
-    /// Delete FeedPagePost by id
+    /// ProcessDelete FeedPagePost by id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
