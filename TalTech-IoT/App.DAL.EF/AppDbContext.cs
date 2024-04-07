@@ -213,6 +213,11 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .WithOne(e => e.PageContent)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Entity<Project>()
+            .HasMany(e => e.ImageResources)
+            .WithOne(e => e.Project)
+            .OnDelete(DeleteBehavior.Cascade);
+
 
     }
 }

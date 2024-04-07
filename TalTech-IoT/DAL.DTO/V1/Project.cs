@@ -10,4 +10,5 @@ public class Project : DomainEntityId
     public bool IsOngoing { get; set; }
     public DateTime CreatedAt { get; set; }
     public List<Content> Content { get; set; } = default!;
+    public List<ImageResource>? ImageResources { get; set; }
 }

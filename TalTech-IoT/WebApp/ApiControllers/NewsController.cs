@@ -139,7 +139,6 @@ public class NewsController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<News>> Update([FromBody] Public.DTO.V1.UpdateNews data)
     {
-        // TODO - updating is with both languages!!!
         try
         {
             var contentTypes = await _bll.NewsService.GetContentTypes();

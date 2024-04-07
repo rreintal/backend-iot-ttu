@@ -1,6 +1,6 @@
 using App.DAL.Contracts;
 using App.DAL.EF.DbExtensions;
-using App.Domain;
+using App.Domain.Helpers;
 using AutoMapper;
 using Base.DAL.EF;
 using DAL.DTO.V1;
@@ -24,41 +24,51 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
         {
             return null;
         }
-        var cults = LanguageCulture.ALL_LANGUAGES;
-        
-        foreach (var lang in cults)
-        {
-            var newBodyValue = entity.GetContentValue(ContentTypes.BODY, lang);
-            var newTitleValue = entity.GetContentValue(ContentTypes.TITLE, lang);
-    
-            var oldBodyValue = existingDomainObject!.GetContentValue(ContentTypes.BODY, lang);
-            var oldTitleValue = existingDomainObject.GetContentValue(ContentTypes.TITLE, lang);
-
-            var isBodyValueChanged = oldBodyValue != newBodyValue;
-            var isTitleContentChanged = oldTitleValue != newTitleValue;
-            
-            if (isBodyValueChanged)
-            {
-                existingDomainObject.SetContentTranslationValue(ContentTypes.BODY, lang, newBodyValue);
-            }
-            
-            if (isTitleContentChanged)
-            {
-                existingDomainObject.SetContentTranslationValue(ContentTypes.TITLE, lang, newTitleValue);
-            }
-        }
-        // TODO: map to domain object and then add or smth!
-
+        var newDomainObject = _mapper.Map<Domain.Project>(entity);
+        UpdateContentHelper.UpdateContent(existingDomainObject, newDomainObject);
         existingDomainObject.ProjectManager = entity.ProjectManager;
         if (entity.ProjectVolume != null)
         {
             existingDomainObject.ProjectVolume = entity.ProjectVolume.Value;    
         }
-
         if (entity.Year != null)
         {
             existingDomainObject.Year = entity.Year.Value;
         }
+
+        if (entity.ImageResources != null)
+        {
+            if (existingDomainObject.ImageResources != null)
+            {
+                // Mark as deleted, because just clearing removes the NewsId but its still in the DB!
+                DbContext.ImageResources.RemoveRange(existingDomainObject.ImageResources);
+                
+                
+                foreach (var imageResource in entity.ImageResources)
+                {
+                    var item = new Domain.ImageResource()
+                    {
+                        ProjectId = existingDomainObject.Id,
+                        Link = imageResource.Link,
+                    };
+                    DbContext.Entry(item).State = EntityState.Added;
+                    existingDomainObject.ImageResources.Add(item);
+                }
+            }
+            else
+            {
+                existingDomainObject.ImageResources = new List<Domain.ImageResource>();
+                foreach (var imageResource in entity.ImageResources)
+                {
+                    var item = new Domain.ImageResource()
+                    {
+                        ProjectId = existingDomainObject.Id,
+                        Link = imageResource.Link,
+                    };
+                    DbContext.Entry(item).State = EntityState.Added;
+                }
+            }
+        }   
 
         var updateResult = Update(existingDomainObject);
         var result = _mapper.Map<Project>(updateResult);
@@ -71,8 +81,7 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
         {
             DbContext.ContentTypes.Attach(content.ContentType);
         }
-
-        entity.CreatedAt = DateTime.UtcNow;
+        
         return base.Add(entity);
     }
 
@@ -134,9 +143,17 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
     public async Task<global::DAL.DTO.V1.Project?> FindByIdAsyncWithAllTranslations(Guid id)
     {
         var domainEntity = await DbSet.Where(e => e.Id == id)
+            .Include(e => e.ImageResources)
             .IncludeContentWithTranslation()
             .FirstOrDefaultAsync();
         return _mapper.Map<global::DAL.DTO.V1.Project>(domainEntity);
+    }
+
+    public async Task<Project?> FindByIdWithImageResources(Guid id)
+    {
+        
+        return await DbSet.Include(e => e.ImageResources)
+            .Where(e => e.Id == id).FirstOrDefaultAsync();
     }
 
     public async Task<Project?> FindAsyncByIdWithAllTranslations(Guid id)

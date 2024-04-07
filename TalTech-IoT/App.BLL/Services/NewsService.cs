@@ -34,7 +34,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     }
     
     
-    public async Task<News?> UpdateAsync(News entity)
+    public async Task<News?> UpdateAsync(News entity)   
     {
         var isDuplicateTopicAreas = entity.TopicAreas
             .GroupBy(e => e.Id)

@@ -76,7 +76,7 @@ public class ProjectController : ControllerBase
                 Status = HttpStatusCode.NotFound
             });
         }
-        _bll.ProjectService.Remove(entity);
+        await _bll.ProjectService.RemoveAsync(entity.Id);
         await _bll.SaveChangesAsync();
         return Ok(new RestApiResponse()
         {
@@ -139,7 +139,8 @@ public class ProjectController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Update([FromBody] UpdateProject data)
     {
-        var bllEntity = UpdateProjectMapper.Map(data);
+        var contentTypes = await _bll.NewsService.GetContentTypes();
+        var bllEntity = UpdateProjectMapper.Map(data, contentTypes);
         var result = await _bll.ProjectService.UpdateAsync(bllEntity);
 
         if (result == null)

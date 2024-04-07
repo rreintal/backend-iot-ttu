@@ -12,10 +12,10 @@ public class UpdateNewsMapper
         var titleContentType = contentTypes.First(x => x.Name == ContentTypes.TITLE);
 
         var titleContent = ContentHelper.CreateContent(entity.Title, titleContentType, entityId,
-            ContentHelper.EContentHelperEntityType.HomePageBanner);
+            ContentHelper.EContentHelperEntityType.News);
         
         var bodyContent = ContentHelper.CreateContent(entity.Body, bodyContentType, entityId,
-            ContentHelper.EContentHelperEntityType.HomePageBanner);
+            ContentHelper.EContentHelperEntityType.News);
         return new BLL.DTO.V1.News()
         {
             Id = entity.Id,

@@ -1,10 +1,11 @@
 using Base.Domain;
 using BLL.DTO.ContentHelper;
+using BLL.DTO.Contracts;
 using Contracts;
 
 namespace BLL.DTO.V1;
 
-public class Project : DomainEntityId, IContentEntity
+public class Project : DomainEntityId, IContentEntity, IContainsImageResource
 {
     public int Year { get; set; } = default!;
     public string ProjectManager { get; set; } = default!;
@@ -14,6 +15,7 @@ public class Project : DomainEntityId, IContentEntity
     public List<Content> Content { get; set; } = default!;
 
     public int ViewCount { get; set; }
+    public List<ImageResource> ImageResources { get; set; } = new List<ImageResource>();
     
     public string GetContentValue(string contentType)
     {
