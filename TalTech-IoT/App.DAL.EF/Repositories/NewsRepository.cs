@@ -143,8 +143,6 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         }
         var newDomainObject = _mapper.Map<Domain.News>(dalEntity);
         UpdateContentHelper.UpdateContent(existingDomainObject, newDomainObject);
-        
-        // Update properties
         existingDomainObject.Author = newDomainObject.Author;
 
         // If image is not null. then thumbnail is also updated in service level
@@ -182,24 +180,9 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             DbContext.HasTopicAreas.Entry(newItem).State = EntityState.Added;
             existingDomainObject.HasTopicAreas.Add(newItem);
         }
-
-        // Update ImageResources
-        /*
-        if (existingDomainObject.ImageResources != null && newDomainObject.ImageResources != null)
-        {
-            existingDomainObject.ImageResources.Clear();
-            foreach (var imageResource in newDomainObject.ImageResources)
-            {
-                var item = new ImageResource()
-                {
-                    NewsId = existingDomainObject.Id,
-                    Link = imageResource.Link,
-                    CreatedAt = imageResource.CreatedAt
-                };
-                DbContext.Entry(item).State = EntityState.Added;
-            }
-        }
-        */
+        
+        
+        // TODO: refactor!
         if (newDomainObject.ImageResources != null)
         {
             if (existingDomainObject.ImageResources != null)
@@ -214,7 +197,6 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
                     {
                         NewsId = existingDomainObject.Id,
                         Link = imageResource.Link,
-                        CreatedAt = imageResource.CreatedAt
                     };
                     DbContext.Entry(item).State = EntityState.Added;
                     existingDomainObject.ImageResources.Add(item);
@@ -229,7 +211,6 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
                     {
                         NewsId = existingDomainObject.Id,
                         Link = imageResource.Link,
-                        CreatedAt = imageResource.CreatedAt
                     };
                     DbContext.Entry(item).State = EntityState.Added;
                 }

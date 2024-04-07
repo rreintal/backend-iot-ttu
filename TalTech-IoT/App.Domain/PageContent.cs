@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using App.Domain.Contracts;
 using Base.Domain;
 

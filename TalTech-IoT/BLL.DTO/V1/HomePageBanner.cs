@@ -3,39 +3,15 @@ using BLL.DTO.Contracts;
 
 namespace BLL.DTO.V1;
 
-public class HomePageBanner : DomainEntityId, IContainsImage
+public class HomePageBanner : DomainEntityId, IContainsImage, IContainsOneImageResource
 {
 
     public List<Content> Content { get; set; } = default!;
     
     public string Image { get; set; } = default!;
     public int? SequenceNumber { get; set; }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+    public ImageResource? ImageResources { get; set; }
     
     public string GetContentValue(string contentType)
     {

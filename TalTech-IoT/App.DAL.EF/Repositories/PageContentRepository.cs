@@ -1,6 +1,7 @@
 using App.DAL.Contracts;
 using App.DAL.EF.DbExtensions;
 using App.Domain;
+using App.Domain.Helpers;
 using AutoMapper;
 using Base.DAL.EF;
 using Microsoft.EntityFrameworkCore;
@@ -27,9 +28,11 @@ public class PageContentRepository : EFBaseRepository<App.Domain.PageContent, Ap
     {
         return await DbSet
             .Where(e => e.PageIdentifier == identifier)
+            .Include(e => e.ImageResources)
             .IncludeContentWithTranslation()
             .FirstOrDefaultAsync();
     }
+
 
     public async Task<PageContent?> FindAsyncByIdentifierString(string identifier, string languageCulture)
     {
@@ -47,36 +50,40 @@ public class PageContentRepository : EFBaseRepository<App.Domain.PageContent, Ap
         {
             return null;
         }
-        
-        var cults = LanguageCulture.ALL_LANGUAGES;
-        
-        foreach (var lang in cults)
+
+        if (entity.ImageResources != null)
         {
-            var oldBodyValue = existingObject.GetContentValue(ContentTypes.BODY, lang);
-            var oldTitleValue = existingObject.GetContentValue(ContentTypes.TITLE, lang);
-    
-            var newBodyValue = entity!.GetContentValue(ContentTypes.BODY, lang);
-            var newTitleValue = entity.GetContentValue(ContentTypes.TITLE, lang);
-
-            var isBodyValueChanged = oldBodyValue != newBodyValue;
-            var isTitleContentChanged = oldTitleValue != newTitleValue;
-
-            Console.WriteLine($"Language culture: {lang}");
-            Console.WriteLine($"Title: {isTitleContentChanged}");
-            Console.WriteLine($"Body: {isBodyValueChanged}");
-            if (isBodyValueChanged)
+            if (existingObject.ImageResources != null)
             {
-                Console.WriteLine($"Old value: {oldBodyValue}, new value: {newBodyValue}");
-                existingObject.SetContentTranslationValue(ContentTypes.BODY, lang, newBodyValue);
+                DbContext.ImageResources.RemoveRange(existingObject.ImageResources);
+
+                foreach (var imageResource in entity.ImageResources)
+                {
+                    var item = new ImageResource()
+                    {
+                        PageContentId = existingObject.Id,
+                        Link = imageResource.Link
+                    };
+
+                    DbContext.Entry(item).State = EntityState.Added;
+                }
             }
-            
-            if (isTitleContentChanged)
+            else
             {
-                Console.WriteLine($"Old value: {oldTitleValue}, new value: {newTitleValue}");
-                existingObject.SetContentTranslationValue(ContentTypes.TITLE, lang, newTitleValue);
+                existingObject.ImageResources = new List<ImageResource>();
+                foreach (var imageResource in entity.ImageResources)
+                {
+                    var item = new ImageResource()
+                    {
+                        PageContentId = existingObject.Id,
+                        Link = imageResource.Link
+                    };
+                    DbContext.Entry(item).State = EntityState.Added;
+                }
             }
         }
-
+        
+        UpdateContentHelper.UpdateContent(existingObject, entity);
         var updatedObject = Update(existingObject);
         return updatedObject;
     }

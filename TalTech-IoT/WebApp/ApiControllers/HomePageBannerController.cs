@@ -71,7 +71,7 @@ public class HomePageBannerController : ControllerBase
             });
         }
 
-        _bll.HomePageBannerService.Remove(entity);
+        await _bll.HomePageBannerService.RemoveAsync(entity.Id);
         await _bll.SaveChangesAsync();
         return Ok();
     }

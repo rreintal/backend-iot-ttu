@@ -151,6 +151,11 @@ public class ImageStorageService : IImageStorageService
         {
             data.ExistingImageLinks = imageResourceEntity.ImageResources.Select(e => e.Link).ToList();
         }
+
+        if (entity is IContainsOneImageResource containsOneImageResourceEntity)
+        {
+            data.ExistingImageLinks = new List<string>() { containsOneImageResourceEntity.ImageResources.Link };
+        }
         if (isContentEntity)
         {
             var bodyEntity = entity as IContentEntity;

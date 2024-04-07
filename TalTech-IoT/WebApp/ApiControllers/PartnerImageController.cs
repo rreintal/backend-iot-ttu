@@ -92,7 +92,7 @@ public class PartnerImageController : ControllerBase
                 Status = HttpStatusCode.NotFound
             });
         }
-        _bll.PartnerImageService.Remove(entity);
+        await _bll.PartnerImageService.RemoveAsync(entity.Id);
         await _bll.SaveChangesAsync();
         return Ok();
     }

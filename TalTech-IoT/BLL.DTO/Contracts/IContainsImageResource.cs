@@ -6,3 +6,8 @@ public interface IContainsImageResource
 {
     public List<ImageResource> ImageResources { get; set; }
 }
+
+public interface IContainsOneImageResource
+{
+    public ImageResource ImageResources { get; set; }
+}

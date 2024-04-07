@@ -3,6 +3,7 @@ using System;
 using App.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240407095430_oskaodksa")]
+    partial class oskaodksa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -412,9 +415,6 @@ namespace App.DAL.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("FeedPagePostId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid?>("HomePageBannerId")
                         .HasColumnType("uuid");
 
@@ -435,8 +435,6 @@ namespace App.DAL.EF.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FeedPagePostId");
 
                     b.HasIndex("HomePageBannerId")
                         .IsUnique();
@@ -870,11 +868,6 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("App.Domain.ImageResource", b =>
                 {
-                    b.HasOne("App.Domain.FeedPagePost", "FeedPagePost")
-                        .WithMany("ImageResources")
-                        .HasForeignKey("FeedPagePostId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("App.Domain.HomePageBanner", "HomePageBanner")
                         .WithOne("ImageResources")
                         .HasForeignKey("App.Domain.ImageResource", "HomePageBannerId")
@@ -888,7 +881,7 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.PageContent", "PageContent")
                         .WithMany("ImageResources")
                         .HasForeignKey("PageContentId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("App.Domain.PartnerImage", "PartnerImage")
                         .WithMany("ImageResources")
@@ -899,8 +892,6 @@ namespace App.DAL.EF.Migrations
                         .WithMany("ImageResources")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("FeedPagePost");
 
                     b.Navigation("HomePageBanner");
 
@@ -990,8 +981,6 @@ namespace App.DAL.EF.Migrations
             modelBuilder.Entity("App.Domain.FeedPagePost", b =>
                 {
                     b.Navigation("Content");
-
-                    b.Navigation("ImageResources");
                 });
 
             modelBuilder.Entity("App.Domain.HomePageBanner", b =>

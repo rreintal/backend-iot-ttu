@@ -13,6 +13,13 @@ public class ImageResource : DomainEntityId
     
     public Guid? PageContentId { get; set; }
     public PageContent? PageContent { get; set; }
+
+    public Guid? HomePageBannerId { get; set; }
+    public HomePageBanner? HomePageBanner { get; set; }
     
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public Guid? PartnerImageId { get; set; }
+    public PartnerImage? PartnerImage { get; set; }
+    
+    public Guid? FeedPagePostId { get; set; }
+    public FeedPagePost? FeedPagePost { get; set; }
 }

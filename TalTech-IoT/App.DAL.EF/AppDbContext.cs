@@ -192,5 +192,27 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .HasMany(x => x.ImageResources)
             .WithOne(x => x.News)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<HomePageBanner>()
+            .HasOne(e => e.ImageResources)
+            .WithOne(e => e.HomePageBanner)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Entity<PartnerImage>()
+            .HasMany(e => e.ImageResources)
+            .WithOne(b => b.PartnerImage)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<FeedPagePost>()
+            .HasMany(e => e.ImageResources)
+            .WithOne(e => e.FeedPagePost)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<PageContent>()
+            .HasMany(e => e.ImageResources)
+            .WithOne(e => e.PageContent)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
     }
 }
