@@ -34,7 +34,7 @@ public class MailController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<ActionResult> Contact([FromBody] ContactForm data, Guid? fromNews)
+    public async Task<ActionResult> Contact([FromBody] ContactForm data, [FromQuery] Guid? fromNews)
     {
         var recipents = await _context.EmailRecipents.ToListAsync();
         _Bll.MailService.SendContactUs(data, recipents, fromNews);

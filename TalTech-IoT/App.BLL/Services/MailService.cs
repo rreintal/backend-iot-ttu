@@ -84,6 +84,7 @@ public class MailService : IMailService
         mail.Subject = $"Contact us - {DateTime.UtcNow}";
 
         string? newsTitle = null;
+        Console.WriteLine($"NEWS ID IS NULL: {NewsId == null}");
         if (NewsId != null)
         {
             var NavigationNews = _uow.NewsRepository.FindByIdWithAllTranslations(NewsId.Value);
@@ -91,6 +92,9 @@ public class MailService : IMailService
             {
                 newsTitle = UpdateContentHelper.GetContentValue(NavigationNews, ContentTypes.TITLE, LanguageCulture.EST);   
             }
+
+            Console.WriteLine($"NEWS TITLE IS: {newsTitle}");
+            
         }
         
         mail.Body = MakeContactUsBody(data, newsTitle);
