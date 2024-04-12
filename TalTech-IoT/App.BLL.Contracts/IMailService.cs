@@ -1,3 +1,4 @@
+using App.Domain;
 using Public.DTO.V1;
 
 namespace App.BLL.Contracts;
@@ -8,7 +9,7 @@ public interface IMailService
 
     public void SendForgotPassword(string recipentMail, string password);
 
-    public void SendContactUs(ContactForm data);
+    public void SendContactUs(ContactForm data, List<EmailRecipents> emailRecipentsList);
 
     public void AccessResource(string recipentMail, string resourceName, string link, string languageCulture);
 }

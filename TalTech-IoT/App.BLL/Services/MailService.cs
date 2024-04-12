@@ -65,13 +65,14 @@ public class MailService : IMailService
         SmtpClient.Send(mail);
     }
 
-    public void SendContactUs(ContactForm data)
+    public void SendContactUs(ContactForm data, List<EmailRecipents> recipentsList)
     {
         MailMessage mail = new MailMessage();
         mail.From = new MailAddress(Email);
-        mail.To.Add(Email); // TODO: add email of the admin!
-        var bodyTemplate = 
-
+        foreach (var emailRecipents in recipentsList)
+        {
+            mail.To.Add(emailRecipents.Email);
+        }
         mail.Subject = $"Contact us - {DateTime.UtcNow}";
         mail.Body = MakeContactUsBody(data);
         SmtpClient.Send(mail);

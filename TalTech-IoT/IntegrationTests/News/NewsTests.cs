@@ -8,7 +8,6 @@ using TopicArea = Public.DTO.V1.TopicArea;
 
 namespace NUnitTests.News
 {
-    // TODO: Test viewCount
     public class NewsTests
     {
         private const string BASE_URL = $"api/{VERSION}News";
@@ -36,36 +35,17 @@ namespace NUnitTests.News
                 Author = "Richard Reintal",
                 Title = new List<ContentDto>()
                 {
-                    new ContentDto()
-                    {
-                        Value = "eesti pealkiri",
-                        Culture = LanguageCulture.EST
-                    },
-                    new ContentDto()
-                    {
-                        Value = "english title",
-                        Culture = LanguageCulture.ENG
-                    }
+                    new(value: "eesti pealkiri", culture: LanguageCulture.EST),
+                    new(value: "english title", culture: LanguageCulture.ENG)
                 },
                 Body = new List<ContentDto>()
                 {
-                    new ContentDto()
-                    {
-                        Value = "eesti sisu",
-                        Culture = LanguageCulture.EST
-                    },
-                    new ContentDto()
-                    {
-                        Value = "english body",
-                        Culture = LanguageCulture.ENG
-                    }
+                    new(value: "eesti sisu", culture: LanguageCulture.EST),
+                    new(value: "english body", culture: LanguageCulture.ENG)
                 },
                 TopicAreas = new List<TopicArea>()
                 {
-                    new TopicArea()
-                    {
-                        Id = Guid.Parse(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID)
-                    }
+                    new(id: Guid.Parse(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID))
                 },
                 Image = "image stuff"
             };
@@ -98,29 +78,13 @@ namespace NUnitTests.News
                 Author = "Richard Reintal",
                 Title = new List<ContentDto>()
                 {
-                    new ContentDto()
-                    {
-                        Value = "eesti pealkiri",
-                        Culture = LanguageCulture.EST
-                    },
-                    new ContentDto()
-                    {
-                        Value = "english title",
-                        Culture = LanguageCulture.ENG
-                    }
+                    new(value: "eesti pealkiri", culture: LanguageCulture.EST),
+                    new(value: "english title", culture: LanguageCulture.ENG)
                 },
                 Body = new List<ContentDto>()
                 {
-                    new ContentDto()
-                    {
-                        Value = "eesti sisu",
-                        Culture = LanguageCulture.EST
-                    },
-                    new ContentDto()
-                    {
-                        Value = "english body",
-                        Culture = LanguageCulture.ENG
-                    }
+                    new(value: "eesti sisu", culture: LanguageCulture.EST),
+                    new(value: "english body", culture: LanguageCulture.ENG)
                 }
             };
             await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
@@ -142,29 +106,13 @@ namespace NUnitTests.News
                 Author = "Richard Reintal",
                 Title = new List<ContentDto>()
                 {
-                    new ContentDto()
-                    {
-                        Value = "eesti pealkiri",
-                        Culture = LanguageCulture.EST
-                    },
-                    new ContentDto()
-                    {
-                        Value = "english title",
-                        Culture = LanguageCulture.ENG
-                    }
+                    new(value: "eesti pealkiri", culture: LanguageCulture.EST),
+                    new(value: "english title", culture: LanguageCulture.ENG)
                 },
                 Body = new List<ContentDto>()
                 {
-                    new ContentDto()
-                    {
-                        Value = bodyString,
-                        Culture = LanguageCulture.EST
-                    },
-                    new ContentDto()
-                    {
-                        Value = "english body",
-                        Culture = LanguageCulture.ENG
-                    }
+                    new(value: bodyString, culture: LanguageCulture.EST),
+                    new(value: "english body", culture: LanguageCulture.ENG)
                 },
                 TopicAreas = new List<TopicArea>()
                 {
@@ -963,7 +911,6 @@ namespace NUnitTests.News
         {
             var client = _factory!.CreateClient();
             await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
-            var languageCulture = LanguageCulture.ENG;
             var titleET = "pealkiri eesti keeles";
             var titleEN = "title in english";
             var bodyET = "sisu eesti keeles";
@@ -975,36 +922,17 @@ namespace NUnitTests.News
                 Image = "image stuff",
                 Title = new List<ContentDto>()
                 {
-                    new ContentDto()
-                    {
-                        Value = titleET,
-                        Culture = LanguageCulture.EST
-                    },
-                    new ContentDto()
-                    {
-                        Value = titleEN,
-                        Culture = LanguageCulture.ENG
-                    }
+                    new(value: titleET, culture: LanguageCulture.EST),
+                    new(value: titleEN, culture: LanguageCulture.ENG)
                 },
                 Body = new List<ContentDto>()
                 {
-                    new ContentDto()
-                    {
-                        Value = bodyET,
-                        Culture = LanguageCulture.EST
-                    },
-                    new ContentDto()
-                    {
-                        Value = bodyEN,
-                        Culture = LanguageCulture.ENG
-                    }
+                    new(value: bodyET, culture: LanguageCulture.EST),
+                    new(value: bodyEN, culture: LanguageCulture.ENG)
                 },
                 TopicAreas = new List<TopicArea>()
                 {
-                    new TopicArea()
-                    {
-                        Id = topicAreaId
-                    }
+                    new TopicArea(id: topicAreaId)
                 }
             };
             
@@ -1016,6 +944,179 @@ namespace NUnitTests.News
 
             var deleteResponse = await client.DeleteAsync($"{BASE_URL}/{newsId}");
             Assert.That(deleteResponse.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test, Order(13)]
+        public async Task UpdateNews_AddTopicArea_ReturnsCorrectData()
+        {
+            var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
+            var titleET = "pealkiri eesti keeles";
+            var titleEN = "title in english";
+            var bodyET = "sisu eesti keeles";
+            var bodyEN = "body in english";
+            var topicAreaId = Guid.Parse(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID);
+            var payload = new PostNewsDto()
+            {
+                Author = "Richard Reintal",
+                Image = "image stuff",
+                Title = new List<ContentDto>()
+                {
+                    new(value: titleET, culture: LanguageCulture.EST),
+                    new(value: titleEN, culture: LanguageCulture.ENG)
+                },
+                Body = new List<ContentDto>()
+                {
+                    new(value: bodyET, culture: LanguageCulture.EST),
+                    new(value: bodyEN, culture: LanguageCulture.ENG)
+                },
+                TopicAreas = new List<TopicArea>()
+                {
+                    new TopicArea(id: topicAreaId)
+                }
+            };
+            
+            var response = await client.PostAsJsonAsync("/api/v1/News", payload);
+            var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
+            Assert.NotNull(responseData);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+            var newTopicAreaId = Guid.Parse(AppDataSeeding.TOPIC_AREA_TECHNOLOGY_ID);
+            
+            var updatedPayload = new UpdateNews()
+            {
+                Id = responseData!.Id,
+                Author = "Richard Reintal",
+                Image = "image stuff",
+                Title = new List<ContentDto>()
+                {
+                    new(value: titleET, culture: LanguageCulture.EST),
+                    new(value: titleEN, culture: LanguageCulture.ENG)
+                },
+                Body = new List<ContentDto>()
+                {
+                    new(value: bodyET, culture: LanguageCulture.EST),
+                    new(value: bodyEN, culture: LanguageCulture.ENG)
+                },
+                TopicAreas = new List<TopicArea>()
+                {
+                    new(id: topicAreaId),
+                    new(id: newTopicAreaId),
+                }
+            };
+            
+            var updateResponse = await client.PutAsJsonAsync(BASE_URL, updatedPayload);
+            Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+            var getUpdatedResponse = await client.GetAsync($"{BASE_URL}/{LanguageCulture.EST}/{updatedPayload.Id}");
+            var data = await getUpdatedResponse.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
+            
+            Assert.NotNull(data);
+            Assert.That(data!.TopicAreas.Count, Is.EqualTo(2));
+            Assert.True(data!.TopicAreas.Exists(e => e.Id == newTopicAreaId));
+            Assert.True(data!.TopicAreas.Exists(e => e.Id == topicAreaId));
+        }
+
+        [Test, Order(14)]
+        public async Task UpdateNews_RemoveTopicArea_ReturnsCorrectData()
+        {
+            var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
+            var titleET = "pealkiri eesti keeles";
+            var titleEN = "title in english";
+            var bodyET = "sisu eesti keeles";
+            var bodyEN = "body in english";
+            var topicAreaId = Guid.Parse(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID);
+            var newTopicAreaId = Guid.Parse(AppDataSeeding.TOPIC_AREA_TECHNOLOGY_ID);
+            var payload = new PostNewsDto()
+            {
+                Author = "Richard Reintal",
+                Image = "image stuff",
+                Title = new List<ContentDto>()
+                {
+                    new(value: titleET, culture: LanguageCulture.EST),
+                    new(value: titleEN, culture: LanguageCulture.ENG)
+                },
+                Body = new List<ContentDto>()
+                {
+                    new(value: bodyET, culture: LanguageCulture.EST),
+                    new(value: bodyEN, culture: LanguageCulture.ENG)
+                },
+                TopicAreas = new List<TopicArea>()
+                {
+                    new TopicArea(id: topicAreaId),
+                    new TopicArea(id: newTopicAreaId)
+                }
+            };
+            
+            var response = await client.PostAsJsonAsync("/api/v1/News", payload);
+            var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
+            Assert.NotNull(responseData);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+            
+            
+            var updatedPayload = new UpdateNews()
+            {
+                Id = responseData!.Id,
+                Author = "Richard Reintal",
+                Image = "image stuff",
+                Title = new List<ContentDto>()
+                {
+                    new(value: titleET, culture: LanguageCulture.EST),
+                    new(value: titleEN, culture: LanguageCulture.ENG)
+                },
+                Body = new List<ContentDto>()
+                {
+                    new(value: bodyET, culture: LanguageCulture.EST),
+                    new(value: bodyEN, culture: LanguageCulture.ENG)
+                },
+                TopicAreas = new List<TopicArea>()
+                {
+                    new(id: topicAreaId),
+                }
+            };
+            
+            var updateResponse = await client.PutAsJsonAsync(BASE_URL, updatedPayload);
+            Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+            var getUpdatedResponse = await client.GetAsync($"{BASE_URL}/{LanguageCulture.EST}/{updatedPayload.Id}");
+            var data = await getUpdatedResponse.Content.ReadFromJsonAsync<Public.DTO.V1.News>();
+            
+            Assert.NotNull(data);
+            Assert.That(data!.TopicAreas.Count, Is.EqualTo(1));
+            Assert.True(data!.TopicAreas.Exists(e => e.Id == topicAreaId));
+        }
+
+        [Test, Order(15)]
+        public async Task AddNews_DuplicateTopicArea_ReturnsConflict()
+        {
+            var client = _factory!.CreateClient();
+            await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
+            var topicAreaId = Guid.Parse(AppDataSeeding.TOPIC_AREA_ROBOTICS_ID);
+            var payload = new PostNewsDto()
+            {
+                Author = "Richard Reintal",
+                Image = "image stuff",
+                Title = new List<ContentDto>()
+                {
+                    new(value: "ee", culture: LanguageCulture.EST),
+                    new(value: "ee", culture: LanguageCulture.ENG)
+                },
+                Body = new List<ContentDto>()
+                {
+                    new(value: "ee", culture: LanguageCulture.EST),
+                    new(value: "ee", culture: LanguageCulture.ENG)
+                },
+                TopicAreas = new List<TopicArea>()
+                {
+                    new TopicArea(id: topicAreaId),
+                    new TopicArea(id: topicAreaId),
+                }
+            };
+            
+            var response = await client.PostAsJsonAsync("/api/v1/News", payload);
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
         }
         
         
