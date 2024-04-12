@@ -37,7 +37,7 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
     private IMailService? _mailService;
 
     public IMailService MailService 
-        => _mailService ??= new MailService();
+        => _mailService ??= new MailService(Uow);
 
     private IProjectService? _projectService;
 

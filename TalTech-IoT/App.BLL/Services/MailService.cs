@@ -1,13 +1,17 @@
 using System.Net;
 using System.Net.Mail;
 using App.BLL.Contracts;
+using App.DAL.Contracts;
+using App.DAL.EF.Helpers;
 using App.Domain;
+using App.Domain.Helpers;
 using Public.DTO.V1;
 
 namespace App.BLL.Services;
 
 public class MailService : IMailService
 {
+    private readonly IAppUOW _uow;
     private SmtpClient SmtpClient = new SmtpClient("smtp.gmail.com", 587);
     
     // TODO - ENV VARIABLE
@@ -26,16 +30,20 @@ public class MailService : IMailService
 
     private const string CONTACT_US_TEMPLATE_ET = "Nimi: $FIRSTNAME $LASTNAME \n" +
                                                "Email: $SENDER_EMAIL \n" +
+                                               "Uudis: $NEWS NAME" +
                                                "Sõnum: $BODY";
 
+    private const string CONTACT_US_TEMPLATE_ET_NEWS_TEMPLATE = "Uudis: $NEWS NAME";
+    
     private const string REGISTRATION_SUBJECT_ET = "IOT-TTU: Kasutaja kinnitamine";
     private const string REGISTRATION_SUBJECT_EN = "IOT-TTU: Account confirmation";
 
     private const string REGISTRATION_BODY_ET = "<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Document</title>\n    <style>\n        .header,\n        .footer {\n            height: 60px;\n            background-color: #342b60;\n        }\n\n        .content {\n            background-color: white;\n            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;\n            font-weight: 400;\n            text-align: center;\n        }\n\n        .bold {\n            font-weight: 700;\n        }\n\n        .link {\n            font-weight: 800;\n        }\n    </style>\n</head>\n\n<body>\n    <table width=\"100%\" cellspacing=\"70\" cellpadding=\"10\">\n        <tr>\n            <td class=\"header\">&nbsp;</td>\n        </tr>\n        <tr>\n            <td class=\"content\">\n                <p style=\"display: inline-block; margin: 0; padding: 0;\">Teie uus parool on: <span class=\"bold\"\n                        style=\"font-weight: bold;\">$PASSWORD</span></p>\n                <p style=\"color: #ff6b6b; margin: 0; padding: 0;\">Palun vahetage parool sisselogimise järel turvalisuse tagamiseks!</p>\n            </td>\n        </tr>\n        <tr>\n            <td class=\"footer\">&nbsp;</td>\n        </tr>\n    </table>\n</body>\n\n</html>";
     private const string REGISTRATION_BODY_EN = "<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Document</title>\n    <style>\n        .header,\n        .footer {\n            height: 60px;\n            background-color: #342b60;\n        }\n\n        .content {\n            background-color: white;\n            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;\n            font-weight: 400;\n            text-align: center;\n        }\n\n        .bold {\n            font-weight: 700;\n        }\n\n        .link {\n            font-weight: 800;\n        }\n    </style>\n</head>\n\n<body>\n    <table width=\"100%\" cellspacing=\"70\" cellpadding=\"10\">\n        <tr>\n            <td class=\"header\">&nbsp;</td>\n        </tr>\n        <tr>\n            <td class=\"content\">\n                <p style=\"display: inline-block; margin: 0; padding: 0;\">Your new password is: <span class=\"bold\"\n                        style=\"font-weight: bold;\">$PASSWORD</span></p>\n                <p style=\"color: #ff6b6b; margin: 0; padding: 0;\">Please change your password after logging in for security purposes!\n                </p>\n\n            </td>\n        </tr>\n        <tr>\n            <td class=\"footer\">&nbsp;</td>\n        </tr>\n    </table>\n</body>\n\n</html>";
                                                
-    public MailService()
+    public MailService(IAppUOW uow)
     {
+        _uow = uow;
         SmtpClient.UseDefaultCredentials = false;
         SmtpClient.Credentials = new NetworkCredential(Email, Password);
         SmtpClient.EnableSsl = true;
@@ -65,7 +73,7 @@ public class MailService : IMailService
         SmtpClient.Send(mail);
     }
 
-    public void SendContactUs(ContactForm data, List<EmailRecipents> recipentsList)
+    public void SendContactUs(ContactForm data, List<EmailRecipents> recipentsList, Guid? NewsId)
     {
         MailMessage mail = new MailMessage();
         mail.From = new MailAddress(Email);
@@ -74,7 +82,18 @@ public class MailService : IMailService
             mail.To.Add(emailRecipents.Email);
         }
         mail.Subject = $"Contact us - {DateTime.UtcNow}";
-        mail.Body = MakeContactUsBody(data);
+
+        string? newsTitle = null;
+        if (NewsId != null)
+        {
+            var NavigationNews = _uow.NewsRepository.FindByIdWithAllTranslations(NewsId.Value);
+            if (NavigationNews != null)
+            {
+                newsTitle = UpdateContentHelper.GetContentValue(NavigationNews, ContentTypes.TITLE, LanguageCulture.EST);   
+            }
+        }
+        
+        mail.Body = MakeContactUsBody(data, newsTitle);
         SmtpClient.Send(mail);
 
     }
@@ -113,13 +132,23 @@ public class MailService : IMailService
             .Replace("$LINK", link);
     }
 
-    private string MakeContactUsBody(ContactForm data)
+    private string MakeContactUsBody(ContactForm data, string? NewsTitle)
     {
-        return CONTACT_US_TEMPLATE_ET
+        var result =  CONTACT_US_TEMPLATE_ET
             .Replace("$SENDER_EMAIL", data.Email)
             .Replace("$FIRSTNAME", data.FirstName)
             .Replace("$LASTNAME", data.LastName)
             .Replace("$BODY", data.MessageText);
+
+        if (NewsTitle != null)
+        {
+            result = result.Replace(CONTACT_US_TEMPLATE_ET_NEWS_TEMPLATE, NewsTitle);
+        }
+        else
+        {
+            result = result.Replace(CONTACT_US_TEMPLATE_ET_NEWS_TEMPLATE, "");
+        }
+        return result;
     }
 
     private string MakeRegistrationBody(string password, string template)
