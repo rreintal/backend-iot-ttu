@@ -6,7 +6,7 @@ namespace App.DAL.Contracts;
 
 public interface IUsersRepository : IBaseRepository<global::DAL.DTO.Identity.AppUser> //IUsersRepositoryCustom<AppUser>
 {
-    public Task<IEnumerable<AppUser>> AllAsyncFiltered(bool isDeleted);
+    public Task<IEnumerable<AppUser>> AllAsyncFiltered();
 }
 
 public interface IUsersRepositoryCustom<TEntity>

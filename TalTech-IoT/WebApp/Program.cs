@@ -1,3 +1,5 @@
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using App.BLL;
 using App.BLL.Contracts;
@@ -19,12 +21,13 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApp;
 
 var builder = WebApplication.CreateBuilder(args);
+// SSL Certificates
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews(cfg =>
 {
     cfg.Filters.Add(new MyAPIExceptionFilter());
-    
 });
 
 // Dependency injection
@@ -49,6 +52,8 @@ builder.Services.AddCors(options =>
     } );
 });
 
+
+
 string? databaseUrl = Environment.GetEnvironmentVariable(EnvironmentVariableConstants.DB_CONNECTION);
 if (databaseUrl == null)
 {
@@ -63,6 +68,8 @@ builder.Services
             options.CommandTimeout(60);
         }).EnableSensitiveDataLogging();
     });
+
+
 
 builder.Services.AddIdentity<AppUser, AppRole>(
         options =>
@@ -96,6 +103,22 @@ builder.Services
             ClockSkew = TimeSpan.Zero
         };
     });
+
+// Configure HTTPS and Certificate
+var certPath = Environment.GetEnvironmentVariable("CERT_PATH");
+if (certPath == null)
+{
+    throw new InvalidOperationException("SSL Certificate path is not correct.");
+}
+var certificate = new X509Certificate2(certPath, "");
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Listen(IPAddress.Any, 5001, listenOptions =>
+    {
+        listenOptions.UseHttps(certificate);
+    });
+});
 
 // ----------------------------
 // Automapper
@@ -172,6 +195,7 @@ app.UseSwaggerUI(options =>
     }
 });
 
+app.UseHsts();
 app.UseHttpsRedirection();
 app.UseCors("develop");
 app.UseRouting();

@@ -570,9 +570,9 @@ public class UsersController : ControllerBase
     /// <returns></returns>
     [HttpGet]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<IEnumerable<Public.DTO.Identity.AppUser>> GetAllUsers(bool deleted)
+    public async Task<IEnumerable<Public.DTO.Identity.AppUser>> GetAllUsers()
     {
-        return (await _bll.UsersService.AllAsyncFiltered(deleted)).Select(e => GetUsersMapper.Map(e));
+        return (await _bll.UsersService.AllAsyncFiltered()).Select(e => GetUsersMapper.Map(e));
     }
 
     /// <summary>
