@@ -104,7 +104,7 @@ builder.Services
         };
     });
 
-// Configure HTTPS and Certificate
+// Configure HTTPS and Certificate environment variables
 var certPath = Environment.GetEnvironmentVariable("CERT_PATH");
 var certPassword = Environment.GetEnvironmentVariable("CERT_PASSWORD");
 if (certPath == null || certPassword == null)
