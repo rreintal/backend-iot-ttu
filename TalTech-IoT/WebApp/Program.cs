@@ -105,7 +105,7 @@ builder.Services
     });
 
 // Configure HTTPS and Certificate environment variables
-/*
+
 var certPath = Environment.GetEnvironmentVariable("CERT_PATH");
 var certPassword = Environment.GetEnvironmentVariable("CERT_PASSWORD");
 if (certPath == null || certPassword == null)
@@ -121,7 +121,7 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
         listenOptions.UseHttps(certificate);
     });
 });
-*/
+
 // ----------------------------
 // Automapper
 builder.Services.AddAutoMapper(
