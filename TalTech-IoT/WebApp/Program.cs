@@ -115,7 +115,7 @@ var certificate = new X509Certificate2(certPath, "test");
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    serverOptions.Listen(IPAddress.Any, 5001, listenOptions =>
+    serverOptions.Listen(IPAddress.Parse("127.0.0.1"), 5001, listenOptions =>
     {
         listenOptions.UseHttps(certificate);
     });
