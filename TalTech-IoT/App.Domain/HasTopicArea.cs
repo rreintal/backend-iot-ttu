@@ -11,8 +11,4 @@ public class HasTopicArea : DomainEntityId
     public Guid? NewsId { get; set; }
     public News? News { get; set; }
 
-    // TODO: eemalda need
-    public Guid? ProjectId { get; set; }
-    public Project? Project { get; set; }
-
 }

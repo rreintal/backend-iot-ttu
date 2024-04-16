@@ -2,6 +2,7 @@ version: "3.9"
 services:
   app:
     container_name: ${DOCKER_APP}
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
