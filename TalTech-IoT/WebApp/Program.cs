@@ -106,11 +106,12 @@ builder.Services
 
 // Configure HTTPS and Certificate
 var certPath = Environment.GetEnvironmentVariable("CERT_PATH");
-if (certPath == null)
+var certPassword = Environment.GetEnvironmentVariable("CERT_PASSWORD");
+if (certPath == null || certPassword == null)
 {
-    throw new InvalidOperationException("SSL Certificate path is not correct.");
+    throw new InvalidOperationException("SSL Certificate env variables are not correctly set up.");
 }
-var certificate = new X509Certificate2(certPath, "");
+var certificate = new X509Certificate2(certPath, "test");
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
