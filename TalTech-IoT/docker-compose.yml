@@ -24,6 +24,9 @@ services:
       - type: bind
         source: ${IMAGES_DIRECTORY} # Host machine
         target: ${IMAGES_DIRECTORY} # Container path
+      - type: bind
+        source: ${CERT_PATH}
+        target: ${CERT_PATH}
   db:
     container_name: ${DOCKER_DB}
     image: "postgres:15.2-bullseye"
