@@ -13,7 +13,7 @@ public class MailService : IMailService
     private readonly IAppUOW _uow;
     private SmtpClient SmtpClient = new SmtpClient("172.17.0.1", 25);
     
-    private readonly string Email = "dotnettestimine@gmail.com";
+    private readonly string Email = "iot.ttu@itcollege.ee";
     private string Password = "qnjjyjavnikwtfib";
 
     private const string ACCESS_REPOSITORY_TEMPLATE_TITLE_EN = "IOT-TTU: Resource access request";
