@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Mail;
 using App.BLL.Contracts;
 using App.DAL.Contracts;
-using App.DAL.EF.Helpers;
 using App.Domain;
 using App.Domain.Helpers;
 using Public.DTO.V1;
@@ -12,9 +11,8 @@ namespace App.BLL.Services;
 public class MailService : IMailService
 {
     private readonly IAppUOW _uow;
-    private SmtpClient SmtpClient = new SmtpClient("smtp.gmail.com", 587);
+    private SmtpClient SmtpClient = new SmtpClient("172.17.0.1", 25);
     
-    // TODO - ENV VARIABLE
     private readonly string Email = "dotnettestimine@gmail.com";
     private string Password = "qnjjyjavnikwtfib";
 
