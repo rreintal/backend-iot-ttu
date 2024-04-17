@@ -43,7 +43,7 @@ public class MailService : IMailService
         _uow = uow;
         SmtpClient.UseDefaultCredentials = false;
         SmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-        SmtpClient.EnableSsl = true;
+        SmtpClient.EnableSsl = false;
     }
     
     public void SendRegistration(string recipentMail, string username, string password, string languageCulture)
@@ -72,6 +72,7 @@ public class MailService : IMailService
 
     public void SendContactUs(ContactForm data, List<EmailRecipents> recipentsList, Guid? NewsId)
     {
+        // TODO: checki kas RecipentsList EI OLE TÜHI!
         MailMessage mail = new MailMessage();
         mail.From = new MailAddress(Email);
         foreach (var emailRecipents in recipentsList)
