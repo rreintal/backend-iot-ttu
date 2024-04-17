@@ -14,7 +14,6 @@ public class MailService : IMailService
     private SmtpClient SmtpClient = new SmtpClient("172.17.0.1", 25);
     
     private readonly string Email = "iot.ttu@itcollege.ee";
-    private string Password = "qnjjyjavnikwtfib";
 
     private const string ACCESS_REPOSITORY_TEMPLATE_TITLE_EN = "IOT-TTU: Resource access request";
     private const string ACCESS_REPOSITORY_TEMPLATE_TITLE_ET = "IOT-TTU: Materjali ligipääs";
@@ -43,7 +42,7 @@ public class MailService : IMailService
     {
         _uow = uow;
         SmtpClient.UseDefaultCredentials = false;
-        SmtpClient.Credentials = new NetworkCredential(Email, Password);
+        SmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
         SmtpClient.EnableSsl = true;
     }
     
