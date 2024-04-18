@@ -43,7 +43,7 @@ public class MailService : IMailService
         _uow = uow;
         SmtpClient.UseDefaultCredentials = false;
         SmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-        SmtpClient.EnableSsl = false;
+        SmtpClient.EnableSsl = false; // TODO: ??
     }
     
     public void SendRegistration(string recipentMail, string username, string password, string languageCulture)
