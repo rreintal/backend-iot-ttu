@@ -15,7 +15,7 @@ public class MailService : IMailService
     private readonly IAppUOW _uow; 
     private SmtpClient SmtpClient = new SmtpClient("10.123.1.1", 25);
     
-    private readonly string Email = "info@iot.itcollege.ee";
+    private readonly string Email = "iot.ttu@itcollege.ee";
 
     private const string ACCESS_REPOSITORY_TEMPLATE_TITLE_EN = "IOT-TTU: Resource access request";
     private const string ACCESS_REPOSITORY_TEMPLATE_TITLE_ET = "IOT-TTU: Materjali ligipääs";
