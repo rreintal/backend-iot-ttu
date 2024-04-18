@@ -20,6 +20,7 @@ services:
       - JWT_KEY=${JWT_KEY}
       - CERT_PATH=${CERT_PATH}
       - CERT_PASSWORD=${CERT_PASSWORD}
+      - APP_EMAIL=${APP_EMAIL}
     volumes:
       - type: bind
         source: ${IMAGES_DIRECTORY} # Host machine

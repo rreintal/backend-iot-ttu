@@ -11,11 +11,9 @@ namespace App.BLL.Services;
 public class MailService : IMailService
 {
     
-    // TODO: lisa conf faili
-    private readonly IAppUOW _uow; 
-    private SmtpClient SmtpClient = new SmtpClient("10.123.1.1", 25);
-    
-    private readonly string Email = "iot.ttu@itcollege.ee";
+    private readonly IAppUOW _uow;
+    private SmtpClient SmtpClient { get; }
+    private string Email { get; }
 
     private const string ACCESS_REPOSITORY_TEMPLATE_TITLE_EN = "IOT-TTU: Resource access request";
     private const string ACCESS_REPOSITORY_TEMPLATE_TITLE_ET = "IOT-TTU: Materjali ligipääs";
@@ -43,9 +41,29 @@ public class MailService : IMailService
     public MailService(IAppUOW uow)
     {
         _uow = uow;
-        SmtpClient.UseDefaultCredentials = false;
-        SmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-        SmtpClient.EnableSsl = false; // TODO: ??
+        SmtpClient = CreateClient();
+        Email = SetupEmail();
+
+    }
+
+    private SmtpClient CreateClient()
+    {
+        var client = new SmtpClient("10.123.1.1", 25);
+        client.UseDefaultCredentials = false;
+        client.DeliveryMethod = SmtpDeliveryMethod.Network;
+        client.EnableSsl = false;
+        return client;
+    }
+
+    private string SetupEmail()
+    {
+        var email = Environment.GetEnvironmentVariable("APP_EMAIL");
+        if (email == null)
+        {
+            throw new InvalidOperationException("APP_MAIL environment variable is not set!");
+        }
+
+        return email;
     }
     
     public void SendRegistration(string recipentMail, string username, string password, string languageCulture)
@@ -81,10 +99,9 @@ public class MailService : IMailService
         {
             mail.To.Add(emailRecipents.Email);
         }
-        mail.Subject = $"Contact us - {DateTime.UtcNow}";
+        mail.Subject = $"Võta ühendust vorm - {DateTime.UtcNow.ToString("R")}";
 
         string? newsTitle = null;
-        Console.WriteLine($"NEWS ID IS NULL: {NewsId == null}");
         if (NewsId != null)
         {
             var NavigationNews = _uow.NewsRepository.FindByIdWithAllTranslations(NewsId.Value);
@@ -99,7 +116,6 @@ public class MailService : IMailService
         
         mail.Body = MakeContactUsBody(data, newsTitle);
         SmtpClient.Send(mail);
-
     }
 
     public void AccessResource(string recipentMail, string resourceName, string link, string languageCulture)
