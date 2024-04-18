@@ -11,7 +11,7 @@ namespace App.BLL.Services;
 public class MailService : IMailService
 {
     private readonly IAppUOW _uow;
-    private SmtpClient SmtpClient = new SmtpClient("172.17.0.1", 25);
+    private SmtpClient SmtpClient = new SmtpClient("10.123.1.1", 25);
     
     private readonly string Email = "iot.ttu@itcollege.ee";
 
