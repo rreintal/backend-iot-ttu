@@ -142,7 +142,12 @@ public static class AppDataSeeding
                 {
                     Email = "reintalrichard@gmail.com"
                 };
+                var recipent2 = new EmailRecipents()
+                {
+                    Email = "edgar.vildt@gmail.com"
+                };
                 context.EmailRecipents.Add(recipent);
+                context.EmailRecipents.Add(recipent2);
             }
 
             await context.SaveChangesAsync();
