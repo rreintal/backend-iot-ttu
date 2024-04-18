@@ -38,7 +38,7 @@ public class EmailRecipentsController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Add(EmailRecipent data)
     {
         var isValidEmail = _bll.EmailValidationService.IsValid(data.Email); 
