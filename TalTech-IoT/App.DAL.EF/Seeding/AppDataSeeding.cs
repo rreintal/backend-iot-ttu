@@ -136,7 +136,13 @@ public static class AppDataSeeding
                 
                 await userManager.CreateAsync(userUser, "user");
                 await userManager.AddToRoleAsync(userUser, IdentityRolesConstants.ROLE_MODERATOR);
-                
+
+
+                var recipent = new EmailRecipents()
+                {
+                    Email = "reintalrichard@gmail.com"
+                };
+                context.EmailRecipents.Add(recipent);
             }
 
             await context.SaveChangesAsync();
