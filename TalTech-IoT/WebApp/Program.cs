@@ -195,7 +195,6 @@ app.UseSwaggerUI(options =>
         options.SwaggerEndpoint(
             $"/swagger/{description.GroupName}/swagger.json",
             description.GroupName);
-        options.RoutePrefix = "test";
     }
 });
 
