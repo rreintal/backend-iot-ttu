@@ -104,57 +104,6 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         var bllEntity = _mapper.Map<News?>(updatedDalEntity);
         return bllEntity;
     }
-    
-    
-    /*
-    public async Task<News?> UpdateAsync(News entity)
-    {
-        var existingEntity = await Uow.NewsRepository.FindByIdWithAllTranslationsAsync(entity.Id);
-        if (existingEntity == null)
-        {
-            return null;
-        }
-
-        // Business logic to process the thumbnail image
-        var thumbNail = entity.ThumbnailImage == null ? existingEntity.ThumbnailImage : entity.ThumbnailImage;
-        _imageStorageService.ProccessUpdate(entity);
-
-        // Get IDs of TopicAreas currently associated with the News entity
-        var currentTopicAreaIds = existingEntity.HasTopicAreas.Select(hta => hta.TopicAreaId).ToList();
-
-        // Determine which TopicArea associations need to be removed
-        var toRemove = existingEntity.HasTopicAreas
-            .Where(hta => !entity.TopicAreas.Select(ta => ta.Id).Contains(hta.TopicAreaId))
-            .ToList();
-
-        // Remove the determined TopicArea associations
-        foreach (var removeItem in toRemove)
-        {
-            existingEntity.HasTopicAreas.Remove(removeItem);
-        }
-
-        // Find new TopicAreaIds to add (those not already associated with the News entity)
-        var toAdd = entity.TopicAreas.Select(ta => ta.Id).Except(currentTopicAreaIds).ToList();
-        foreach (var addId in toAdd)
-        {
-            existingEntity.HasTopicAreas.Add(new HasTopicArea
-            {
-                TopicAreaId = addId,
-                NewsId = existingEntity.Id
-            });
-        }
-
-        // Additional properties update
-        existingEntity.Author = entity.Author; // Assuming author needs to be updated here
-        
-        // Call DAL to persist the changes
-        var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(existingEntity);
-        var updatedDalEntity = await Uow.NewsRepository.Update(dalEntity);
-        var bllEntity = _mapper.Map<News?>(updatedDalEntity);
-    
-        return bllEntity;
-    }
-    */
 
     public async Task<News> AddAsync(News entity)
     {
@@ -201,7 +150,8 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         if (!data.Links.IsNullOrEmpty())
         {
             var response = _imageStorageService.ProcessDelete(data);
-        
+            // return 500
+            
             // What to do if it fails?? notify user?
             if (response == false)
             {
@@ -214,13 +164,14 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     
     public override News Add(News entity)
     {
-        // TODO: thumbnail!
         try
         {
             entity.ThumbnailImage = _thumbnailService.Compress(entity.Image);
         }
         catch (Exception e)
         {
+            // TODO: thumbnail!
+            // Return 500
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
