@@ -6,7 +6,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    #platform: linux/amd64
     ports:
       - ${PORT}
     depends_on:
@@ -25,12 +24,9 @@ services:
       - type: bind
         source: ${IMAGES_DIRECTORY} # Host machine
         target: ${IMAGES_DIRECTORY} # Container path
-      #- type: bind
-      #  source: ${CERT_PATH}
-      #  target: ${CERT_PATH}
   db:
     container_name: ${DOCKER_DB}
-    image: "postgres:15.2-bullseye"
+    image: "postgres:latest"
     restart: always
     environment:
       - POSTGRES_USER=${DB_USER}
@@ -41,10 +37,6 @@ services:
         max-file: "3"
     ports:
       - ${DB_PORT}
-      #volumes :
-      #- /Users/richardreintal/dev/iot-db:/var/lib/postgresql/data
-volumes:
-  images-volume:
     
 #  db-volume:
 #    driver: local

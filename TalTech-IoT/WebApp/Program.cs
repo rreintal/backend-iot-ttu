@@ -100,24 +100,6 @@ builder.Services
         };
     });
 
-// Configure HTTPS and Certificate environment variables
-/*
-var certPath = Environment.GetEnvironmentVariable("CERT_PATH");
-var certPassword = Environment.GetEnvironmentVariable("CERT_PASSWORD");
-if (certPath == null || certPassword == null)
-{
-    throw new InvalidOperationException("SSL Certificate env variables are not correctly set up.");
-}
-var certificate = new X509Certificate2(certPath, "test");
-
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.Listen(IPAddress.Any, 5001, listenOptions =>
-    {
-        listenOptions.UseHttps(certificate);
-    });
-});
-*/
 
 // ----------------------------
 // Automapper
