@@ -1,5 +1,3 @@
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using App.BLL;
 using App.BLL.Contracts;
@@ -7,8 +5,6 @@ using App.BLL.Services.ImageStorageService;
 using App.DAL.Contracts;
 using App.DAL.EF;
 using App.DAL.EF.Seeding;
-using App.Domain;
-using App.Domain.Constants;
 using App.Domain.Identity;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
