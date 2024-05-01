@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 127.0.0.1:${PORT} # This maps that the database is only accessible from inside the server (localhost)
+      - ${PORT}
     depends_on:
       - db
     environment:
@@ -36,7 +36,7 @@ services:
         max-size: 10m
         max-file: "3"
     ports:
-      - ${DB_PORT}
+      - 127.0.0.1:${DB_PORT} # This maps that the database is only accessible from inside the server (localhost)
     
 #  db-volume:
 #    driver: local
