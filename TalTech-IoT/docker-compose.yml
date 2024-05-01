@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - ${PORT}
+      - 127.0.0.1:${PORT} # This maps that the database is only accessible from inside the server (localhost)
     depends_on:
       - db
     environment:
