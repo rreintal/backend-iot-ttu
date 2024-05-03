@@ -331,7 +331,7 @@ public class ImageStorageService : IImageStorageService
         
         // Send items to CDN for save
         // TODO: check here if there is even anything to save!!!!
-        var saveResponseData = _imageStorageExecutor.Upload(CDNPayload);
+        var saveResponseData = _imageStorageExecutor.Upload(CDNPayload); // TODO: TESTS - siia lisa parameeter "test" mis on boolean, kas salvestab FS või ei
 
         
 
