@@ -2,43 +2,42 @@ version: "3.9"
 services:
   app:
     container_name: ${DOCKER_APP}
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
-    #platform: linux/amd64
     ports:
-      - ${PORT}
+      - 127.0.0.1:${PORT} # This maps that the app is only accessible from inside the server (localhost)
     depends_on:
       - db
     environment:
-      #- DOCKERDBCONNECTION=Server=iot-ttu-db:5432;Database=iot-ttu;Username=postgres;Password=postgres;   
       - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
       - IMAGES_DIRECTORY=${IMAGES_DIRECTORY}
       - IMAGES_LOCATION=${IMAGES_LOCATION}
+      - IOT_JWT_ISSUER=${IOT_JWT_ISSUER}
+      - IOT_JWT_AUDIENCE=${IOT_JWT_AUDIENCE}
+      - JWT_KEY=${JWT_KEY}
+      - CERT_PATH=${CERT_PATH}
+      - CERT_PASSWORD=${CERT_PASSWORD}
+      - APP_EMAIL=${APP_EMAIL}
     volumes:
       - type: bind
         source: ${IMAGES_DIRECTORY} # Host machine
         target: ${IMAGES_DIRECTORY} # Container path
   db:
     container_name: ${DOCKER_DB}
-    image: "postgres:15.2-bullseye"
+    image: "postgres:latest"
     restart: always
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      #- POSTGRES_USER=postgres
-      #- POSTGRES_PASSWORD=postgres
     logging:
       options:
         max-size: 10m
         max-file: "3"
     ports:
-      - ${DB_PORT}
-      #volumes :
-      #- /Users/richardreintal/dev/iot-db:/var/lib/postgresql/data
-volumes:
-  images-volume:
-    
+      - 127.0.0.1:${DB_PORT} # This maps that the database is only accessible from inside the server (localhost)
+
 #  db-volume:
 #    driver: local
 #    driver_opts:
