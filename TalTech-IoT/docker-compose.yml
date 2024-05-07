@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 127.0.0.1:${PORT}
+      - 127.0.0.1:${PORT} # This maps that the app is only accessible from inside the server (localhost)
     depends_on:
       - db
     environment:
@@ -17,8 +17,6 @@ services:
       - IOT_JWT_ISSUER=${IOT_JWT_ISSUER}
       - IOT_JWT_AUDIENCE=${IOT_JWT_AUDIENCE}
       - JWT_KEY=${JWT_KEY}
-      - CERT_PATH=${CERT_PATH}
-      - CERT_PASSWORD=${CERT_PASSWORD}
       - APP_EMAIL=${APP_EMAIL}
     volumes:
       - type: bind
@@ -31,16 +29,14 @@ services:
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
     logging:
       options:
         max-size: 10m
         max-file: "3"
     ports:
       - 127.0.0.1:${DB_PORT} # This maps that the database is only accessible from inside the server (localhost)
-    
-#  db-volume:
-#    driver: local
-#    driver_opts:
-#      type: none
-#      device: /Users/richardreintal/dev/iot-db/
-#      o: bind
+    volumes:
+      - type: bind
+        source: ${LOCAL_PGDATA} # Local directory for PostgreSQL data
+        target: /var/lib/postgresql/data
