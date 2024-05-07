@@ -43,13 +43,14 @@ public class NewsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(RestApiResponse), StatusCodes.Status409Conflict)]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<News>> Add([FromBody] PostNewsDto payload)
+    public async Task<ActionResult<News>> Add([FromBody] PostNewsDto payload, [FromQuery] bool? test)
     {
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
         try
         {
-            var bllResult = await _bll.NewsService.AddAsync(bllEntity);
+            var isTest = test ?? false;
+            var bllResult = await _bll.NewsService.AddAsync(bllEntity, isTest);
             var result = ReturnNewsMapper.Map(bllResult);
             await _bll.SaveChangesAsync();
             return Ok(result);
@@ -131,19 +132,20 @@ public class NewsController : ControllerBase
     }
 
     /// <summary>
-    /// Update News. Updateing with Topic Areas is not working YET!
+    /// Update News.
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPut]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<News>> Update([FromBody] Public.DTO.V1.UpdateNews data)
+    public async Task<ActionResult> Update([FromBody] Public.DTO.V1.UpdateNews data, [FromQuery] bool? test)
     {
         try
         {
             var contentTypes = await _bll.NewsService.GetContentTypes();
             var bllEntity = UpdateNewsMapper.Map(data, contentTypes);
-            var result =  await _bll.NewsService.UpdateAsync(bllEntity);
+            var isTest = test ?? false;
+            var result =  await _bll.NewsService.UpdateAsync(bllEntity, isTest);
             if (result == null)
             {
                 return NotFound(new RestApiResponse()
@@ -173,7 +175,7 @@ public class NewsController : ControllerBase
     /// <returns></returns>
     [HttpDelete("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<ActionResult> Delete(Guid id)
+    public async Task<ActionResult> Delete(Guid id, [FromQuery] bool? test)
     {
         var entity = await _bll.NewsService.FindByIdAllTranslationsAsync(id);
         if (entity == null)
@@ -184,7 +186,9 @@ public class NewsController : ControllerBase
                 Status = HttpStatusCode.NotFound
             });
         }
-        await _bll.NewsService.RemoveAsync(entity);
+
+        var isTest = test ?? false;
+        await _bll.NewsService.RemoveAsync(entity, isTest);
         await _bll.SaveChangesAsync();
         return Ok();
     }

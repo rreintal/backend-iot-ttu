@@ -81,6 +81,7 @@ public class FeedPagePostService : BaseEntityService<global::BLL.DTO.V1.FeedPage
     {
         var existingEntity = await _uow.FeedPagePostRepository.FindAsync(entity.Id);
 
+        // THIS CAN BE REFACTORED //
         if (existingEntity != null)
         {
             entity.ImageResources = existingEntity.ImageResources.Select(e => new ImageResource()
@@ -116,7 +117,7 @@ public class FeedPagePostService : BaseEntityService<global::BLL.DTO.V1.FeedPage
                 }).ToList();
             }
         }
-        
+        // THIS CAN BE REFACTORED //
         var domainObject = Mapper.Map(entity);
         var domainResult = await _uow.FeedPagePostRepository.UpdateAsync(domainObject);
         return Mapper.Map(domainResult)!;

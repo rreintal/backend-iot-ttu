@@ -36,6 +36,7 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
             existingDomainObject.Year = entity.Year.Value;
         }
 
+        // THIS CAN BE REFACTORED //
         if (entity.ImageResources != null)
         {
             if (existingDomainObject.ImageResources != null)
@@ -69,6 +70,7 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
                 }
             }
         }   
+        // THIS CAN BE REFACTORED //
 
         var updateResult = Update(existingDomainObject);
         var result = _mapper.Map<Project>(updateResult);

@@ -1,14 +1,13 @@
 using App.BLL.Contracts.ImageStorageModels.Save;
 using App.BLL.Contracts.ImageStorageModels.Save.Result;
 using App.BLL.Services.ImageStorageService.Models.Delete;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+
 
 namespace App.BLL.Services.ImageStorageService;
 
 public interface IIMageStorageExecutor
 {
-    public List<CDNSaveResult> Upload(CDNSaveImages payload);
+    public List<CDNSaveResult> Upload(CDNSaveImages payload, bool test = false);
 }
 
 // TODO: make it atomic, that first conver everything from base64 to byteArray, and after everything successful, then write.
@@ -26,7 +25,7 @@ public class ImageStorageExecutor : IIMageStorageExecutor
         }
         IMAGES_DIRECTORY = imagesDirectory;
     }
-    public List<CDNSaveResult> Upload(CDNSaveImages payload)
+    public List<CDNSaveResult> Upload(CDNSaveImages payload, bool test)
     {
         var result = new List<CDNSaveResult>() { };
         foreach (var unit in payload.Items)
@@ -40,9 +39,14 @@ public class ImageStorageExecutor : IIMageStorageExecutor
             {
                 // Save image
                 string imageName = Guid.NewGuid().ToString();
-                string path = $"{IMAGES_DIRECTORY}{imageName}.{item.FileFormat}"; // TTÜ
+                string path = $"{IMAGES_DIRECTORY}{imageName}.{item.FileFormat}";
                 byte[] imageByteArray = Convert.FromBase64String(item.ImageContent);
-                File.WriteAllBytes(path, imageByteArray);
+
+                // If its for test, then don't save it to the file system
+                if (!test)
+                {
+                    File.WriteAllBytes(path, imageByteArray);   
+                }
 
                 var saveResultItem = new CDNSaveResultItem()
                 {
@@ -69,10 +73,17 @@ public class ImageStorageExecutor : IIMageStorageExecutor
     }
     
     
-    public bool DeleteImages(List<CDNDeleteImage> imagesList)
+    public bool DeleteImages(List<CDNDeleteImage> imagesList, bool test = false)
     {
         Console.WriteLine("ProcessDelete hit!");
         var deletedImagesCount = 0;
+        
+        // If its a test, then there is no images to delete, and it can't be tested. so return true!!
+        if (test)
+        {
+            return true;
+        }
+        
         foreach (var imageToDelete in imagesList)
         {
             var imageName = imageToDelete.ImageName;

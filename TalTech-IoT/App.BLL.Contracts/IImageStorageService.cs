@@ -5,7 +5,7 @@ namespace App.BLL.Contracts;
 
 public interface IImageStorageService
 {
-    public SaveImageResources? ProccessSave(Object entity);
+    public SaveImageResources? ProccessSave(Object entity, bool test = false);
 
     public UpdateImageResources? ProccessUpdate(Object entity);
     public bool ProcessDelete(DeleteContent content);

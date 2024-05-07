@@ -57,6 +57,7 @@ public class PageContentService : BaseEntityService<global::BLL.DTO.V1.PageConte
             return null;
         }
 
+        // THIS CAN BE REFACTORED //
         if (existing.ImageResources != null)
         {
             entity.ImageResources = existing.ImageResources.Select(e => new ImageResource()
@@ -89,6 +90,7 @@ public class PageContentService : BaseEntityService<global::BLL.DTO.V1.PageConte
                 }).ToList();
             }
         }
+        // THIS CAN BE REFACTORED //
         var domainEntity = Mapper.Map(entity);
         var updatedDomainEntity = await Uow.PageContentRepository.UpdateAsync(domainEntity);
         return Mapper.Map(updatedDomainEntity);

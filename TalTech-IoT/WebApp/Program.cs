@@ -1,3 +1,4 @@
+using System.Drawing.Printing;
 using System.Text;
 using App.BLL;
 using App.BLL.Contracts;
@@ -55,7 +56,6 @@ if (databaseUrl == null)
 {
     throw new InvalidOperationException("Database connection string is null.");
 }
-
 builder.Services
     .AddDbContext<AppDbContext>(options =>
     {

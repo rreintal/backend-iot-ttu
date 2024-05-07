@@ -51,6 +51,7 @@ public class PageContentRepository : EFBaseRepository<App.Domain.PageContent, Ap
             return null;
         }
 
+        // THIS CAN BE REFACTORED //
         if (entity.ImageResources != null)
         {
             if (existingObject.ImageResources != null)
@@ -82,7 +83,7 @@ public class PageContentRepository : EFBaseRepository<App.Domain.PageContent, Ap
                 }
             }
         }
-        
+        // THIS CAN BE REFACTORED //
         UpdateContentHelper.UpdateContent(existingObject, entity);
         var updatedObject = Update(existingObject);
         return updatedObject;

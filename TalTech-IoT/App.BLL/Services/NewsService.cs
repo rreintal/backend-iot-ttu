@@ -23,8 +23,6 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     private IImageStorageService _imageStorageService { get; }
     private IThumbnailService _thumbnailService { get; }
     
-    // need Add, Remove jne on basic operationid
-    // kui vaja tagastada DTO siis seda tehakse custom meetoditega!!
     public NewsService(IAppUOW uow, IMapper<News, Domain.News> mapper, IMapper autoMapper, IThumbnailService thumbnailService, IImageStorageService imageStorageService) : base(uow.NewsRepository, mapper)
     {
         Uow = uow;
@@ -34,7 +32,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     }
     
     
-    public async Task<News?> UpdateAsync(News entity)   
+    public async Task<News?> UpdateAsync(News entity, bool test = false)   
     {
         var isDuplicateTopicAreas = entity.TopicAreas
             .GroupBy(e => e.Id)
@@ -67,7 +65,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
                 }
             }
         }
-
+        // THIS CAN BE REFACTORED //
         entity.ImageResources = existingEntity.ImageResources.Select(e => new ImageResource()
         {
             NewsId = e.NewsId,
@@ -98,6 +96,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
                 _imageStorageService.ProcessDelete(data);
             }
         }
+        // THIS CAN BE REFACTORED //
         
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var updatedDalEntity =  await Uow.NewsRepository.Update(dalEntity);
@@ -105,7 +104,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         return bllEntity;
     }
 
-    public async Task<News> AddAsync(News entity)
+    public async Task<News> AddAsync(News entity, bool test)
     {
         var isDuplicateTopicAreas = entity.TopicAreas
             .GroupBy(e => e.Id)
@@ -124,7 +123,10 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             // TODO: what to do here? this actually should not get to this point
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
-        var serviceResult = _imageStorageService.ProccessSave(entity);
+        var serviceResult = _imageStorageService.ProccessSave(entity, test);
+        
+        // THIS CAN BE REFACTORED //
+        // Maybe _imageStorageService.UpdateImageResources(BLLEntity, serviceResult)
         if (serviceResult != null)
         {
             entity.ImageResources = serviceResult.SavedLinks.Select(e => new ImageResource()
@@ -133,15 +135,19 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
                 Link = e
             }).ToList();
         }
+        
+        // THIS CAN BE REFACTORED //
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var dalResult = await Uow.NewsRepository.AddAsync(dalEntity);
         var result = _mapper.Map<News>(dalResult);
         return result;
     }
 
-    public async Task<News> RemoveAsync(News entity)
+    public async Task<News> RemoveAsync(News entity, bool test = false)
     {
         var imageResources = (await Uow.NewsRepository.GetImageResources(entity.Id)).Select(e => e.Link);
+        
+        // THIS CAN BE REFACTORED //
         var data = new DeleteContent()
         {
             Links = imageResources.ToList()
@@ -150,14 +156,13 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         if (!data.Links.IsNullOrEmpty())
         {
             var response = _imageStorageService.ProcessDelete(data);
-            // return 500
-            
-            // What to do if it fails?? notify user?
             if (response == false)
             {
                 Console.WriteLine("NewsService: ProcessDelete to CDN failed!");            
             }   
         }
+        // THIS CAN BE REFACTORED //
+        
         var dalResult = await Uow.NewsRepository.RemoveAsync(entity.Id);
         return _mapper.Map<News>(dalResult);
     }

@@ -182,7 +182,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         }
         
         
-        // TODO: refactor!
+        // THIS CAN BE REFACTORED //
         if (newDomainObject.ImageResources != null)
         {
             if (existingDomainObject.ImageResources != null)
@@ -216,7 +216,7 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
                 }
             }
         }
-        
+        // THIS CAN BE REFACTORED //
 
         return existingDomainObject;
     }
