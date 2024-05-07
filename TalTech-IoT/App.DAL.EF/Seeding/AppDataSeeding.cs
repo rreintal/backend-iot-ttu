@@ -28,8 +28,6 @@ public static class AppDataSeeding
         }
         if (configuration.GetValue<bool>("DataInit:Migrate"))
         {
-            await context.Database.EnsureCreatedAsync();
-            
             if (context.Database.IsRelational()) // This is because, when running tests, in memory db can't migrate :(
             {
                 context.Database.Migrate();
