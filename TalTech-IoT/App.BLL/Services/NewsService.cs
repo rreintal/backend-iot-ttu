@@ -99,7 +99,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             entity.Image = updateResult.Items.First(e => e.Sequence == 2).Content;
             entity.ThumbnailImage = updateResult.Items.First(e => e.Sequence == 3).Content;
 
-            
+            x
             // TODO: this is a hack as the BLL entity does not have the IMAGERESOURCES but DOMAIN object has 
 
             entity.ImageResources = existingEntity.ImageResources.Select(e => _mapper.Map<ImageResource>(e)).ToList();
