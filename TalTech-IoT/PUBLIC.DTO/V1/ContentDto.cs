@@ -7,6 +7,17 @@ namespace Public.DTO.V1;
 
 public class ContentDto
 {
+    public ContentDto(string culture, string value)
+    {
+        Culture = culture;
+        Value = value;
+    }
+
+    public ContentDto()
+    {
+        
+    }
+
     [Required]
     [MinLength(1)]
     [MaxLength(10000000)] // TODO: mis on max length? kas base64 loeb?  

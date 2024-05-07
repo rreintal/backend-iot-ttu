@@ -28,6 +28,7 @@ public class HomePageBannerTests
     public async Task AddHomePageBanner_ValidData_ReturnsOK()
     {
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var data = CreateHomePageBanner();
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.NotNull(response);
@@ -41,14 +42,11 @@ public class HomePageBannerTests
         {
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Value = "aaa",
-                    Culture = "ooo"
-                }
+                new(value: "aaa", culture: "ooo")
             }
         };
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.NotNull(response);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
@@ -58,6 +56,7 @@ public class HomePageBannerTests
     public async Task DeleteHomePageBanner_ValidData_ReturnsOK()
     {
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var data = CreateHomePageBanner();
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.NotNull(response);
@@ -75,6 +74,7 @@ public class HomePageBannerTests
     public async Task DeleteHomePageBanner_InvalidId_ReturnsNotFound()
     {
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var deleteResponse = await client.DeleteAsync($"{BASE_URL}/{Guid.NewGuid()}");
         Assert.NotNull(deleteResponse);
         Assert.That(deleteResponse.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
@@ -85,6 +85,7 @@ public class HomePageBannerTests
     {
         var TitleInEstonian = "updated title in estonian";
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var data = CreateHomePageBanner();
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.NotNull(response);
@@ -110,8 +111,9 @@ public class HomePageBannerTests
     [Test, Order(6)]
     public async Task UpdateHomePageBanner_Et_ReturnsCorrectBody()
     {
-        var BodyInEstonain = "updated body in estonian";
+        var BodyInEstonia = "updated body in estonian";
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var data = CreateHomePageBanner();
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.NotNull(response);
@@ -119,7 +121,7 @@ public class HomePageBannerTests
         var responseData = await response.Content.ReadFromJsonAsync<Public.DTO.V1.HomePageBanner>();
         Assert.NotNull(responseData);
         
-        var updateData = CreateHomePageBanner(BodyInEstonian: BodyInEstonain);
+        var updateData = CreateHomePageBanner(BodyInEstonian: BodyInEstonia);
         updateData.Id = responseData!.Id;
 
         var updateResponse = await client.PutAsJsonAsync($"{BASE_URL}", updateData);
@@ -132,7 +134,7 @@ public class HomePageBannerTests
 
         var updatedDataTitle = updateData.Body.FirstOrDefault(content => content.Culture == LanguageCulture.EST);
         Assert.NotNull(updatedDataTitle);
-        Assert.That(updatedDataTitle!.Value, Is.EqualTo(BodyInEstonain));
+        Assert.That(updatedDataTitle!.Value, Is.EqualTo(BodyInEstonia));
     }
     
     [Test, Order(7)]
@@ -140,6 +142,7 @@ public class HomePageBannerTests
     {
         var TitleInEnglish = "updated title in english";
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var data = CreateHomePageBanner();
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.NotNull(response);
@@ -168,6 +171,7 @@ public class HomePageBannerTests
     {
         var BodyInEnglish = "updated body in english";
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var data = CreateHomePageBanner();
         var response = await client.PostAsJsonAsync(BASE_URL, data);
         Assert.NotNull(response);
@@ -204,29 +208,13 @@ public class HomePageBannerTests
             Image = Image,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Value = BodyInEstonian,
-                    Culture = LanguageCulture.EST
-                },
-                new ContentDto()
-                {
-                    Value = BodyInEnglish,
-                    Culture = LanguageCulture.ENG
-                }
+                new(value: BodyInEstonian, culture: LanguageCulture.EST),
+                new(value: BodyInEnglish, culture: LanguageCulture.ENG)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Value = TitleInEstonian,
-                    Culture = LanguageCulture.EST
-                },
-                new ContentDto()
-                {
-                    Value = TitleInEnglish,
-                    Culture = LanguageCulture.ENG
-                }
+                new(value: TitleInEstonian, culture: LanguageCulture.EST),
+                new(value: TitleInEnglish, culture: LanguageCulture.ENG)
             }
         };
     }

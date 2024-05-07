@@ -15,7 +15,8 @@ public class GetProjectMapper
             ProjectVolume = entity.ProjectVolume,
             IsOngoing = entity.IsOngoing,
             Year = entity.Year,
-            CreatedAt = entity.CreatedAt
+            CreatedAt = entity.CreatedAt,
+            ViewCount = entity.ViewCount
         };
 
         return result;

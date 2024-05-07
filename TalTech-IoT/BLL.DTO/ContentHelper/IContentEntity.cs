@@ -1,5 +1,3 @@
-using BLL.DTO.Contracts;
-
 namespace BLL.DTO.ContentHelper;
 
 public interface IContentEntity

@@ -10,4 +10,5 @@ public class OpenSourceSolution : DomainEntityId
     public bool Private { get; set; }
     public DateTime CreatedAt { get; set; }
     public string Link { get; set; } = default!;
+    public ICollection<AccessDetails>? AccessDetails { get; set; }
 }

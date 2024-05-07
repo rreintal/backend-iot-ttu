@@ -6,5 +6,5 @@ namespace App.BLL.Contracts;
 
 public interface IOpenSourceSolutionService : ITranslateableEntityService<OpenSourceSolution>, IOpenSourceSolutionRepositoryCustom<Domain.OpenSourceSolution>
 {
-    
+    public Task<List<OpenSourceSolution>> AllAsyncWithStatistics();
 }

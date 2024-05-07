@@ -7,4 +7,5 @@ public class PartnerImage : DomainEntityId, IContainsImage
 {
     public string? Link { get; set; }
     public string Image { get; set; } = default!;
+    public List<ImageResource> ImageResources { get; set; } = new List<ImageResource>();
 }

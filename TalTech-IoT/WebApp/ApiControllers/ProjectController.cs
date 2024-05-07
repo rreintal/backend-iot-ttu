@@ -2,6 +2,8 @@ using System.Net;
 using App.BLL.Contracts;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1;
@@ -33,6 +35,7 @@ public class ProjectController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<Public.DTO.V1.PostProjectSuccessDto>> Create([FromBody] Public.DTO.V1.PostProjectDto data)
     {
         var types = await _bll.NewsService.GetContentTypes(); // TODO - tee eraldi service ehk?
@@ -57,10 +60,11 @@ public class ProjectController : ControllerBase
     }
 
     /// <summary>
-    /// Delete Project
+    /// ProcessDelete Project
     /// </summary>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.ProjectService.FindAsync(id);
@@ -72,7 +76,7 @@ public class ProjectController : ControllerBase
                 Status = HttpStatusCode.NotFound
             });
         }
-        _bll.ProjectService.Remove(entity);
+        await _bll.ProjectService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return Ok(new RestApiResponse()
         {
@@ -100,7 +104,6 @@ public class ProjectController : ControllerBase
     [HttpGet("{languageCulture}/{id}")]
     public async Task<ActionResult<GetProject>> Get(string languageCulture, Guid id)
     {
-        //var entity = await _bll.ProjectService.FindAsync(id, languageCulture);
         var entity = await _bll.ProjectService.FindAsync(id, languageCulture);
         if (entity == null)
         {
@@ -111,8 +114,19 @@ public class ProjectController : ControllerBase
             });
         }
 
+        await IncreaseViewCount(id);
         var result = GetProjectMapper.Map(entity);
         return result;
+    }
+    
+    private async Task IncreaseViewCount(Guid id)
+    {
+        var isClientHeaderPresent = HttpContext.Request.Headers.ContainsKey("IOT-App");
+        if (isClientHeaderPresent)
+        {
+            await _bll.ProjectService.IncrementViewCount(id);
+            await _bll.SaveChangesAsync();
+        }
     }
 
     /// <summary>
@@ -122,9 +136,11 @@ public class ProjectController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpPut]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Update([FromBody] UpdateProject data)
     {
-        var bllEntity = UpdateProjectMapper.Map(data);
+        var contentTypes = await _bll.NewsService.GetContentTypes();
+        var bllEntity = UpdateProjectMapper.Map(data, contentTypes);
         var result = await _bll.ProjectService.UpdateAsync(bllEntity);
 
         if (result == null)
@@ -161,6 +177,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPost("Ongoing")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> ToggleProjectStatus(Guid id, bool isOngoing)
     {
         var result = await _bll.ProjectService.ChangeProjectStatus(id, isOngoing);

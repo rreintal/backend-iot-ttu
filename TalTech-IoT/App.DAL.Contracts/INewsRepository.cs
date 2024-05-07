@@ -13,8 +13,6 @@ public interface INewsRepository :IBaseTranslateableRepository<App.Domain.News>,
 
     public Task<App.Domain.News?> FindByIdWithAllTranslationsAsync(Guid Id);
     
-    public Task<App.Domain.News?> FindByIdWithAllTranslationsAsyncNoTracking(Guid Id);
-
     public Task<App.Domain.News?> Update(News dalEntity);
 
     public News Add(News entity);
@@ -30,4 +28,6 @@ public interface INewsRepositoryCustom<TEntity>
 {
     // here methods which are shared between repo and service!
     public Task<int> FindNewsTotalCount(Guid? TopicAreaId);
+    
+    public Task IncrementViewCount(Guid id);
 }

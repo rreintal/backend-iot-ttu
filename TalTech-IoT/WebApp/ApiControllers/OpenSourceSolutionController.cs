@@ -1,12 +1,17 @@
 using System.Net;
 using App.BLL.Contracts;
+using App.DAL.EF;
 using App.Domain;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Public.DTO;
 using Public.DTO.V1.Mappers;
 using Public.DTO.V1.OpenSourceSolution;
+using AccessDetails = BLL.DTO.V1.AccessDetails;
 using OpenSourceSolution = Public.DTO.V1.OpenSourceSolution.OpenSourceSolution;
 
 namespace WebApp.ApiControllers;
@@ -20,13 +25,15 @@ namespace WebApp.ApiControllers;
 public class OpenSourceSolutionController : ControllerBase
 {
     private readonly IAppBLL _bll;
+    private readonly AppDbContext _context;
     
     /// <summary>
     /// Controller for OpenSourceSolutions
     /// </summary>
-    public OpenSourceSolutionController(IAppBLL bll)
+    public OpenSourceSolutionController(IAppBLL bll, AppDbContext context)
     {
         _bll = bll;
+        _context = context;
     }
 
     /// <summary>
@@ -35,6 +42,7 @@ public class OpenSourceSolutionController : ControllerBase
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<OpenSourceSolution>> Create([FromBody] OpenSourceSolution entity)
     {
         var types = await _bll.NewsService.GetContentTypes();
@@ -46,11 +54,12 @@ public class OpenSourceSolutionController : ControllerBase
     }
 
     /// <summary>
-    /// Delete OpenSourceSolution by id
+    /// ProcessDelete OpenSourceSolution by id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.OpenSourceSolutionService.FindAsync(id);
@@ -133,6 +142,7 @@ public class OpenSourceSolutionController : ControllerBase
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpPut]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Update([FromBody] OpenSourceSolution entity)
     {
         var entityExists = await _bll.OpenSourceSolutionService.FindAsync(entity.Id) != null;
@@ -177,7 +187,20 @@ public class OpenSourceSolutionController : ControllerBase
         var titleName = openSourceSolution!.Content.First(x => x.ContentType!.Name == "TITLE");
         var name = titleName.LanguageString.LanguageStringTranslations.First().TranslationValue;
         _bll.MailService.AccessResource(data.Email, name, openSourceSolution.Link, languageCulture);
+        
+        // TODO: lisa alles siis kui mail on successful!
+        
+        var bllEntity = AccessDetailsMapper.Map(data);
+        _bll.AccessDetailsService.Add(bllEntity);
+        await _bll.SaveChangesAsync();
 
         return true;
+    }
+    
+    [HttpGet("{languageCulture}/RequestInfo")]
+    public async Task<List<OpenSourceSolutionRequestInfo>> GetWithAccessDetails(string languageCulture)
+    {
+        var items = await _bll.OpenSourceSolutionService.AllAsyncWithStatistics();
+        return items.Select(e => OpenSourceSolutionWithStatisticsMapper.Map(e, languageCulture)).ToList();
     }
 }

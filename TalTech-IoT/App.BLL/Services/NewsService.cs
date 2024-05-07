@@ -2,12 +2,15 @@ using App.BLL.Contracts;
 using App.BLL.Services.ImageStorageService.Models.Delete;
 using App.DAL.Contracts;
 using App.Domain;
+using App.Domain.Helpers;
 using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
 using Microsoft.IdentityModel.Tokens;
 using Public.DTO;
+using Public.DTO.ApiExceptions;
 using ContentType = BLL.DTO.V1.ContentType;
+using ImageResource = BLL.DTO.V1.ImageResource;
 using News = BLL.DTO.V1.News;
 
 
@@ -15,11 +18,10 @@ namespace App.BLL.Services;
 
 public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>, INewsService
 {
-    private IAppUOW Uow { get; set; }
+    private IAppUOW Uow { get; }
     private IMapper _mapper { get; }
-    private IImageStorageService _imageStorageService { get; set; }
-    
-    private IThumbnailService ThumbnailService { get; }
+    private IImageStorageService _imageStorageService { get; }
+    private IThumbnailService _thumbnailService { get; }
     
     // need Add, Remove jne on basic operationid
     // kui vaja tagastada DTO siis seda tehakse custom meetoditega!!
@@ -27,125 +29,94 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     {
         Uow = uow;
         _mapper = autoMapper;
-        ThumbnailService = thumbnailService;
+        _thumbnailService = thumbnailService;
         _imageStorageService = imageStorageService;
     }
     
-    public async Task<News?> UpdateAsync(News entity)
+    
+    public async Task<News?> UpdateAsync(News entity)   
     {
+        var isDuplicateTopicAreas = entity.TopicAreas
+            .GroupBy(e => e.Id)
+            .Any(group => group.Count() > 1);
+
+        if (isDuplicateTopicAreas)
+        {
+            throw new TopicAreasNotUnique();
+        }
+        
+        
         var existingEntity = await Uow.NewsRepository.FindByIdWithAllTranslationsAsync(entity.Id);
         if (existingEntity == null)
         {
             return null;
         }
-        
-        /*
-        var bodyEn = ContentHelper.GetContentValue(entity, ContentTypes.BODY, LanguageCulture.ENG);
-        var bodyEt = ContentHelper.GetContentValue(entity, ContentTypes.BODY, LanguageCulture.EST);
-        var image = entity.Image;
-        */
-        
-        // If not adding the image + Thumbnail image then when updating
-        // the 'not used' or more specific 'not in the list when checking for unused images' then it gets deleted
-        var thumbNail = entity.ThumbnailImage == null ? existingEntity.ThumbnailImage : entity.ThumbnailImage;
 
-        _imageStorageService.ProccessUpdate(entity);
-        /*
-        var updateData = new UpdateContent()
+        entity.ThumbnailImage = existingEntity.ThumbnailImage;
+        if (entity.Image != null)
         {
-            Items = new List<UpdateItem>()
-        };
-        
-        var imageResources = await Uow.NewsRepository.GetImageResources(entity.Id);
-        updateData.ExistingImageLinks = imageResources.Select(e => e.Link).ToList();
-
-        var updateBodyEn = new UpdateItem()
-        {
-            Content = bodyEn,
-            Sequence = 0
-        };
-
-        var updateBodyEt = new UpdateItem()
-        {
-            Content = bodyEt,
-            Sequence = 1
-        };
-
-        var updateImage = new UpdateItem()
-        {
-            Content = image,
-            Sequence = 2,
-            IsAlreadyBase64 = true
-        };
-
-        var thumbNailImage = new UpdateItem()
-        {
-            Content = thumbNail,
-            Sequence = 3,
-            IsAlreadyBase64 = true
-        };
-        
-        updateData.Items.Add(updateBodyEn);
-        updateData.Items.Add(updateBodyEt);
-        updateData.Items.Add(updateImage);
-        updateData.Items.Add(thumbNailImage);
-
-        var updateResult = _imageStorageService.Update(updateData);
-        /*
-        if (updateResult != null && !updateResult.IsEmpty())
-        {
-            ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, updateResult.Items.First(e => e.Sequence == 1).Content);
-            ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.ENG, updateResult.Items.First(e => e.Sequence == 0).Content);
-            entity.Image = updateResult.Items.First(e => e.Sequence == 2).Content;
-            entity.ThumbnailImage = updateResult.Items.First(e => e.Sequence == 3).Content;
-
-            x
-            // TODO: this is a hack as the BLL entity does not have the IMAGERESOURCES but DOMAIN object has 
-
-            entity.ImageResources = existingEntity.ImageResources.Select(e => _mapper.Map<ImageResource>(e)).ToList();
-            var IsAddedLinksEmpty = updateResult.AddedLinks.IsNullOrEmpty();
-            if (!IsAddedLinksEmpty)
             {
-                // TODO: IMPORTANT- when fetching the object for update we need all these ImageResources!!1
-                foreach (var newLink in updateResult.AddedLinks)
+                try
                 {
-                    entity.ImageResources.Add(new ImageResource()
-                    {
-                        NewsId = entity.Id,
-                        Link = newLink 
-                    });   
+                    entity.ThumbnailImage = _thumbnailService.Compress(entity.Image);
                 }
-            }
-
-            var IsDeletedLinksEmpty = updateResult.DeletedLinks.IsNullOrEmpty();
-            if (!IsDeletedLinksEmpty && updateResult.DeletedLinks != null)
-            {
-                foreach (var deletedLink in updateResult.DeletedLinks)
+                catch (Exception e)
                 {
-                    var itemToRemove = entity.ImageResources.First(e => e.Link == deletedLink);
-                    entity.ImageResources.Remove(itemToRemove);
+                    entity.ThumbnailImage = "Thumbnailservice threw an exception";
                 }
             }
         }
-        */
-        // TODO: IMAGERESOURCES
-        // TODO: IMAGERESOURCES
-        // TODO: IMAGERESOURCES
-        // TODO: IMAGERESOURCES
-        // TODO: IMAGERESOURCES
+
+        entity.ImageResources = existingEntity.ImageResources.Select(e => new ImageResource()
+        {
+            NewsId = e.NewsId,
+            Link = e.Link
+        }).ToList();
+        
+        
+        var updateResult = _imageStorageService.ProccessUpdate(entity);
+        if (updateResult != null)
+        {
+            entity.ImageResources = entity.ImageResources
+                .Where(image => updateResult.DeletedLinks == null || !updateResult.DeletedLinks.Contains(image.Link))
+                .ToList();
+
+            // Add the SavedLinks
+            if (updateResult.SavedLinks != null)
+            {
+                foreach (var link in updateResult.SavedLinks)
+                {
+                    entity.ImageResources.Add(new global::BLL.DTO.V1.ImageResource() { Link = link, NewsId = entity.Id});
+                }
+            }
+
+            if (updateResult.DeletedLinks != null)
+            {
+                DeleteContent data = new DeleteContent();
+                data.Links = updateResult.DeletedLinks;
+                _imageStorageService.ProcessDelete(data);
+            }
+        }
         
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var updatedDalEntity =  await Uow.NewsRepository.Update(dalEntity);
         var bllEntity = _mapper.Map<News?>(updatedDalEntity);
         return bllEntity;
-        
     }
 
     public async Task<News> AddAsync(News entity)
     {
+        var isDuplicateTopicAreas = entity.TopicAreas
+            .GroupBy(e => e.Id)
+            .Any(group => group.Count() > 1);
+
+        if (isDuplicateTopicAreas)
+        {
+            throw new TopicAreasNotUnique();
+        }
         try
         {
-            entity.ThumbnailImage = ThumbnailService.Compress(entity.Image);
+            entity.ThumbnailImage = _thumbnailService.Compress(entity.Image);
         }
         catch (Exception e)
         {
@@ -153,7 +124,14 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
         var serviceResult = _imageStorageService.ProccessSave(entity);
-        Console.WriteLine("ImageService result: " + serviceResult);
+        if (serviceResult != null)
+        {
+            entity.ImageResources = serviceResult.SavedLinks.Select(e => new ImageResource()
+            {
+                NewsId = entity.Id,
+                Link = e
+            }).ToList();
+        }
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var dalResult = await Uow.NewsRepository.AddAsync(dalEntity);
         var result = _mapper.Map<News>(dalResult);
@@ -170,12 +148,13 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
         if (!data.Links.IsNullOrEmpty())
         {
-            var response = _imageStorageService.Delete(data);
-        
+            var response = _imageStorageService.ProcessDelete(data);
+            // return 500
+            
             // What to do if it fails?? notify user?
             if (response == false)
             {
-                Console.WriteLine("NewsService: Delete to CDN failed!");            
+                Console.WriteLine("NewsService: ProcessDelete to CDN failed!");            
             }   
         }
         var dalResult = await Uow.NewsRepository.RemoveAsync(entity.Id);
@@ -184,40 +163,22 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     
     public override News Add(News entity)
     {
-        // TODO: thumbnail!
         try
         {
-            entity.ThumbnailImage = ThumbnailService.Compress(entity.Image);
+            entity.ThumbnailImage = _thumbnailService.Compress(entity.Image);
         }
         catch (Exception e)
         {
+            // TODO: thumbnail!
+            // Return 500
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
-        
-        
-        // User input content
-        /*
-        var bodyEn = entity.GetContentValue(ContentTypes.BODY, LanguageCulture.ENG);
-        var bodyEt = entity.GetContentValue(ContentTypes.BODY, LanguageCulture.EST);
-        var baseBody = ContentHelper.GetContentBaseValue(entity.Content.First(x => x.ContentType!.Name == ContentTypes.BODY));
-        
-        // Image Service
-        var newBodyEn = _imageStorageService.ReplaceImages(bodyEn);
-        var newBodyEt = _imageStorageService.ReplaceImages(bodyEt);
-        var newBaseBody =  _imageStorageService.ReplaceImages(baseBody);
-        
-        // SET NEW VALUES
-        ContentHelper.SetBaseLanguage(entity, ContentTypes.BODY, newBaseBody);
-        ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.EST, newBodyEt);
-        ContentHelper.SetContentTranslationValue(entity, ContentTypes.BODY, LanguageCulture.ENG, newBodyEn);
-        */
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var dalResult = Uow.NewsRepository.Add(dalEntity);
         var result = _mapper.Map<News>(dalResult);
         return result;
     }
 
-    // OK
     public override async Task<IEnumerable<News>> AllAsync()
     {
         return (await Uow.NewsRepository.AllAsync()).Select(x => _mapper.Map<News>(x));
@@ -240,6 +201,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         var entity = await Uow.NewsRepository.FindByIdWithAllTranslationsAsync(id);
         return _mapper.Map<News>(entity);
     }
+    
 
     public async Task<IEnumerable<News>> AllAsync(string? languageCulture)
     {
@@ -256,7 +218,12 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
     {
         return await Uow.NewsRepository.FindNewsTotalCount(TopicAreaId);
     }
-    
+
+    public async Task IncrementViewCount(Guid id)
+    {
+        await Uow.NewsRepository.IncrementViewCount(id);
+    }
+
     // TODO: Move this to another repository
     public async Task<List<ContentType>> GetContentTypes()
     {

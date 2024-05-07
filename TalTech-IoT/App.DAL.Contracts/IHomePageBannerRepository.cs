@@ -7,6 +7,7 @@ namespace App.DAL.Contracts;
 public interface IHomePageBannerRepository : IBaseTranslateableRepository<HomePageBanner>, IHomePageBannerRepositoryCustom
 {
     public Task<HomePageBanner> UpdateAsync(HomePageBanner entity);
+    public Task<HomePageBanner?> FindAsyncTracking(Guid Id);
 }
 
 public interface IHomePageBannerRepositoryCustom

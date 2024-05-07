@@ -4,6 +4,8 @@ using App.BLL.Contracts;
 using App.DAL.EF.DbExceptions;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1;
@@ -54,6 +56,7 @@ public class TopicAreasController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Create([FromBody] PostTopicAreaDto data)
     {
         var bllEntity = CreateTopicAreaMapper.Map(data);
@@ -102,11 +105,12 @@ public class TopicAreasController : ControllerBase
     }
 
     /// <summary>
-    /// Delete topic area
+    /// ProcessDelete topic area
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpDelete]
+    [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.TopicAreaService.FindAsync(id);
@@ -141,7 +145,7 @@ public class TopicAreasController : ControllerBase
     /// </summary>
     /// <param name="languageCulture"></param>
     /// <returns></returns>
-    [HttpGet("WithCount")]
+    [HttpGet("{languageCulture}/WithCount")]
     public async Task<IEnumerable<TopicAreaWithCount>> GetAllWithCount(string languageCulture)
     {
         var bllResult = await _bll.TopicAreaService.GetTopicAreasWithCount(languageCulture);

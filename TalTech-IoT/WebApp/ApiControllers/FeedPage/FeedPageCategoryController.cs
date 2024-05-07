@@ -2,6 +2,8 @@ using System.Net;
 using App.BLL.Contracts;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1.FeedPage;
@@ -48,11 +50,12 @@ public class FeedPageCategoryController : ControllerBase
     }
 
     /// <summary>
-    /// Delete FeedPageCategory (fails if Feed Page Category has Feed Page Posts) 
+    /// ProcessDelete FeedPageCategory (fails if Feed Page Category has Feed Page Posts) 
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
         var categoryHasPosts = await _bll.FeedPageCategoryService.DoesCategoryHavePostsAsync(id);
@@ -86,6 +89,7 @@ public class FeedPageCategoryController : ControllerBase
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> PostWithPageIdentifier(PostFeedPageCategoryWithPageIdentifier entity)
     {
         var contentTypes = await _bll.NewsService.GetContentTypes();
@@ -126,25 +130,6 @@ public class FeedPageCategoryController : ControllerBase
         var retrunResult = result.Select(e => GetFeedPageCategoryWithoutPostsMapper.Map(e, languageCulture)).ToList();
         return Ok(retrunResult);
     }
-    
-
-    /// <summary>
-    /// Create new FeedPageCategory 
-    /// </summary>
-    /// <param name="entity"></param>
-    /// <returns></returns>
-    /*
-    [HttpPost]
-    public async Task<ActionResult<FeedPageCategory>> Post(FeedPageCategory entity)
-    {
-        var contentTypes = await _bll.NewsService.GetContentTypes();
-        var bllEntity = FeedPageCategoryMapper.Map(entity, contentTypes);
-        var bllResult = _bll.FeedPageCategoryService.Add(bllEntity);
-        await _bll.SaveChangesAsync();
-        var result = FeedPageCategoryMapper.Map(bllResult);
-        return Ok(result);
-    }
-    */
 
     /// <summary>
     /// Update Feed Page Category (PS. only Title!)
@@ -152,6 +137,7 @@ public class FeedPageCategoryController : ControllerBase
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpPut]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Update(FeedPageCategory entity)
     {
         
@@ -171,30 +157,4 @@ public class FeedPageCategoryController : ControllerBase
         await _bll.SaveChangesAsync();
         return Ok(result);
     }
-    
-    /// <summary>
-    /// Get Feed Page Post by id translated
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="languageCulture"></param>
-    /// <returns></returns>
-    ///
-    /*
-    [HttpGet("/posts/{languageCulture}/{id}")]
-    public async Task<ActionResult<Public.DTO.V1.FeedPage.FeedPageCategory>> Get(Guid id, string languageCulture)
-    {
-        var bllEntity = await _bll.FeedPageCategoryService.FindAsync(id, languageCulture);
-        if (bllEntity == null)
-        {
-            return NotFound(new RestApiResponse()
-            {
-                Message = RestApiErrorMessages.GeneralNotFound,
-                Status = HttpStatusCode.NotFound
-            });
-        }
-
-        var result = FeedPageCategoryMapper.Map(bllEntity, languageCulture); 
-        return Ok(result);
-    }
-    */
 }

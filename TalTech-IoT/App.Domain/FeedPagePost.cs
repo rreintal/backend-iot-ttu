@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using App.Domain.Contracts;
 using Base.Domain;
 
@@ -11,4 +10,6 @@ public class FeedPagePost : DomainEntityId, IContentEntity
 
     public Guid FeedPageCategoryId { get; set; }
     public FeedPageCategory? FeedPageCategory { get; set; }
+    
+    public ICollection<ImageResource>? ImageResources { get; set; }
 }

@@ -17,17 +17,12 @@ public class Identity
 {
     private CustomWebAppFactory<Program>? _factory;
     private const string VERSION = "v1";
-    
-    private const string AdminUserEmail = "admin@email.ee"; // TODO: LOE NEED ENV MUUTUJAST!
-    private const string AdminPassword = "admin";
     private string BASE_URL => $"api/{VERSION}/Users";
 
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
         _factory = new CustomWebAppFactory<Program>();
-        
-        // Create a scope to resolve services
     }
     
     
@@ -41,7 +36,7 @@ public class Identity
             // Resolve the RoleManager<AppRole> service
             var _roleManager = scope.ServiceProvider.GetService<RoleManager<App.Domain.Identity.AppRole>>();
             var client = _factory!.CreateClient();
-            var userRole = await _roleManager!.FindByNameAsync(IdentityRolesConstants.ROLE_USER);
+            var userRole = await _roleManager!.FindByNameAsync(IdentityRolesConstants.ROLE_MODERATOR);
             Assert.NotNull(userRole);
         
             var registerModel = new Register
@@ -151,14 +146,16 @@ public class Identity
         var loginModel = new Login
         {
             Email = "john.doe@example.com",
-            Password = "IncorrectPassword" // Assuming this is an incorrect password
+            Password = "Johndoe123.22"  // Assuming this is an incorrect password
         };
 
         // Act
         var response = await client.PostAsJsonAsync($"{BASE_URL}/Login", loginModel);
+        var responseStr = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(responseStr);
 
         // Assert
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
 
     /*
@@ -170,7 +167,7 @@ public class Identity
             var client = _factory!.CreateClient();
         
             // Create new account to lock
-            var userRole = await roleManager!.FindByNameAsync(IdentityRolesConstants.ROLE_USER);
+            var userRole = await roleManager!.FindByNameAsync(IdentityRolesConstants.ROLE_MODERATOR);
             Assert.NotNull(userRole);
         
             var registerModel = new Register
@@ -212,7 +209,7 @@ public class Identity
             var client = _factory!.CreateClient();
         
             // Create new account to lock
-            var userRole = await roleManager!.FindByNameAsync(IdentityRolesConstants.ROLE_USER);
+            var userRole = await roleManager!.FindByNameAsync(IdentityRolesConstants.ROLE_MODERATOR);
             Assert.NotNull(userRole);
         
             var registerModel = new Register

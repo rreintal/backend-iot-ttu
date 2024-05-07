@@ -6,5 +6,5 @@ namespace App.BLL.Contracts;
 
 public interface IHomePageBannerService : IBaseTranslateableRepository<HomePageBanner>, IHomePageBannerRepositoryCustom
 {
-    public Task<HomePageBanner> UpdateAsync(HomePageBanner entity);
+    public Task<HomePageBanner?> UpdateAsync(HomePageBanner entity);
 }

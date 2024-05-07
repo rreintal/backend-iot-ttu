@@ -9,22 +9,20 @@ namespace App.BLL.Services.ImageStorageService;
 public interface IIMageStorageExecutor
 {
     public List<CDNSaveResult> Upload(CDNSaveImages payload);
-    public bool DeleteImages(List<CDNDeleteImage> imagesList);
 }
 
 // TODO: make it atomic, that first conver everything from base64 to byteArray, and after everything successful, then write.
 
 public class ImageStorageExecutor : IIMageStorageExecutor
 {
-    private string IMAGES_DIRECTORY = "/Users/richardreintal/dev/images/"; // use env variable from constructor, if not set then throw fatal error
+    private string IMAGES_DIRECTORY { get; set; }
 
     public ImageStorageExecutor()
     {
         var imagesDirectory = Environment.GetEnvironmentVariable("IMAGES_DIRECTORY");
-        var isValueMissing = imagesDirectory.IsNullOrEmpty();
-        if (isValueMissing)
+        if (string.IsNullOrEmpty(imagesDirectory))
         {
-            throw new Exception("ImageStorageExecutor: Environemnt variable: IMAGES_DIRECTORY - is not set or is empty!");
+            throw new Exception("ImageStorageExecutor: Environment variable: IMAGES_DIRECTORY - is not set or is empty!");
         }
         IMAGES_DIRECTORY = imagesDirectory;
     }
@@ -44,7 +42,7 @@ public class ImageStorageExecutor : IIMageStorageExecutor
                 string imageName = Guid.NewGuid().ToString();
                 string path = $"{IMAGES_DIRECTORY}{imageName}.{item.FileFormat}"; // TTÜ
                 byte[] imageByteArray = Convert.FromBase64String(item.ImageContent);
-                System.IO.File.WriteAllBytes(path, imageByteArray);
+                File.WriteAllBytes(path, imageByteArray);
 
                 var saveResultItem = new CDNSaveResultItem()
                 {
@@ -73,7 +71,7 @@ public class ImageStorageExecutor : IIMageStorageExecutor
     
     public bool DeleteImages(List<CDNDeleteImage> imagesList)
     {
-        Console.WriteLine("Delete hit!");
+        Console.WriteLine("ProcessDelete hit!");
         var deletedImagesCount = 0;
         foreach (var imageToDelete in imagesList)
         {

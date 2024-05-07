@@ -1,20 +1,15 @@
-
-using App.BLL.Contracts.ImageStorageModels.Save;
-using App.BLL.Contracts.ImageStorageModels.Update;
-using App.BLL.Contracts.ImageStorageModels.Update.Result;
 using App.BLL.Services.ImageStorageService.Models.Delete;
+using BLL.DTO.ImageService;
 
 namespace App.BLL.Contracts;
 
 public interface IImageStorageService
 {
-    public bool ProccessSave(Object entity);
+    public SaveImageResources? ProccessSave(Object entity);
 
-    public void ProccessUpdate(Object entity);
-    public void ProccessDelete(Object entity);
-    public SaveResult? Save(SaveContent data);
-    public bool Delete(DeleteContent content);
+    public UpdateImageResources? ProccessUpdate(Object entity);
+    public bool ProcessDelete(DeleteContent content);
 
-    public UpdateResult? Update(UpdateContent data);
+    public bool IsBase64(string content);
 
 }

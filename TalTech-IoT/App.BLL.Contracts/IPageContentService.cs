@@ -11,4 +11,5 @@ public interface IPageContentService : IEntityService<PageContent>, IPageContent
     public Task<PageContent?> FindAsyncByIdentifierString(string identifier, string languageCulture);
 
     public Task<global::BLL.DTO.V1.PageContent?> UpdateAsync(PageContent entity);
+
 }

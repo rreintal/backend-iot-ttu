@@ -3,6 +3,8 @@ using App.BLL.Contracts;
 using App.BLL.Mappers;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
 using Public.DTO.V1;
@@ -36,6 +38,7 @@ public class PartnerImageController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<PartnerImage>> Add([FromBody] PartnerImage data)
     {
         var bllEntity = PartnerImageMapper.Map(data);
@@ -70,11 +73,12 @@ public class PartnerImageController : ControllerBase
     */
 
     /// <summary>
-    /// Delete PartnerImage by id
+    /// ProcessDelete PartnerImage by id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
         // TODO: sequence number unique?
@@ -88,7 +92,7 @@ public class PartnerImageController : ControllerBase
                 Status = HttpStatusCode.NotFound
             });
         }
-        _bll.PartnerImageService.Remove(entity);
+        await _bll.PartnerImageService.RemoveAsync(entity.Id);
         await _bll.SaveChangesAsync();
         return Ok();
     }

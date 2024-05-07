@@ -18,7 +18,9 @@ public class ReturnNewsMapper
             Id = data.Id,
             Author = data.Author,
             TopicAreas = GetTopicAreaMapper.Map(data.TopicAreas),
-            Image = data.Image
+            Image = data.Image,
+            ViewCount = data.ViewCount
+            
         };
         // TODO - viga on äkki DOMAIN - BLL mappingus!
 

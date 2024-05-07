@@ -11,6 +11,7 @@ namespace App.DAL.EF.Repositories;
 
 public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbContext>, IHomePageBannerRepository
 {
+    
     public HomePageBannerRepository(AppDbContext dataContext, IMapper mapper) : base(dataContext, mapper)
     {
     }
@@ -19,6 +20,7 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
     {
         var maxSequenceNumber = DbContext.HomePageBanners.Max(banner => (int?)banner.SequenceNumber) ?? 0;
 
+        
         entity.SequenceNumber = maxSequenceNumber + 1;
 
         foreach (var content in entity.Content)
@@ -45,8 +47,21 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
 
     public override Task<HomePageBanner?> FindAsync(Guid id)
     {
-        return DbSet.Where(x => x.Id == id).IncludeContentWithTranslation().FirstOrDefaultAsync();
+        return DbSet
+            .Where(x => x.Id == id)
+            .Include(e => e.ImageResources)
+            .IncludeContentWithTranslation().FirstOrDefaultAsync();
     } 
+    
+    public async Task<HomePageBanner?> FindAsyncTracking(Guid Id)
+    {
+        return await DbSet
+            .AsTracking()
+            .Where(entity => entity.Id == Id)
+            .Include(e => e.ImageResources)
+            .IncludeContentWithTranslation()
+            .FirstOrDefaultAsync();
+    }
 
     public async Task<IEnumerable<HomePageBanner>> AllAsync(string? languageCulture)
     {
@@ -64,17 +79,17 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
             .FirstOrDefaultAsync();
     }
 
-    
-
     public async Task<HomePageBanner> UpdateAsync(HomePageBanner entity)
     {
         var existingObject = await FindAsync(entity.Id);
         existingObject!.Image = entity.Image;
+        DbContext.Entry(existingObject.ImageResources).State = EntityState.Deleted;
+        DbContext.Entry(entity.ImageResources).State = EntityState.Added;
         UpdateContentHelper.UpdateContent(existingObject, entity);
         var result = Update(existingObject);
         return result;
     }
-    
+
 
     public async Task UpdateSequenceBulkAsync(List<HomePageBannerSequence> data)
     {

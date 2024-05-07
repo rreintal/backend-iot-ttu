@@ -4,6 +4,8 @@ using App.DAL.EF;
 using App.Domain;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Public.DTO;
@@ -39,6 +41,7 @@ public class HomePageBannerController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<HomePageBanner> Add([FromBody] HomePageBanner data)
     {
         var contentTypes = await _bll.NewsService.GetContentTypes();
@@ -50,11 +53,12 @@ public class HomePageBannerController : ControllerBase
     }
 
     /// <summary>
-    /// Delete Home Page Banner by id
+    /// ProcessDelete Home Page Banner by id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.HomePageBannerService.FindAsync(id);
@@ -67,28 +71,17 @@ public class HomePageBannerController : ControllerBase
             });
         }
 
-        _bll.HomePageBannerService.Remove(entity);
+        await _bll.HomePageBannerService.RemoveAsync(entity.Id);
         await _bll.SaveChangesAsync();
         return Ok();
     }
-
-    /// <summary>
-    /// Get all Banners with all languages
-    /// </summary>
-    /// <returns></returns>
-    /*
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<HomePageBanner>>> GetAll()
-    {
-        return (await _bll.HomePageBannerService.AllAsync()).Select(e => HomePageBannerMapper.Map(e)).ToList();
-    }
-    */
 
     /// <summary>
     /// Send bulk request to update banner sequence
     /// </summary>
     /// <returns></returns>
     [HttpPut("bulk/sequence")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> UpdateBannerSequenceNumberBulk([FromBody] List<HomePageBannerSequence> data)
     {
         var bllData = data.Select(e => HomePageBannerMapper.Map(e)).ToList();
@@ -103,6 +96,7 @@ public class HomePageBannerController : ControllerBase
     /// <param name="entity"></param>
     /// <returns></returns>
     [HttpPut]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Update([FromBody] HomePageBanner entity)
     {
         var existingEntity = await _bll.HomePageBannerService.FindAsync(entity.Id);

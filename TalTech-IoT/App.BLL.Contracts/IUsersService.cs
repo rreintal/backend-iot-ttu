@@ -5,5 +5,5 @@ namespace App.BLL.Contracts;
 
 public interface IUsersService : IEntityService<AppUser>
 {
-    public Task<IEnumerable<AppUser>> AllAsyncFiltered(bool isDeleted);
+    public Task<IEnumerable<AppUser>> AllAsyncFiltered();
 }

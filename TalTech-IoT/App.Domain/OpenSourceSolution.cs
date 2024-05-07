@@ -9,6 +9,8 @@ public class OpenSourceSolution : DomainEntityId, IContentEntity
     public bool Private { get; set; }
     public string Link { get; set; } = default!;
     public DateTime CreatedAt { get; set; }
+
+    public ICollection<AccessDetails>? AccessDetails { get; set; }
 }
 
 //  Title, description, createdAt, private/public, link

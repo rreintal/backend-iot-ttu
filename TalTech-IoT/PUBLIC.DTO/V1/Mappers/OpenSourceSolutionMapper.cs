@@ -93,7 +93,7 @@ public class OpenSourceSolutionMapper
             Private = entity.Private,
             Link = entity.Link,
             Title = ContentHelper.GetContentValue(entity, ContentTypes.TITLE, languageCulture),
-            Body = ContentHelper.GetContentValue(entity, ContentTypes.BODY, languageCulture)
+            Body = ContentHelper.GetContentValue(entity, ContentTypes.BODY, languageCulture),
         };
     }
 }

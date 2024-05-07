@@ -27,22 +27,14 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
     public DbSet<TopicArea> TopicAreas { get; set; } = default!;
     public DbSet<HasTopicArea> HasTopicAreas { get; set; } = default!;
     public DbSet<AppRefreshToken> AppRefreshTokens { get; set; } = default!;
-    
     public DbSet<PageContent> PageContents { get; set; } = default!;
-
     public DbSet<PartnerImage> PartnerImages { get; set; } = default!;
-
     public DbSet<HomePageBanner> HomePageBanners { get; set; } = default!;
-
     public DbSet<ContactPerson> ContactPersons { get; set; } = default!;
-
     public DbSet<OpenSourceSolution> OpenSourceSolutions { get; set; } = default!;
-
     public DbSet<EmailRecipents> EmailRecipents { get; set; } = default!;
-
     public DbSet<ImageResource> ImageResources { get; set; } = default!;
-
-    private const string TopicAreaUniqueNameExpression = "\"TopicAreaId\" IS NOT NULL";
+    public DbSet<AccessDetails> AccessDetails { get; set; } = default!;
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
         
@@ -103,12 +95,34 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .HasIndex(x => x.FeedPageName)
             .IsUnique();
 
+        builder.Entity<EmailRecipents>()
+            .HasIndex(e => e.Email)
+            .IsUnique();
+
         // disable cascade delete
         foreach (var relationship in builder.Model
                      .GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
         {
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
         }
+        
+        // Identity cascade delete
+        builder.Entity<AppUser>()
+            .HasMany<IdentityUserClaim<Guid>>()
+            .WithOne()
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<AppUser>()
+            .HasMany<AppRefreshToken>()
+            .WithOne()
+            .HasForeignKey(e => e.AppUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Entity<AppRefreshToken>()
+            .HasOne(rt => rt.AppUser) 
+            .WithMany(u => u.AppRefreshTokens)
+            .HasForeignKey(rt => rt.AppUserId);
         
         // adding cascade delete 
         builder.Entity<News>()
@@ -135,6 +149,13 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .HasOne<News>(x => x.News)
             .WithMany(x => x.HasTopicAreas)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<OpenSourceSolution>()
+            .HasMany(s => s.AccessDetails) 
+            .WithOne(ad => ad.OpenSourceSolution)
+            .HasForeignKey(ad => ad.OpenSourceSolutionId)
+            .OnDelete(DeleteBehavior.Cascade);
+            
         
         // adding cascade delete for Project
         builder.Entity<Project>()
@@ -171,5 +192,32 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid,
             .HasMany(x => x.ImageResources)
             .WithOne(x => x.News)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<HomePageBanner>()
+            .HasOne(e => e.ImageResources)
+            .WithOne(e => e.HomePageBanner)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.Entity<PartnerImage>()
+            .HasMany(e => e.ImageResources)
+            .WithOne(b => b.PartnerImage)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<FeedPagePost>()
+            .HasMany(e => e.ImageResources)
+            .WithOne(e => e.FeedPagePost)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<PageContent>()
+            .HasMany(e => e.ImageResources)
+            .WithOne(e => e.PageContent)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<Project>()
+            .HasMany(e => e.ImageResources)
+            .WithOne(e => e.Project)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
     }
 }

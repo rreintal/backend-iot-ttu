@@ -16,8 +16,4 @@
       <ProjectReference Include="..\Base.Domain\Base.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="V1\FilterObjects\" />
-    </ItemGroup>
-
 </Project>

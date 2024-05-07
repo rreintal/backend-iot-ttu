@@ -1,10 +1,10 @@
 using App.BLL.Contracts;
+using App.BLL.Services.ImageStorageService.Models.Delete;
 using App.DAL.Contracts;
 using App.Domain;
 using Base.BLL;
 using Base.Contracts;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+using ImageResource = BLL.DTO.V1.ImageResource;
 
 namespace App.BLL.Services;
 
@@ -23,7 +23,15 @@ public class PageContentService : BaseEntityService<global::BLL.DTO.V1.PageConte
 
     public override global::BLL.DTO.V1.PageContent Add(global::BLL.DTO.V1.PageContent entity)
     {
-        _imageStorageService.ProccessSave(entity);
+        var updateResult = _imageStorageService.ProccessSave(entity);
+        if (updateResult != null && updateResult.SavedLinks != null)
+        {
+            entity.ImageResources = updateResult.SavedLinks.Select(e => new ImageResource()
+            {
+                PageContentId = entity.Id,
+                Link = e
+            }).ToList();
+        }
         return base.Add(entity);
     }
 
@@ -43,12 +51,48 @@ public class PageContentService : BaseEntityService<global::BLL.DTO.V1.PageConte
 
     public async Task<global::BLL.DTO.V1.PageContent?> UpdateAsync(global::BLL.DTO.V1.PageContent entity)
     {
-        _imageStorageService.ProccessUpdate(entity);
+        var existing = await Uow.PageContentRepository.FindAsyncByIdentifierString(entity.PageIdentifier);
+        if (existing == null)
+        {
+            return null;
+        }
+
+        if (existing.ImageResources != null)
+        {
+            entity.ImageResources = existing.ImageResources.Select(e => new ImageResource()
+            {
+                PageContentId = entity.Id,
+                Link = e.Link
+            }).ToList();
+        }
+        
+        var updateResult = _imageStorageService.ProccessUpdate(entity);
+        
+        
+        if (updateResult != null)
+        {
+            if (updateResult.DeletedLinks != null)
+            {
+                var deleteContent = new DeleteContent()
+                {
+                    Links = updateResult.DeletedLinks
+                };
+                _imageStorageService.ProcessDelete(deleteContent);
+            }
+
+            if (updateResult.SavedLinks != null)
+            {
+                entity.ImageResources = updateResult.SavedLinks.Select(e => new ImageResource()
+                {
+                    PageContentId = entity.Id,
+                    Link = e
+                }).ToList();
+            }
+        }
         var domainEntity = Mapper.Map(entity);
         var updatedDomainEntity = await Uow.PageContentRepository.UpdateAsync(domainEntity);
         return Mapper.Map(updatedDomainEntity);
     }
-
     public PageContent Update(PageContent entity)
     {
         throw new NotImplementedException();

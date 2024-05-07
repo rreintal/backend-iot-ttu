@@ -2,7 +2,6 @@ using App.BLL.Contracts;
 using App.DAL.Contracts;
 using Base.BLL;
 using Base.Contracts;
-using DAL.DTO.V1;
 using OpenSourceSolution = BLL.DTO.V1.OpenSourceSolution;
 
 namespace App.BLL.Services;
@@ -29,5 +28,10 @@ public class OpenSourceSolutionService : BaseEntityService<OpenSourceSolution, D
     public async Task<int> GetCount()
     {
         return await _uow.OpenSourceSolutionRepository.GetCount();
+    }
+
+    public async Task<List<OpenSourceSolution>> AllAsyncWithStatistics()
+    {
+        return (await _uow.OpenSourceSolutionRepository.AllAsyncWithStatistics()).Select(e => Mapper.Map(e)).ToList();
     }
 }

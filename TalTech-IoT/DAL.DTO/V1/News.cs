@@ -11,7 +11,7 @@ public class News : DomainEntityId
 
     public DateTime CreatedAt { get; set; }
     public string Author { get; set; } = default!;
-    public string Image { get; set; } = default!;
+    public string? Image { get; set; }
 
-    public string ThumbnailImage { get; set; } = default!;
+    public string? ThumbnailImage { get; set; }
 }

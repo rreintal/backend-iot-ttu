@@ -9,10 +9,14 @@ public interface IProjectsRepository : IBaseTranslateableRepository<App.Domain.P
     public Task<Project?> UpdateAsync(UpdateProject entity);
 
     public Task<global::DAL.DTO.V1.Project?> FindByIdAsyncWithAllTranslations(Guid id);
+
+    public Task<Project?> FindByIdWithImageResources(Guid id);
 }
 
 public interface IProjectsRepositoryCustom<TEntity>
 {
     public Task<int> FindProjectTotalCount();
     public Task<bool> ChangeProjectStatus(Guid id, bool isOngoing);
+
+    public Task IncrementViewCount(Guid id);
 }

@@ -17,5 +17,7 @@ public class GetProject
     public string ProjectManager { get; set; } = default!;
     
     public int Year { get; set; }
+
+    public int ViewCount { get; set; }
     
 }

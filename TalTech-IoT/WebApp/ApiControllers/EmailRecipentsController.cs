@@ -1,8 +1,14 @@
+using System.Net;
+using App.BLL.Contracts;
 using App.DAL.EF;
 using App.Domain;
+using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Public.DTO;
 using Public.DTO.V1;
 
 namespace WebApp.ApiControllers;
@@ -17,11 +23,13 @@ namespace WebApp.ApiControllers;
 public class EmailRecipentsController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly IAppBLL _bll;
 
     /// <inheritdoc />
-    public EmailRecipentsController(AppDbContext context)
+    public EmailRecipentsController(AppDbContext context, IAppBLL bll)
     {
         _context = context;
+        _bll = bll;
     }
 
     /// <summary>
@@ -30,8 +38,27 @@ public class EmailRecipentsController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Add(EmailRecipent data)
     {
+        var isValidEmail = _bll.EmailValidationService.IsValid(data.Email); 
+        if (!isValidEmail)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.InvalidEmail,
+                Status = HttpStatusCode.BadRequest
+            });
+        }   
+        var emailAlreadyTaken = _context.EmailRecipents.Any(e => e.Email == data.Email);
+        if (emailAlreadyTaken)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Message = RestApiErrorMessages.AlreadyExists,
+                Status = HttpStatusCode.BadRequest
+            });
+        }
         var dto = new EmailRecipents()
         {
             FirstName = data.FirstName,
@@ -52,6 +79,7 @@ public class EmailRecipentsController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Remove(Guid id)
     {
         var entity = await _context.EmailRecipents.FirstOrDefaultAsync(entity => entity.Id == id);
@@ -71,6 +99,7 @@ public class EmailRecipentsController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPut]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Update(EmailRecipent data)
     {
         var entity = await _context.EmailRecipents.FirstOrDefaultAsync(entity => entity.Id == data.Id);
@@ -94,6 +123,7 @@ public class EmailRecipentsController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpGet("all")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<List<EmailRecipent>>> GetAll()
     {
         var data = await _context.EmailRecipents.ToListAsync();

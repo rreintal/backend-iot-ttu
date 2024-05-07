@@ -5,5 +5,4 @@ namespace App.BLL.Contracts;
 
 public interface IPartnerImageService : IEntityService<PartnerImage>
 {
-    
 }

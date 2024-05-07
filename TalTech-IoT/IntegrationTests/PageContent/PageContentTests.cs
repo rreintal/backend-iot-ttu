@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Security.Cryptography.X509Certificates;
 using App.Domain;
 using Integration;
 using Public.DTO.V1;
@@ -38,33 +37,18 @@ public class PageContentTests
             PageIdentifier = pageIdentifier,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = bodyET
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = bodyEN
-                }
+                new(culture: LanguageCulture.EST, value: bodyET),
+                new(culture: LanguageCulture.ENG, value: bodyEN)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = titleEN
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = titleET
-                }
+                new(culture: LanguageCulture.ENG, value: titleEN),
+                new(culture: LanguageCulture.EST, value: titleET)
             }
         };
 
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, payload);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         
@@ -96,40 +80,25 @@ public class PageContentTests
             PageIdentifier = pageIdentifier,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = bodyET
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = bodyEN
-                }
+                new(culture: LanguageCulture.EST, value: bodyET),
+                new(culture: LanguageCulture.ENG, value: bodyEN)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = titleEN
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = titleET
-                }
+                new(culture: LanguageCulture.ENG, value: titleEN),
+                new(culture: LanguageCulture.EST, value: titleET)
             }
         };
 
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, payload);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
         
         var getResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{pageIdentifier}");
         Assert.That(getResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        var data = await getResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetPageContent>();
+        var data = await getResponse.Content.ReadFromJsonAsync<GetPageContent>();
         Assert.NotNull(data);
         Assert.That(data!.Title, Is.EqualTo(titleET));
         
@@ -149,39 +118,24 @@ public class PageContentTests
             PageIdentifier = pageIdentifier,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = bodyET
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = bodyEN
-                }
+                new(culture: LanguageCulture.EST, value: bodyET),
+                new(culture: LanguageCulture.ENG, value: bodyEN)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = titleEN
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = titleET
-                }
+                new(culture: LanguageCulture.ENG, value: titleEN),
+                new(culture: LanguageCulture.EST, value: titleET)
             }
         };
 
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, payload);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
         var getResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{pageIdentifier}");
         Assert.That(getResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        var data = await getResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetPageContent>();
+        var data = await getResponse.Content.ReadFromJsonAsync<GetPageContent>();
         Assert.NotNull(getResponse);
         Assert.NotNull(data);
         
@@ -202,39 +156,24 @@ public class PageContentTests
             PageIdentifier = pageIdentifier,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = bodyET
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = bodyEN
-                }
+                new(culture: LanguageCulture.EST, value: bodyET),
+                new(culture: LanguageCulture.ENG, value: bodyEN)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = titleET
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = titleEN
-                }
+                new(culture: LanguageCulture.EST, value: titleET),
+                new(culture: LanguageCulture.ENG, value: titleEN)
             }
         };
 
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, payload);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
         var getResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{pageIdentifier}");
         Assert.That(getResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        var data = await getResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetPageContent>();
+        var data = await getResponse.Content.ReadFromJsonAsync<GetPageContent>();
         Assert.NotNull(data);
         
         Assert.That(data!.Body, Is.EqualTo(bodyET));
@@ -254,39 +193,24 @@ public class PageContentTests
             PageIdentifier = pageIdentifier,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = bodyET
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = bodyEN
-                }
+                new(culture: LanguageCulture.EST, value: bodyET),
+                new(culture: LanguageCulture.ENG, value: bodyEN)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = titleEN
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = titleET
-                }
+                new(culture: LanguageCulture.ENG, value: titleEN),
+                new(culture: LanguageCulture.EST, value: titleET)
             }
         };
 
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, payload);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
         var getResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{pageIdentifier}");
         Assert.That(getResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        var data = await getResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetPageContent>();
+        var data = await getResponse.Content.ReadFromJsonAsync<GetPageContent>();
         Assert.NotNull(data);
         
         Assert.That(data!.Body, Is.EqualTo(bodyEN));
@@ -306,33 +230,18 @@ public class PageContentTests
             PageIdentifier = pageIdentifier,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = bodyET
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = bodyEN
-                }
+                new(culture: LanguageCulture.EST, value: bodyET),
+                new(culture: LanguageCulture.ENG, value: bodyEN)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = titleEN
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = titleET
-                }
+                new(culture: LanguageCulture.ENG, value: titleEN),
+                new(culture: LanguageCulture.EST, value: titleET)
             }
         };
 
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, payload);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
@@ -342,29 +251,13 @@ public class PageContentTests
             PageIdentifier = pageIdentifier,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = bodyET
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = updatedEnBody
-                }
+                new(culture: LanguageCulture.EST, value: bodyET),
+                new(culture: LanguageCulture.ENG, value: updatedEnBody)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = titleEN
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = titleET
-                }
+                new(culture: LanguageCulture.ENG, value: titleEN),
+                new(culture: LanguageCulture.EST, value: titleET)
             }
         };
         
@@ -373,7 +266,7 @@ public class PageContentTests
 
         var getUpdatedResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{pageIdentifier}");
         Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        var data = await getUpdatedResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetPageContent>();
+        var data = await getUpdatedResponse.Content.ReadFromJsonAsync<GetPageContent>();
         Assert.NotNull(data);
         Assert.That(data!.Body, Is.EqualTo(updatedEnBody));
         
@@ -393,33 +286,18 @@ public class PageContentTests
             PageIdentifier = pageIdentifier,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = bodyET
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = bodyEN
-                }
+                new(culture: LanguageCulture.EST, value: bodyET),
+                new(culture: LanguageCulture.ENG, value: bodyEN)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = titleEN
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = titleET
-                }
+                new(culture: LanguageCulture.ENG, value: titleEN),
+                new(culture: LanguageCulture.EST, value: titleET)
             }
         };
 
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, payload);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
@@ -429,29 +307,13 @@ public class PageContentTests
             PageIdentifier = pageIdentifier,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = updatedEtBody
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = bodyEN
-                }
+                new(culture: LanguageCulture.EST, value: updatedEtBody),
+                new(culture: LanguageCulture.ENG, value: bodyEN)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = titleEN
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = titleET
-                }
+                new(culture: LanguageCulture.ENG, value: titleEN),
+                new(culture: LanguageCulture.EST, value: titleET)
             }
         };
         
@@ -460,7 +322,7 @@ public class PageContentTests
 
         var getUpdatedResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{pageIdentifier}");
         Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        var data = await getUpdatedResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetPageContent>();
+        var data = await getUpdatedResponse.Content.ReadFromJsonAsync<GetPageContent>();
         Assert.NotNull(data);
         Assert.That(data!.Body, Is.EqualTo(updatedEtBody));
         
@@ -480,33 +342,18 @@ public class PageContentTests
             PageIdentifier = pageIdentifier,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = bodyET
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = bodyEN
-                }
+                new(culture: LanguageCulture.EST, value: bodyET),
+                new(culture: LanguageCulture.ENG, value: bodyEN)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = titleEN
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = titleET
-                }
+                new(culture: LanguageCulture.ENG, value: titleEN),
+                new(culture: LanguageCulture.EST, value: titleET)
             }
         };
 
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, payload);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
@@ -516,29 +363,13 @@ public class PageContentTests
             PageIdentifier = pageIdentifier,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = bodyET
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = bodyEN
-                }
+                new(culture: LanguageCulture.EST, value: bodyET),
+                new(culture: LanguageCulture.ENG, value: bodyEN)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = updatedEnTitle
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = titleET
-                }
+                new(culture: LanguageCulture.ENG, value: updatedEnTitle),
+                new(culture: LanguageCulture.EST, value: titleET)
             }
         };
         
@@ -547,7 +378,7 @@ public class PageContentTests
 
         var getUpdatedResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{pageIdentifier}");
         Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        var data = await getUpdatedResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetPageContent>();
+        var data = await getUpdatedResponse.Content.ReadFromJsonAsync<GetPageContent>();
         Assert.NotNull(data);
         Assert.That(data!.Title, Is.EqualTo(updatedEnTitle));
         
@@ -567,33 +398,18 @@ public class PageContentTests
             PageIdentifier = pageIdentifier,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = bodyET
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = bodyEN
-                }
+                new(culture: LanguageCulture.EST, value: bodyET),
+                new(culture: LanguageCulture.ENG, value: bodyEN)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = titleEN
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = titleET
-                }
+                new(culture: LanguageCulture.ENG, value: titleEN),
+                new(culture: LanguageCulture.EST, value: titleET)
             }
         };
 
         var client = _factory!.CreateClient();
+        await TestHelpers.Authenticate(client, TestHelpers.MakeAdminLoginModel());
         var response = await client.PostAsJsonAsync(BASE_URL, payload);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
@@ -603,29 +419,13 @@ public class PageContentTests
             PageIdentifier = pageIdentifier,
             Body = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = bodyET
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = bodyEN
-                }
+                new(culture: LanguageCulture.EST, value: bodyET),
+                new(culture: LanguageCulture.ENG, value: bodyEN)
             },
             Title = new List<ContentDto>()
             {
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.ENG,
-                    Value = titleEN
-                },
-                new ContentDto()
-                {
-                    Culture = LanguageCulture.EST,
-                    Value = updatedEtTitle
-                }
+                new(culture: LanguageCulture.ENG, value: titleEN),
+                new(culture: LanguageCulture.EST, value: updatedEtTitle)
             }
         };
         
@@ -634,7 +434,7 @@ public class PageContentTests
 
         var getUpdatedResponse = await client.GetAsync($"{BASE_URL}/{languageCulture}/{pageIdentifier}");
         Assert.That(updateResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        var data = await getUpdatedResponse.Content.ReadFromJsonAsync<Public.DTO.V1.GetPageContent>();
+        var data = await getUpdatedResponse.Content.ReadFromJsonAsync<GetPageContent>();
         Assert.NotNull(data);
         Assert.That(data!.Title, Is.EqualTo(updatedEtTitle));
         

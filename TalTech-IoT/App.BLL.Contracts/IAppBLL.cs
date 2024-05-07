@@ -31,5 +31,8 @@ public interface IAppBLL : IBaseUOW
     IFeedPageService FeedPageService { get; }
     
     IOpenSourceSolutionService OpenSourceSolutionService { get; }
+    IEmailValidationService EmailValidationService { get; }
+    
+    IAccessDetailsService AccessDetailsService { get; }
     
 }

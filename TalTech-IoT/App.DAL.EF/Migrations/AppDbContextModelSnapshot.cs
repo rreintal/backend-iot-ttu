@@ -22,6 +22,29 @@ namespace App.DAL.EF.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("App.Domain.AccessDetails", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("OpenSourceSolutionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OpenSourceSolutionId");
+
+                    b.ToTable("AccessDetails");
+                });
+
             modelBuilder.Entity("App.Domain.ContactPerson", b =>
                 {
                     b.Property<Guid>("Id")
@@ -137,6 +160,9 @@ namespace App.DAL.EF.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("EmailRecipents");
                 });
@@ -386,8 +412,11 @@ namespace App.DAL.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<Guid?>("FeedPagePostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("HomePageBannerId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Link")
                         .IsRequired()
@@ -399,14 +428,24 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid?>("PageContentId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("PartnerImageId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("ProjectId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FeedPagePostId");
+
+                    b.HasIndex("HomePageBannerId")
+                        .IsUnique();
+
                     b.HasIndex("NewsId");
 
                     b.HasIndex("PageContentId");
+
+                    b.HasIndex("PartnerImageId");
 
                     b.HasIndex("ProjectId");
 
@@ -432,6 +471,9 @@ namespace App.DAL.EF.Migrations
                     b.Property<string>("ThumbnailImage")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("ViewCount")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -510,6 +552,9 @@ namespace App.DAL.EF.Migrations
 
                     b.Property<double>("ProjectVolume")
                         .HasColumnType("double precision");
+
+                    b.Property<int>("ViewCount")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Year")
                         .HasColumnType("integer");
@@ -661,6 +706,17 @@ namespace App.DAL.EF.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("App.Domain.AccessDetails", b =>
+                {
+                    b.HasOne("App.Domain.OpenSourceSolution", "OpenSourceSolution")
+                        .WithMany("AccessDetails")
+                        .HasForeignKey("OpenSourceSolutionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OpenSourceSolution");
+                });
+
             modelBuilder.Entity("App.Domain.Content", b =>
                 {
                     b.HasOne("App.Domain.ContactPerson", "ContactPerson")
@@ -770,7 +826,7 @@ namespace App.DAL.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("App.Domain.TopicArea", "TopicArea")
-                        .WithMany()
+                        .WithMany("HasTopicAreas")
                         .HasForeignKey("TopicAreaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -787,7 +843,7 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.Identity.AppUser", "AppUser")
                         .WithMany("AppRefreshTokens")
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AppUser");
@@ -814,6 +870,16 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("App.Domain.ImageResource", b =>
                 {
+                    b.HasOne("App.Domain.FeedPagePost", "FeedPagePost")
+                        .WithMany("ImageResources")
+                        .HasForeignKey("FeedPagePostId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("App.Domain.HomePageBanner", "HomePageBanner")
+                        .WithOne("ImageResources")
+                        .HasForeignKey("App.Domain.ImageResource", "HomePageBannerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("App.Domain.News", "News")
                         .WithMany("ImageResources")
                         .HasForeignKey("NewsId")
@@ -822,16 +888,27 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.PageContent", "PageContent")
                         .WithMany("ImageResources")
                         .HasForeignKey("PageContentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("App.Domain.PartnerImage", "PartnerImage")
+                        .WithMany("ImageResources")
+                        .HasForeignKey("PartnerImageId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("App.Domain.Project", "Project")
                         .WithMany("ImageResources")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("FeedPagePost");
+
+                    b.Navigation("HomePageBanner");
 
                     b.Navigation("News");
 
                     b.Navigation("PageContent");
+
+                    b.Navigation("PartnerImage");
 
                     b.Navigation("Project");
                 });
@@ -871,7 +948,7 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -913,11 +990,15 @@ namespace App.DAL.EF.Migrations
             modelBuilder.Entity("App.Domain.FeedPagePost", b =>
                 {
                     b.Navigation("Content");
+
+                    b.Navigation("ImageResources");
                 });
 
             modelBuilder.Entity("App.Domain.HomePageBanner", b =>
                 {
                     b.Navigation("Content");
+
+                    b.Navigation("ImageResources");
                 });
 
             modelBuilder.Entity("App.Domain.Identity.AppRole", b =>
@@ -943,6 +1024,8 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("App.Domain.OpenSourceSolution", b =>
                 {
+                    b.Navigation("AccessDetails");
+
                     b.Navigation("Content");
                 });
 
@@ -953,11 +1036,21 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("ImageResources");
                 });
 
+            modelBuilder.Entity("App.Domain.PartnerImage", b =>
+                {
+                    b.Navigation("ImageResources");
+                });
+
             modelBuilder.Entity("App.Domain.Project", b =>
                 {
                     b.Navigation("Content");
 
                     b.Navigation("ImageResources");
+                });
+
+            modelBuilder.Entity("App.Domain.TopicArea", b =>
+                {
+                    b.Navigation("HasTopicAreas");
                 });
 
             modelBuilder.Entity("App.Domain.Translations.LanguageString", b =>

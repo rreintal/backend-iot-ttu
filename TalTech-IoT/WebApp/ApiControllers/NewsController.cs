@@ -3,8 +3,11 @@ using System.Net.Mime;
 using App.BLL.Contracts;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
+using Public.DTO.ApiExceptions;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
 using Public.DTO.V1;
@@ -36,16 +39,30 @@ public class NewsController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Produces(MediaTypeNames.Application.Json)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(News), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(RestApiResponse), StatusCodes.Status409Conflict)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<News>> Add([FromBody] PostNewsDto payload)
     {
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = CreateNewsMapper.Map(payload, types);
-        var bllResult = await _bll.NewsService.AddAsync(bllEntity);
-        var result = ReturnNewsMapper.Map(bllResult);
-        await _bll.SaveChangesAsync();
-        return Ok(result) ;
+        try
+        {
+            var bllResult = await _bll.NewsService.AddAsync(bllEntity);
+            var result = ReturnNewsMapper.Map(bllResult);
+            await _bll.SaveChangesAsync();
+            return Ok(result);
+        }
+        catch (TopicAreasNotUnique ex)
+        {
+            return Conflict(new RestApiResponse()
+            {
+                Message = "TOPIC_AREAS_NOT_UNIQUE",
+                Status = HttpStatusCode.Conflict
+            });
+        }
+        
     }
 
     /// <summary>
@@ -87,6 +104,8 @@ public class NewsController : ControllerBase
     public async Task<ActionResult<News>> GetById(Guid id, string languageCulture)
     {
         var bllEntity = await _bll.NewsService.FindAsync(id, languageCulture);
+        await IncreaseViewCount(id);
+        
         if (bllEntity == null)
         {
             return NotFound(new RestApiResponse()
@@ -96,8 +115,19 @@ public class NewsController : ControllerBase
             });
             
         }
+        
         var res = ReturnNewsMapper.Map(bllEntity);
         return Ok(res);
+    }
+
+    private async Task IncreaseViewCount(Guid id)
+    {
+        var isClientHeaderPresent = HttpContext.Request.Headers.ContainsKey("IOT-App");
+        if (isClientHeaderPresent)
+        {
+            await _bll.NewsService.IncrementViewCount(id);
+            await _bll.SaveChangesAsync();
+        }
     }
 
     /// <summary>
@@ -106,32 +136,43 @@ public class NewsController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPut]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<News>> Update([FromBody] Public.DTO.V1.UpdateNews data)
     {
-        // TODO - updating is with both languages!!!
-        // TODO: TopicArea update not working!
-        var contentTypes = await _bll.NewsService.GetContentTypes();
-        var bllEntity = UpdateNewsMapper.Map(data, contentTypes);
-        var result =  await _bll.NewsService.UpdateAsync(bllEntity);
-        if (result == null)
+        try
         {
-            return NotFound(new RestApiResponse()
+            var contentTypes = await _bll.NewsService.GetContentTypes();
+            var bllEntity = UpdateNewsMapper.Map(data, contentTypes);
+            var result =  await _bll.NewsService.UpdateAsync(bllEntity);
+            if (result == null)
             {
-                Message = RestApiErrorMessages.GeneralNotFound,
-                Status = HttpStatusCode.NotFound
+                return NotFound(new RestApiResponse()
+                {
+                    Message = RestApiErrorMessages.GeneralNotFound,
+                    Status = HttpStatusCode.NotFound
+                });
+            }
+
+            await _bll.SaveChangesAsync();
+            return Ok();   
+        }
+        catch (TopicAreasNotUnique ex)
+        {
+            return Conflict(new RestApiResponse()
+            {
+                Message = "TOPIC_AREAS_NOT_UNIQUE",
+                Status = HttpStatusCode.Conflict
             });
         }
-
-        await _bll.SaveChangesAsync();
-        return Ok();
     }
 
     /// <summary>
-    /// Delete news by id
+    /// ProcessDelete news by id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.NewsService.FindByIdAllTranslationsAsync(id);

@@ -42,10 +42,9 @@ public class UsersRepository : EFBaseRepository<AppUser, AppDbContext>, IUsersRe
         return result;
     }
 
-    public async Task<IEnumerable<AppUser>> AllAsyncFiltered(bool isDeleted)
+    public async Task<IEnumerable<AppUser>> AllAsyncFiltered()
     {
         var res = (await DbContext.Users
-            .Where(u => u.Deleted == isDeleted)
             .Include(u => u.UserRoles)
             .ThenInclude(ur => ur.AppRole)
             .Select(user => new Domain.Identity.AppUser()
@@ -57,7 +56,6 @@ public class UsersRepository : EFBaseRepository<AppUser, AppDbContext>, IUsersRe
                 Email = user.Email,
                 EmailConfirmed = user.EmailConfirmed,
                 LockoutEnabled = user.LockoutEnabled,
-                Deleted = user.Deleted,
                 UserRoles = user.UserRoles.Select(ur => new AppUserRole
                 {
                     AppRole = new AppRole

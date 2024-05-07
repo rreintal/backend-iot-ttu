@@ -1,19 +1,14 @@
 using System.Text;
 using App.BLL;
 using App.BLL.Contracts;
-using App.BLL.Services;
 using App.BLL.Services.ImageStorageService;
 using App.DAL.Contracts;
 using App.DAL.EF;
 using App.DAL.EF.Seeding;
-using App.Domain;
 using App.Domain.Identity;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Server.HttpSys;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -22,12 +17,13 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApp;
 
 var builder = WebApplication.CreateBuilder(args);
+// SSL Certificates
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews(cfg =>
 {
     cfg.Filters.Add(new MyAPIExceptionFilter());
-    
 });
 
 // Dependency injection
@@ -52,31 +48,24 @@ builder.Services.AddCors(options =>
     } );
 });
 
-//DockerDbConnection 
-//DevDbConnection
-string? databaseUrl = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 
-var connectionString = "";
-if (string.IsNullOrWhiteSpace(databaseUrl))
+
+string? databaseUrl = Environment.GetEnvironmentVariable(EnvironmentVariableConstants.DB_CONNECTION);
+if (databaseUrl == null)
 {
-    //databaseUrl = "DevDbConnection";
-    //connectionString = builder.Configuration.GetConnectionString(databaseUrl) ??
-                       //throw new InvalidOperationException("Connection string not found");
-    //connectionString = "Server=localhost:5432;Database=iot-ttu;Username=postgres;Password=postgres;";
-}
-else
-{
-    connectionString = databaseUrl;
+    throw new InvalidOperationException("Database connection string is null.");
 }
 
 builder.Services
     .AddDbContext<AppDbContext>(options =>
     {
-        options.UseNpgsql(connectionString, options =>
+        options.UseNpgsql(databaseUrl, options =>
         {
             options.CommandTimeout(60);
         }).EnableSensitiveDataLogging();
     });
+
+
 
 builder.Services.AddIdentity<AppUser, AppRole>(
         options =>
@@ -84,6 +73,14 @@ builder.Services.AddIdentity<AppUser, AppRole>(
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
+var JWT_ISSUER = Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_ISSUER);
+var JWT_AUDIENCE = Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_AUDIENCE);
+var JWT_KEY = Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JWT_KEY);
+
+if (JWT_AUDIENCE == null || JWT_ISSUER == null || JWT_KEY == null)
+{
+    throw new InvalidOperationException("JWT Environemnt variables are missing");
+}
 
 // Authentication
 // ----------------------------
@@ -95,15 +92,14 @@ builder.Services
         options.SaveToken = false;
         options.TokenValidationParameters = new TokenValidationParameters()
         {
-            ValidIssuer = builder.Configuration.GetValue<string>(StartupConfigConstants.JWT_ISSUER),
-            ValidAudience = builder.Configuration.GetValue<string>(StartupConfigConstants.JWT_AUDIENCE),
+            ValidIssuer = JWT_ISSUER,
+            ValidAudience = JWT_AUDIENCE,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>(StartupConfigConstants.JWT_KEY)!)),
+                Encoding.UTF8.GetBytes(JWT_KEY)),
             ClockSkew = TimeSpan.Zero
         };
     });
 
-builder.Services.AddAuthorization();
 
 // ----------------------------
 // Automapper
@@ -180,13 +176,12 @@ app.UseSwaggerUI(options =>
     }
 });
 
+app.UseHsts();
 app.UseHttpsRedirection();
 app.UseCors("develop");
 app.UseRouting();
 app.UseAuthorization(); 
 app.UseStaticFiles();
-
-
 
 
 

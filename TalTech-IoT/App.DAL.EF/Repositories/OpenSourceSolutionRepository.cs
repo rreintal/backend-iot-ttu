@@ -75,4 +75,11 @@ public class OpenSourceSolutionRepository : EFBaseRepository<Domain.OpenSourceSo
     {
         return await DbSet.CountAsync();
     }
+
+    public async Task<List<Domain.OpenSourceSolution>> AllAsyncWithStatistics()
+    {
+        return await DbSet.Include(e => e.AccessDetails)
+            .IncludeContentWithTranslation()
+            .ToListAsync();
+    }
 }

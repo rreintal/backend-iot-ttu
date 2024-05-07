@@ -2,9 +2,10 @@ using System.Net;
 using App.BLL.Contracts;
 using App.Domain.Constants;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Public.DTO;
-using Public.DTO.Identity;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
 
@@ -32,6 +33,7 @@ public class ContactPersonController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<Public.DTO.V1.ContactPerson>> Add([FromBody] Public.DTO.V1.ContactPerson data)
     {
         var types = await _bll.NewsService.GetContentTypes();
@@ -43,11 +45,12 @@ public class ContactPersonController : ControllerBase
     }
 
     /// <summary>
-    /// Delete contact person by id
+    /// ProcessDelete contact person by id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
         var entity = await _bll.ContactPersonService.FindAsync(id);
@@ -129,6 +132,7 @@ public class ContactPersonController : ControllerBase
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpPut]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<ContactPerson>> Update(ContactPerson entity)
     {
         var isEntityExists = await _bll.ContactPersonService.FindAsync(entity.Id) != null;

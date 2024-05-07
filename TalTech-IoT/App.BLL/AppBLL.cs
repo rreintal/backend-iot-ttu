@@ -80,7 +80,7 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
     private IFeedPageCategoryService? _feedPageCategoryService;
 
     public IFeedPagePostService FeedPagePostService => _feedPagePostService ??=
-        new FeedPagePostService(Uow, new BaseMapper<FeedPagePost, Domain.FeedPagePost>(_mapper));
+        new FeedPagePostService(Uow, new BaseMapper<FeedPagePost, Domain.FeedPagePost>(_mapper), _imageStorageService);
 
     private IFeedPagePostService? _feedPagePostService;
 
@@ -94,5 +94,15 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
             new BaseMapper<OpenSourceSolution, Domain.OpenSourceSolution>(_mapper));
 
     private IOpenSourceSolutionService? _openSourceSolutionService;
+
+    public IEmailValidationService EmailValidationService =>
+        _emailValidationService ??= new EmailValidationService();
+    
+    private IEmailValidationService? _emailValidationService;
+
+    public IAccessDetailsService AccessDetailsService =>
+        _accessDetailsService ??= new AccessDetailsService(Uow, new BaseMapper<AccessDetails, App.Domain.AccessDetails>(_mapper));
+
+    private IAccessDetailsService? _accessDetailsService;
 
 }
