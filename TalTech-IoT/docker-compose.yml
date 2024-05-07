@@ -17,8 +17,6 @@ services:
       - IOT_JWT_ISSUER=${IOT_JWT_ISSUER}
       - IOT_JWT_AUDIENCE=${IOT_JWT_AUDIENCE}
       - JWT_KEY=${JWT_KEY}
-      - CERT_PATH=${CERT_PATH}
-      - CERT_PASSWORD=${CERT_PASSWORD}
       - APP_EMAIL=${APP_EMAIL}
     volumes:
       - type: bind
