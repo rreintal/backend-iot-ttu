@@ -29,6 +29,7 @@ services:
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - PGDATA=${DB_DATA_PATH}
     logging:
       options:
         max-size: 10m
