@@ -1,9 +1,11 @@
 using System.Net.Mail;
 using App.BLL;
 using App.BLL.Contracts;
+using App.DAL.EF;
 using App.Domain;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Public.DTO.V1;
 
 namespace WebApp.ApiControllers;
@@ -13,15 +15,17 @@ namespace WebApp.ApiControllers;
 [ApiController]
 public class MailController : ControllerBase
 {
-    private IAppBLL _Bll { get; set; }
+    private IAppBLL _Bll { get; }
+    private AppDbContext _context { get; } // TODO: make service for EmailRecipents!!
     
     /// <summary>
     /// 
     /// </summary>
     /// <param name="bll"></param>
-    public MailController(IAppBLL bll)
+    public MailController(IAppBLL bll, AppDbContext context)
     {
         _Bll = bll;
+        _context = context;
     }
 
     /// <summary>
@@ -30,9 +34,10 @@ public class MailController : ControllerBase
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPost]
-    public ActionResult Contact([FromBody] ContactForm data)
+    public async Task<ActionResult> Contact([FromBody] ContactForm data, [FromQuery] Guid? fromNews)
     {
-        _Bll.MailService.SendContactUs(data);
+        var recipents = await _context.EmailRecipents.ToListAsync();
+        _Bll.MailService.SendContactUs(data, recipents, fromNews);
         return Ok();
     }
 }
