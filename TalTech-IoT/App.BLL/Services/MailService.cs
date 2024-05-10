@@ -48,7 +48,7 @@ public class MailService : IMailService
 
     private SmtpClient CreateClient()
     {
-        var client = new SmtpClient("10.123.1.1", 25);
+        var client = new SmtpClient("10.123.0.1", 25);
         client.UseDefaultCredentials = false;
         client.DeliveryMethod = SmtpDeliveryMethod.Network;
         client.EnableSsl = false;

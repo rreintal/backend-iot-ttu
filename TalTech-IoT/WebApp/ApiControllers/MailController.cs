@@ -1,8 +1,5 @@
-using System.Net.Mail;
-using App.BLL;
 using App.BLL.Contracts;
 using App.DAL.EF;
-using App.Domain;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
