@@ -17,10 +17,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApp;
 
 var builder = WebApplication.CreateBuilder(args);
-// SSL Certificates
 
-
-// Add services to the container.
 builder.Services.AddControllersWithViews(cfg =>
 {
     cfg.Filters.Add(new MyAPIExceptionFilter());
@@ -40,12 +37,14 @@ builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
 
 builder.Services.AddCors(options =>
 {
+    /*
     options.AddPolicy("develop", policyBuilder =>
     {
         policyBuilder.AllowAnyMethod();
         policyBuilder.AllowAnyOrigin();
         policyBuilder.AllowAnyHeader();
     } );
+    */
 });
 
 
@@ -135,18 +134,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<IdentityOptions>(options =>
 { // Password settings
-    options.Password.RequireDigit = false;
-    options.Password.RequiredLength = 1;
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 8;
     options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
+    options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = false;
     options.Password.RequiredUniqueChars = 1;
     options.User.RequireUniqueEmail = true;
-    // Lockout settings
-    //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
-    //options.Lockout.MaxFailedAccessAttempts = 10;
-    //options.Lockout.AllowedForNewUsers = true;
-    // User settings
 });
 
 
@@ -160,7 +154,7 @@ await AppDataSeeding.SetupAppData(app.Services, app.Configuration);
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    //app.UseHsts();
 }
 
 // Swagger //
@@ -178,7 +172,7 @@ app.UseSwaggerUI(options =>
 
 app.UseHsts();
 app.UseHttpsRedirection();
-app.UseCors("develop");
+//app.UseCors("develop");
 app.UseRouting();
 app.UseAuthorization(); 
 app.UseStaticFiles();
