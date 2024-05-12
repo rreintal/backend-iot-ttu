@@ -56,6 +56,7 @@ public class PageContentService : BaseEntityService<global::BLL.DTO.V1.PageConte
             return null;
         }
 
+        // THIS CAN BE REFACTORED //
         if (existing.ImageResources != null)
         {
             entity.ImageResources = existing.ImageResources.Select(e => new ImageResource()

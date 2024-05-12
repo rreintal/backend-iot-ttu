@@ -25,6 +25,9 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
     {
         // CDN stuff
         var result = _imageStorageService.ProccessSave(entity);
+        
+        // THIS CAN BE REFACTORED //
+        // Maybe _imageStorageService.UpdateImageResources(BLLEntity, serviceResult)
         if (result != null && result.SavedLinks != null)
         {
             entity.ImageResources = result.SavedLinks.Select(e => new ImageResource()
@@ -33,6 +36,7 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
                 Link = e
             }).ToList();
         }
+        // THIS CAN BE REFACTORED //
         
         var domainEntity = Mapper.Map(entity);
         var dalResult = Uow.ProjectsRepository.Add(domainEntity);
@@ -47,6 +51,7 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
             return null;
         }
 
+        // THIS CAN BE REFACTORED //
         if (existingEntity.ImageResources != null)
         {
             entity.ImageResources = existingEntity.ImageResources.Select(e => new ImageResource()
@@ -58,7 +63,6 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
         
         var updateResult = _imageStorageService.ProccessUpdate(entity);
         _imageStorageService.HandleEntityImageResources(entity, updateResult);
-        
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.UpdateProject>(entity);
         var updatedDalEntity = await Uow.ProjectsRepository.UpdateAsync(dalEntity);
         var result = _mapper.Map<Project>(updatedDalEntity);
@@ -72,7 +76,7 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
         {
             return null;
         }
-
+        // THIS CAN BE REFACTORED //
         if (existingEntity.ImageResources != null)
         {
             var deleteContent = new DeleteContent()
@@ -81,7 +85,7 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
             };
             _imageStorageService.ProcessDelete(deleteContent);
         }
-        
+        // THIS CAN BE REFACTORED //
         return await base.RemoveAsync(id);
     }
 

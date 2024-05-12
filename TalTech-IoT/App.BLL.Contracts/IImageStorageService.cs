@@ -9,7 +9,9 @@ public interface IImageStorageService
 {
     public void HandleEntityImageResources<T>(T entity, UpdateImageResources updateDataResult)
         where T : IContainsImageResource, IDomainEntityId;
-    public SaveImageResources? ProccessSave(Object entity);
+    
+    public SaveImageResources? ProccessSave(Object entity, bool test = false);
+
 
     public UpdateImageResources? ProccessUpdate(Object entity);
     public bool ProcessDelete(DeleteContent content);

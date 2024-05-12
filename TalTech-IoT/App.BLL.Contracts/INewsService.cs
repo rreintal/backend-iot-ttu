@@ -11,11 +11,11 @@ public interface INewsService : ITranslateableEntityService<News>, INewsReposito
     public Task<List<ContentType>> GetContentTypes();
     
     public Task<IEnumerable<News>> AllAsyncFiltered(NewsFilterSet filterSet, string languageCulture);
-    public Task<News?> UpdateAsync(News entity);
+    public Task<News?> UpdateAsync(News entity, bool test);
 
-    public Task<News> AddAsync(News entity);
+    public Task<News> AddAsync(News entity, bool test);
 
-    public Task<News> RemoveAsync(News entity);
+    public Task<News> RemoveAsync(News entity, bool test);
 
     public Task<News?> FindByIdAllTranslationsAsync(Guid id);
     

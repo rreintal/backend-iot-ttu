@@ -16,6 +16,7 @@ public class UpdateNews : DomainEntityId
     [IncludesAllCultures]
     public List<ContentDto> Title { get; set; } = default!;
     
+    [Required]
     public string? Image { get; set; }
     
     public List<TopicArea> TopicAreas { get; set; } = default!;

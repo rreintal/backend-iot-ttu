@@ -50,7 +50,8 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
         return DbSet
             .Where(x => x.Id == id)
             .Include(e => e.ImageResources)
-            .IncludeContentWithTranslation().FirstOrDefaultAsync();
+            .IncludeContentWithTranslation()
+            .FirstOrDefaultAsync();
     } 
     
     public async Task<HomePageBanner?> FindAsyncTracking(Guid Id)

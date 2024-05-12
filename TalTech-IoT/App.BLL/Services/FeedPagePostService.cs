@@ -74,6 +74,7 @@ public class FeedPagePostService : BaseEntityService<global::BLL.DTO.V1.FeedPage
         var existingEntity = await _uow.FeedPagePostRepository.FindAsync(entity.Id);
 
         if (existingEntity != null && existingEntity.ImageResources != null)
+
         {
             entity.ImageResources = existingEntity.ImageResources.Select(e => new ImageResource()
             {

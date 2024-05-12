@@ -176,7 +176,6 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
             existingDomainObject.HasTopicAreas.Add(newItem);
         }
         
-        
         ImageResourcesHelper.HandleImageResourcesStates(newDomainObject, existingDomainObject, DbContext);
         return existingDomainObject;
     }

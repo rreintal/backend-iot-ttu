@@ -20,8 +20,8 @@ public class ImageStorageService : IImageStorageService
 {
     private ImageExtractor _imageExtractor { get; }
     private ImageStorageExecutor _imageStorageExecutor { get; }
-
     private string IMAGE_PUBLIC_LOCATION { get; set; }
+
 
     public ImageStorageService()
     {
@@ -32,6 +32,7 @@ public class ImageStorageService : IImageStorageService
         }
 
         IMAGE_PUBLIC_LOCATION = imagesLocation!;
+
 
         _imageExtractor = new ImageExtractor();
         _imageStorageExecutor = new ImageStorageExecutor();
@@ -64,7 +65,7 @@ public class ImageStorageService : IImageStorageService
         }
     }
 
-    public SaveImageResources? ProccessSave(object entity)
+    public SaveImageResources? ProccessSave(object entity, bool test = false)
     {
         var isContentEntity = InstanceOf(entity, typeof(IContentEntity));
         var isImageEntity = InstanceOf(entity, typeof(IContainsImage));
@@ -118,7 +119,7 @@ public class ImageStorageService : IImageStorageService
             data.Items.Add(thumbnailPayload);
         }
 
-        var result = Save(data);
+        var result = Save(data, test);
 
         if (result != null)
         {
@@ -211,8 +212,7 @@ public class ImageStorageService : IImageStorageService
         {
             var imageEntity = entity as IContainsImage;
             var image = imageEntity!.Image;
-            // Because for News update, image can be null!
-            if (image != null)
+            if (_imageExtractor.IsBase64String(image))
             {
                 var imagePayload = new UpdateItem()
                 {
@@ -221,10 +221,6 @@ public class ImageStorageService : IImageStorageService
                     IsAlreadyBase64 = true
                 };
                 data.Items.Add(imagePayload);
-            }
-            else
-            {
-                isImageEntity = false;
             }
         }
 
@@ -300,8 +296,8 @@ public class ImageStorageService : IImageStorageService
         return null;
 
     }
-
-    private SaveResult Save(SaveContent data)
+    
+    public SaveResult? Save(SaveContent data, bool test = false)
     {
         var CDNPayload = new CDNSaveImages()
         {
@@ -360,7 +356,7 @@ public class ImageStorageService : IImageStorageService
         
         // Send items to CDN for save
         // TODO: check here if there is even anything to save!!!!
-        var saveResponseData = _imageStorageExecutor.Upload(CDNPayload); // TODO: TESTS - siia lisa parameeter "test" mis on boolean, kas salvestab FS või ei
+        var saveResponseData = _imageStorageExecutor.Upload(CDNPayload, test); // TODO: TESTS - siia lisa parameeter "test" mis on boolean, kas salvestab FS või ei
 
         
 
@@ -476,7 +472,6 @@ public class ImageStorageService : IImageStorageService
             // are stored in the list. So just checking if the links in new body are different from before is not possible.
             // If the duplicated list is empty in the end it means all of the existing images are still used.
             
-            // NEW SOLUTION DOWN
             List<string> linksToRemove = new List<string>();
 
             foreach (var updateItem in data.Items)
@@ -551,8 +546,9 @@ public class ImageStorageService : IImageStorageService
         return null;
     }
     
+    // *********
     // Helpers
-    
+    // *********
     private bool IsSaveResultEmpty(List<CDNSaveResult> items)
     {
         foreach (var set in items)

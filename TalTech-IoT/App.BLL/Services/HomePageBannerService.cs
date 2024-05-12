@@ -103,6 +103,10 @@ public class HomePageBannerService : BaseEntityService<HomePageBanner, Domain.Ho
             };
             domainObject.Image = item;
         }
+        else
+        {
+            domainObject.ImageResources = existing.ImageResources;
+        }
         
         
         
