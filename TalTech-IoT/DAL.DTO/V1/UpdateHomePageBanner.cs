@@ -20,8 +20,6 @@ public class UpdateHomePageBanner : DomainEntityId
         {
             return Title.Where(x => x.Culture == languageCulture).First().Value;
         }
-
-        // TODO - trhow an exception
         return "INAVLID CONTENT TYPE!";
     }
 }

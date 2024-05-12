@@ -56,7 +56,6 @@ public class PartnerImageController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> Delete(Guid id)
     {
-        // TODO: sequence number unique?
         
         var entity = await _bll.PartnerImageService.FindAsync(id);
         if (entity == null)

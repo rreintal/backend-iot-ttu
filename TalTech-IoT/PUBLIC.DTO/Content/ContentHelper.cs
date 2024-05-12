@@ -103,13 +103,6 @@ public abstract class ContentHelper
         
         result.TranslationValue = value;
     }
-
-    public static void SetBaseLanguage(IContentEntity entity,string contentType, string value)
-    {
-        var result = entity.Content.First(c => c.ContentType!.Name == contentType)
-            .LanguageString;
-        result.Value = value;
-    }
     
     public static string? GetContentValue(IContentEntity entity, string contentType, string languageCulture)
     {
@@ -123,26 +116,4 @@ public abstract class ContentHelper
         }
         return result;
     }
-
-    public static string? GetContentValue(BLL.DTO.V1.Content content, string languageCulture)
-    {
-        try
-        {
-            return content.LanguageString.LanguageStringTranslations.Where(t => t.LanguageCulture == languageCulture)
-                .First()
-                .TranslationValue;
-        }
-        catch
-        {
-            Console.WriteLine($"EXCEPTION CAUGHT IN CONTENTHELPER - could not read content with languageculture {languageCulture}");
-            return null;
-        }
-        
-    }
-
-    public static string GetContentBaseValue(BLL.DTO.V1.Content content)
-    {
-        return content.LanguageString.Value;
-    }
-
 }

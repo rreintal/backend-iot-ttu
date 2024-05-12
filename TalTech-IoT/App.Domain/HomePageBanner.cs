@@ -8,7 +8,7 @@ public class HomePageBanner : DomainEntityId, IContentEntity
     public ICollection<Content> Content { get; set; } = default!;
     public string Image { get; set; } = default!;
 
-    public int SequenceNumber { get; set; } = default!;
+    public int SequenceNumber { get; set; }
     
     public ImageResource? ImageResources { get; set; }
     

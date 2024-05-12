@@ -22,7 +22,6 @@ public class HomePageBannerService : BaseEntityService<HomePageBanner, Domain.Ho
         _mapper = autoMapper;
         _imageStorageService = new ImageStorageService.ImageStorageService();
     }
-    // TODO: here do CDN magic!
     public async Task<IEnumerable<HomePageBanner>> AllAsync(string? languageCulture)
     {
         return (await _uow.HomePageBannerRepository.AllAsync(languageCulture)).Select(e => Mapper.Map(e));

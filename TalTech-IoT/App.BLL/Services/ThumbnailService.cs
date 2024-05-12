@@ -45,7 +45,6 @@ public class ThumbnailService : IThumbnailService
     }
     catch (Exception e)
     {
-        // TODO: logger
         Console.WriteLine("Failed to compress image! Exception: " + e.Message);
     }
 

@@ -375,7 +375,6 @@ public class UsersController : ControllerBase
         
         await _context.SaveChangesAsync();
 
-        // TODO: HACK!!!
         var userRoles = await _userManager.GetRolesAsync(appUser);
         if (userRoles.Count != 1)
         {
@@ -480,7 +479,6 @@ public class UsersController : ControllerBase
 
         if (result.Succeeded)
         {
-            // TODO: generate new jwt
             var jwt = await MakeJWT(user);
             
             return Ok(jwt);

@@ -127,12 +127,12 @@ public class ImageStorageService : IImageStorageService
             {
                 var etBody = result.Items.FirstOrDefault(e => e.Sequence == 1)?.Content;
                 var enBody = result.Items.FirstOrDefault(e => e.Sequence == 2)?.Content;
-                if (enBody != null) // TODO: add && imageEntity != null
+                if (enBody != null) 
                 {
                     var contentEntity = entity as IContentEntity;
                     ContentHelper.SetContentTranslationValue(contentEntity, ContentTypes.BODY, LanguageCulture.ENG, enBody);
                 }
-                if (etBody != null) // TODO: add && imageEntity != null
+                if (etBody != null) 
                 {
                     var contentEntity = entity as IContentEntity;
                     ContentHelper.SetContentTranslationValue(contentEntity, ContentTypes.BODY, LanguageCulture.EST, etBody);

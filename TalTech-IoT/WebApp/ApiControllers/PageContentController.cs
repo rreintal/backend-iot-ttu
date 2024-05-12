@@ -112,7 +112,6 @@ public class PageContentController : ControllerBase
         var contentTypes = await _bll.NewsService.GetContentTypes();
         var mappedEntity = CreatePageContentMapper.Map(content, contentTypes);
 
-        // TODO: HACK!
         await _bll.PageContentService.UpdateAsync(mappedEntity);
         await _bll.SaveChangesAsync();
         return Ok();

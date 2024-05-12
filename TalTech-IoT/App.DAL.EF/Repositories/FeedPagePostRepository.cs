@@ -63,7 +63,6 @@ public class FeedPagePostRepository : EFBaseRepository<FeedPagePost, AppDbContex
             ImageResourcesHelper.HandleImageResourcesStates(entity, existingObject, DbContext);
         }
         
-        // TODO: Check if category exists!! Do this in BLL, and throw an error if not!
         var categoryExists = await DbContext.FeedPageCategories.FindAsync(entity.FeedPageCategoryId) != null;
         if (categoryExists)
         {

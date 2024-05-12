@@ -17,7 +17,6 @@ public class FeedPageCategoryMapper
         {
             Content = new List<BLL.DTO.V1.Content>() { titleContent },
             FeedPageId = entity.FeedPageId
-            // TODO: add posts!
         };
     }
     public static BLL.DTO.V1.FeedPageCategory MapToUpdate(Public.DTO.V1.FeedPage.FeedPageCategory entity, List<ContentType> contentTypes, Guid id)
@@ -30,7 +29,6 @@ public class FeedPageCategoryMapper
             Id = id,
             Content = new List<BLL.DTO.V1.Content>() { titleContent },
             FeedPageId = entity.FeedPageId
-            // TODO: add posts!
         };
     }
 
@@ -46,12 +44,11 @@ public class FeedPageCategoryMapper
         };
     }
 
-    public static Public.DTO.V1.FeedPage.FeedPageCategory Map(BLL.DTO.V1.FeedPageCategory entity)
+    public static FeedPage.FeedPageCategory Map(BLL.DTO.V1.FeedPageCategory entity)
     {
         // ALL LANGS
-        return new Public.DTO.V1.FeedPage.FeedPageCategory()
+        return new FeedPage.FeedPageCategory()
         {
-            // TODO: add post
             Id = entity.Id,
             FeedPageId = entity.FeedPageId,
             Title = LanguageCulture.ALL_LANGUAGES.Select(lang =>
@@ -66,11 +63,10 @@ public class FeedPageCategoryMapper
         };
     }
     
-    public static Public.DTO.V1.FeedPage.FeedPageCategory Map(BLL.DTO.V1.FeedPageCategory entity, string language)
+    public static FeedPage.FeedPageCategory Map(BLL.DTO.V1.FeedPageCategory entity, string language)
     {
-        return new Public.DTO.V1.FeedPage.FeedPageCategory()
+        return new FeedPage.FeedPageCategory()
         {
-            // TODO: add post
             Id = entity.Id,
             FeedPageId = entity.FeedPageId,
             Title = new List<ContentDto>()

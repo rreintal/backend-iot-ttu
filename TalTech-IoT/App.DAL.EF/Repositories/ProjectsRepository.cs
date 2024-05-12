@@ -88,8 +88,6 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
 
     public async Task<bool> ChangeProjectStatus(Guid id, bool isOngoing)
     {
-        // TODO: better approach but how to check if save is successful?
-         // TODO: concurrency issues, if something is saved at the same time, then it will be > 0??
         var entity = new Project() { Id = id, IsOngoing = isOngoing};
         DbSet.Attach(entity);
         DbSet.Entry(entity).Property(x => x.IsOngoing).IsModified = true;

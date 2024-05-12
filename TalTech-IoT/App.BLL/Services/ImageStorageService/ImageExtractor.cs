@@ -7,9 +7,7 @@ public class ImageExtractor
 {
     private const string PATTERN_IMAGE_NAME_FROM_LINK = @"[^\/]+\.(\w+)$";
     private const string PATTERN_BASE64 = @"^data:image\/(png|jpeg|jpg|webp);base64,([\/+A-Za-z0-9]+={0,2})$";
-
-
-    // TODO: nullable, but will never return null?
+    
     public ImageExtractorResult? CreatePayloadFromBase64(string base64)
     {
         Regex regex = new Regex(PATTERN_BASE64);
@@ -28,7 +26,6 @@ public class ImageExtractor
             };
 
         }
-        // TODO: add logger here that it failed
         return null;
     }
 

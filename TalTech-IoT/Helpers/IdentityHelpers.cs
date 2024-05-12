@@ -1,5 +1,4 @@
 ﻿namespace Helpers;
-
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -37,14 +36,14 @@ public static class IdentityHelpers
         SecurityToken validatedToken;
         try
         {
-            var principal = tokenHandler.ValidateToken(jwt, validationParameters, out validatedToken);
+            tokenHandler.ValidateToken(jwt, validationParameters, out validatedToken);
         }
         catch (SecurityTokenExpiredException e)
         {
             // is it ok to be expired? since we are refreshing expired jwt
             return ignoreExpiration;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             // something else was wrong
             return false;

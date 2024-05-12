@@ -9,7 +9,6 @@ public class Project : DomainEntityIdMetaData, IContentEntity, IContainsImageRes
     public double ProjectVolume { get; set; } 
     public string ProjectManager { get; set; } = default!;
 
-    // TODO: add CreatedAt
     public bool IsOngoing { get; set; }
     
     public ICollection<ImageResource>? ImageResources { get; set; }

@@ -26,7 +26,6 @@ public class Identity
     }
     
     
-    // TODO: problem because the registration needs roleId too!
     [Test, Order(1)]
     public async Task Register_NewUser_ReturnsOk()
     {

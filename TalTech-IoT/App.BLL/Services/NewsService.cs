@@ -137,10 +137,9 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             entity.ThumbnailImage = _thumbnailService.Compress(entity.Image);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            // TODO: thumbnail!
-            // Return 500
+            // TODO: FIXME
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
@@ -162,7 +161,6 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
 
     public async Task<IEnumerable<News>> AllAsyncFiltered(NewsFilterSet filterSet, string languageString)
     {
-        // TODO: add this method to common interface w service/repo
         return (await Uow.NewsRepository.AllAsyncFiltered(filterSet, languageString)).Select(e => _mapper.Map<News>(e));
     }
     
@@ -194,7 +192,6 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         await Uow.NewsRepository.IncrementViewCount(id);
     }
 
-    // TODO: Move this to another repository
     public async Task<List<ContentType>> GetContentTypes()
     {
         var titleContentType = await Uow.ContentTypesRepository.FindByName(ContentTypes.TITLE);
