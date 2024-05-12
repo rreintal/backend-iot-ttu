@@ -1,10 +1,9 @@
-using System.ComponentModel.DataAnnotations;
 using App.Domain.Contracts;
 using Base.Domain;
 
 namespace App.Domain;
 
-public class Project : DomainEntityIdMetaData, IContentEntity
+public class Project : DomainEntityIdMetaData, IContentEntity, IContainsImageResource
 {
     public int Year { get; set; } 
     public double ProjectVolume { get; set; } 

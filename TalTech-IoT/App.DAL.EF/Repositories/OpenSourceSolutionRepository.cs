@@ -66,7 +66,6 @@ public class OpenSourceSolutionRepository : EFBaseRepository<Domain.OpenSourceSo
 
     public override Domain.OpenSourceSolution Remove(Domain.OpenSourceSolution entity)
     {
-        // TODO: wtf?
         DbContext.Entry(entity).State = EntityState.Deleted;
         return base.Remove(entity);
     }

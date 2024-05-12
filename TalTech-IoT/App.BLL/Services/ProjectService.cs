@@ -61,26 +61,7 @@ public class ProjectService : BaseEntityService<Project, Domain.Project, IProjec
         }
         
         var updateResult = _imageStorageService.ProccessUpdate(entity);
-        if (updateResult != null)
-        {
-            if (updateResult.DeletedLinks != null)
-            {
-                var deleteContent = new DeleteContent()
-                {
-                    Links = updateResult.DeletedLinks
-                };
-                _imageStorageService.ProcessDelete(deleteContent);
-            }
-
-            if (updateResult.SavedLinks != null)
-            {
-                entity.ImageResources = updateResult.SavedLinks.Select(e => new ImageResource()
-                {
-                    ProjectId = entity.Id,
-                    Link = e
-                }).ToList();
-            }
-        }
+        _imageStorageService.HandleEntityImageResources(entity, updateResult);
         
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.UpdateProject>(entity);
         var updatedDalEntity = await Uow.ProjectsRepository.UpdateAsync(dalEntity);

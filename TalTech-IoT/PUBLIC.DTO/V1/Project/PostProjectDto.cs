@@ -7,8 +7,7 @@ namespace Public.DTO.V1;
 public class PostProjectDto
 {
     [Required(ErrorMessage = RestApiErrorMessages.MissingProjectYear)]
-    //[Range(1000, 3000)] // ??
-    public int Year { get; set; } = default!;
+    public int Year { get; set; }
 
     [Required(ErrorMessage = RestApiErrorMessages.MissingProjectManager)]
     [MinLength(2)]
@@ -20,16 +19,12 @@ public class PostProjectDto
     [Range(0, 1000000000)]
     public double ProjectVolume { get; set; }
     
-    [MinLength(2, ErrorMessage = RestApiErrorMessages.GeneralMissingTranslationValue)]
+    [IncludesAllCultures]
     public List<ContentDto> Title { get; set; } = default!;
     
-    [MinLength(2, ErrorMessage = RestApiErrorMessages.GeneralMissingTranslationValue)]
+    [IncludesAllCultures]
     public List<ContentDto> Body { get; set; } = default!;
 
     [Required]
-    public bool IsOngoing { get; set; } = default!;
-
-
-    // TODO - seda pole ju siin vaja, sest date pannakse alles siis kui db salvestan
-    //public DateTime CreatedAt { get; set; } = default!;
+    public bool IsOngoing { get; set; }
 }

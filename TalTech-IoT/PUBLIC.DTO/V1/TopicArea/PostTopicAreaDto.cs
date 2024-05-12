@@ -6,11 +6,8 @@ namespace Public.DTO.V1;
 
 public class PostTopicAreaDto
 {
-    public Guid? ParentTopicId { get; set; }
-
-    //[ValidCultures]
-    //[IncludesAllCultures]
-    [MinLength(2, ErrorMessage = RestApiErrorMessages.GeneralMissingTranslationValue)]
+    
+    [IncludesAllCultures]
     public List<ContentDto> Name { get; set; } = default!;
     
 }

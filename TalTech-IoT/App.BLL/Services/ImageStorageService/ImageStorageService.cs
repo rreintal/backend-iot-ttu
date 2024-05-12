@@ -8,19 +8,21 @@ using App.Domain;
 using BLL.DTO.ContentHelper;
 using BLL.DTO.Contracts;
 using BLL.DTO.ImageService;
+using Contracts;
 using HtmlAgilityPack;
 using Microsoft.IdentityModel.Tokens;
 using Public.DTO.Content;
 
 namespace App.BLL.Services.ImageStorageService;
 
- 
+
 public class ImageStorageService : IImageStorageService
 {
     private ImageExtractor _imageExtractor { get; }
     private ImageStorageExecutor _imageStorageExecutor { get; }
-    
-    private string IMAGE_PUBLIC_LOCATION { get; set; } = "http://185.170.213.135:5052/images/"; // TODO: use env variable!
+
+    private string IMAGE_PUBLIC_LOCATION { get; set; } =
+        "http://185.170.213.135:5052/images/"; // TODO: use env variable!
 
     public ImageStorageService()
     {
@@ -29,10 +31,38 @@ public class ImageStorageService : IImageStorageService
         {
             throw new Exception("ImageStorageService: Environemnt variable: IMAGES_LOCATION - is not set or is empty!");
         }
+
         IMAGE_PUBLIC_LOCATION = imagesLocation;
-        
+
         _imageExtractor = new ImageExtractor();
         _imageStorageExecutor = new ImageStorageExecutor();
+    }
+
+    public void HandleEntityImageResources<T>(T entity, UpdateImageResources updateDataResult)
+        where T : IContainsImageResource, IDomainEntityId
+    {
+        if (updateDataResult != null)
+        {
+            entity.ImageResources = entity.ImageResources
+                .Where(image => updateDataResult.DeletedLinks == null || !updateDataResult.DeletedLinks.Contains(image.Link))
+                .ToList();
+
+            // Add the SavedLinks
+            if (updateDataResult.SavedLinks != null)
+            {
+                foreach (var link in updateDataResult.SavedLinks)
+                {
+                    entity.ImageResources.Add(new global::BLL.DTO.V1.ImageResource() { Link = link, NewsId = entity.Id});
+                }
+            }
+
+            if (updateDataResult.DeletedLinks != null)
+            {
+                DeleteContent data = new DeleteContent();
+                data.Links = updateDataResult.DeletedLinks;
+                ProcessDelete(data);
+            }
+        }
     }
 
     public SaveImageResources? ProccessSave(object entity)
@@ -446,19 +476,6 @@ public class ImageStorageService : IImageStorageService
             // Reason for this is that: all the links which are associated with some entity (thumbnail, image, content images etc.)
             // are stored in the list. So just checking if the links in new body are different from before is not possible.
             // If the duplicated list is empty in the end it means all of the existing images are still used.
-            
-            /* OLD - Issue that modifying collection while iterating over
-            foreach (var updateItem in data.Items)
-            {
-                data.ExistingImageLinks.ForEach(existingLink =>
-                {
-                    if (updateItem.Content.Contains(existingLink))
-                    {
-                        existingLinksDuplicate.Remove(existingLink);
-                    }
-                });
-            }
-            */
             
             // NEW SOLUTION DOWN
             List<string> linksToRemove = new List<string>();

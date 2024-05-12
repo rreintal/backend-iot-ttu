@@ -106,11 +106,6 @@ public class HomePageBannerRepository : EFBaseRepository<HomePageBanner, AppDbCo
             {
                 banner.SequenceNumber = item.SequenceNumber;
             }
-            else
-            {
-                
-                // TODO: handle case when banner with this ID was not found, return error
-            }
         }
         
     }

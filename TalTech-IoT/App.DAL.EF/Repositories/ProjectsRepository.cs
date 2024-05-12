@@ -1,5 +1,6 @@
 using App.DAL.Contracts;
 using App.DAL.EF.DbExtensions;
+using App.DAL.EF.Helpers;
 using App.Domain.Helpers;
 using AutoMapper;
 using Base.DAL.EF;
@@ -35,41 +36,7 @@ public class ProjectsRepository : EFBaseRepository<App.Domain.Project, AppDbCont
         {
             existingDomainObject.Year = entity.Year.Value;
         }
-
-        if (entity.ImageResources != null)
-        {
-            if (existingDomainObject.ImageResources != null)
-            {
-                // Mark as deleted, because just clearing removes the NewsId but its still in the DB!
-                DbContext.ImageResources.RemoveRange(existingDomainObject.ImageResources);
-                
-                
-                foreach (var imageResource in entity.ImageResources)
-                {
-                    var item = new Domain.ImageResource()
-                    {
-                        ProjectId = existingDomainObject.Id,
-                        Link = imageResource.Link,
-                    };
-                    DbContext.Entry(item).State = EntityState.Added;
-                    existingDomainObject.ImageResources.Add(item);
-                }
-            }
-            else
-            {
-                existingDomainObject.ImageResources = new List<Domain.ImageResource>();
-                foreach (var imageResource in entity.ImageResources)
-                {
-                    var item = new Domain.ImageResource()
-                    {
-                        ProjectId = existingDomainObject.Id,
-                        Link = imageResource.Link,
-                    };
-                    DbContext.Entry(item).State = EntityState.Added;
-                }
-            }
-        }   
-
+        ImageResourcesHelper.HandleImageResourcesStates(newDomainObject, existingDomainObject, DbContext);
         var updateResult = Update(existingDomainObject);
         var result = _mapper.Map<Project>(updateResult);
         return result;

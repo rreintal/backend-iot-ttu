@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.JavaScript;
 using App.BLL.Contracts;
 using App.BLL.Services.ImageStorageService.Models.Delete;
 using App.DAL.Contracts;
@@ -56,19 +57,8 @@ public class FeedPagePostService : BaseEntityService<global::BLL.DTO.V1.FeedPage
             return null;
         }
 
-        if (entity.ImageResources != null)
-        {
-            var deleteContent = new DeleteContent()
-            {
-                Links = new List<string>()
-            };
-            foreach (var resource in entity.ImageResources)
-            {
-                deleteContent.Links.Add(resource.Link);
-            }
-
-            _imageStorageService.ProcessDelete(deleteContent);
-        }
+        var linksToDelete = entity.ImageResources?.Select(e => e.Link).ToList();
+        _imageStorageService.ProcessDelete(new DeleteContent() { Links = linksToDelete });
         return await base.RemoveAsync(id);
     }
 
@@ -91,32 +81,7 @@ public class FeedPagePostService : BaseEntityService<global::BLL.DTO.V1.FeedPage
         }
 
         var updateResult = _imageStorageService.ProccessUpdate(entity);
-        if (updateResult != null)
-        {
-            if (updateResult.DeletedLinks != null)
-            {
-                var deleteContent = new DeleteContent()
-                {
-                    Links = new List<string>()
-                };
-                foreach (var deletedLink in updateResult.DeletedLinks)
-                {
-                    deleteContent.Links.Add(deletedLink);
-                }
-
-                _imageStorageService.ProcessDelete(deleteContent);
-            }
-
-            if (updateResult.SavedLinks != null)
-            {
-                entity.ImageResources = updateResult.SavedLinks.Select(e => new ImageResource()
-                {
-                    FeedPagePostId = entity.Id,
-                    Link = e
-                }).ToList();
-            }
-        }
-        
+        _imageStorageService.HandleEntityImageResources(entity, updateResult);
         var domainObject = Mapper.Map(entity);
         var domainResult = await _uow.FeedPagePostRepository.UpdateAsync(domainObject);
         return Mapper.Map(domainResult)!;

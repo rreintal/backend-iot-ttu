@@ -195,7 +195,7 @@ public class UsersController : ControllerBase
             return BadRequest(new RestApiResponse()
             {
                 Status = HttpStatusCode.NotFound,
-                Message = RestApiErrorMessages.UserGeneralError // TODO: for testing!
+                Message = RestApiErrorMessages.UserGeneralError
             });
         }
         
@@ -707,9 +707,6 @@ public class UsersController : ControllerBase
                         Message = "registration failed!"
                     });
             }
-
-            // TODO: send email, if email is valid then saveChanges!!
-            // TODO: does it save user even before saving changes?
             
             _bll.MailService.SendRegistration(register.Email, register.Username, RandomUserPassword, languageCulture);
             await _context.SaveChangesAsync();

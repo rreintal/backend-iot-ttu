@@ -75,8 +75,9 @@ public class HomePageBannerService : BaseEntityService<HomePageBanner, Domain.Ho
         {
             return null;
         }
-        var domainObject = _mapper.Map<Domain.HomePageBanner>(entity);
-
+        
+        var domainObject = _mapper.Map<Domain.HomePageBanner>(entity); 
+        
         entity.ImageResources = new ImageResource()
         {
             HomePageBannerId = entity.Id,

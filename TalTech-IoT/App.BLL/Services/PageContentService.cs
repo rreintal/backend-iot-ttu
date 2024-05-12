@@ -67,28 +67,7 @@ public class PageContentService : BaseEntityService<global::BLL.DTO.V1.PageConte
         }
         
         var updateResult = _imageStorageService.ProccessUpdate(entity);
-        
-        
-        if (updateResult != null)
-        {
-            if (updateResult.DeletedLinks != null)
-            {
-                var deleteContent = new DeleteContent()
-                {
-                    Links = updateResult.DeletedLinks
-                };
-                _imageStorageService.ProcessDelete(deleteContent);
-            }
-
-            if (updateResult.SavedLinks != null)
-            {
-                entity.ImageResources = updateResult.SavedLinks.Select(e => new ImageResource()
-                {
-                    PageContentId = entity.Id,
-                    Link = e
-                }).ToList();
-            }
-        }
+        _imageStorageService.HandleEntityImageResources(entity, updateResult);
         var domainEntity = Mapper.Map(entity);
         var updatedDomainEntity = await Uow.PageContentRepository.UpdateAsync(domainEntity);
         return Mapper.Map(updatedDomainEntity);

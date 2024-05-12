@@ -25,14 +25,12 @@ namespace WebApp.ApiControllers;
 public class HomePageBannerController : ControllerBase
 {
 
-    private readonly AppDbContext _context;
     private readonly IAppBLL _bll;
 
     /// <inheritdoc />
-    public HomePageBannerController(IAppBLL bll, AppDbContext context)
+    public HomePageBannerController(IAppBLL bll)
     {
         _bll = bll;
-        _context = context;
     }
 
     /// <summary>

@@ -3,7 +3,7 @@ using Base.Domain;
 
 namespace App.Domain;
 
-public class FeedPagePost : DomainEntityId, IContentEntity
+public class FeedPagePost : DomainEntityId, IContentEntity, IContainsImageResource
 {
     public ICollection<Content> Content { get; set; } = default!;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

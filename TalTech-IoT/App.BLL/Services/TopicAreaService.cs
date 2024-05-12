@@ -38,9 +38,4 @@ public class TopicAreaService : BaseEntityService<TopicArea, Domain.TopicArea, I
     {
         return Uow.TopicAreaRepository.GetTopicAreasWithCount(languageCulture);
     }
-
-    public override TopicArea Remove(TopicArea entity)
-    {
-        return base.Remove(entity);
-    }
 }

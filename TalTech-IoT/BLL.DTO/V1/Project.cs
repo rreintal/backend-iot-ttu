@@ -1,8 +1,6 @@
 using Base.Domain;
 using BLL.DTO.ContentHelper;
 using BLL.DTO.Contracts;
-using Contracts;
-
 namespace BLL.DTO.V1;
 
 public class Project : DomainEntityId, IContentEntity, IContainsImageResource

@@ -34,23 +34,6 @@ public class TopicAreasController : ControllerBase
     /// </summary>
     /// <param name="data"></param>
     /// <response code="409">TOPIC_AREA_CREATE_PARENT_DOES_NOT_EXIST, TOPIC_AREA_CREATE_NAME_EXISTS</response>
-    /// <remarks>
-    /// Sample request:
-    ///
-    /// {
-    ///     "parentTopicId" : "parent-id",
-    ///     "name" : [
-    ///         {
-    ///             "Value": "Robootika",
-    ///             "Culutre": "et"
-    ///         },
-    ///         {
-    ///             "Value": "Robotics",
-    ///             "Culutre": "en"
-    ///         }
-    ///         ]
-    /// }
-    /// </remarks>
     /// <returns></returns>
     [HttpPost]
     [Produces(MediaTypeNames.Application.Json)]

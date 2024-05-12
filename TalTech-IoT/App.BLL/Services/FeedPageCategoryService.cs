@@ -35,7 +35,6 @@ public class FeedPageCategoryService : BaseEntityService<global::BLL.DTO.V1.Feed
 
     public async Task<global::BLL.DTO.V1.FeedPageCategory> UpdateAsync(global::BLL.DTO.V1.FeedPageCategory entity)
     {
-        
         var domainObject = Mapper.Map(entity);
         var domainResult = await _uow.FeedPageCategoryRepository.UpdateAsync(domainObject);
         return Mapper.Map(domainResult)!;

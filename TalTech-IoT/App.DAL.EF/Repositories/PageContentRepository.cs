@@ -1,5 +1,6 @@
 using App.DAL.Contracts;
 using App.DAL.EF.DbExtensions;
+using App.DAL.EF.Helpers;
 using App.Domain;
 using App.Domain.Helpers;
 using AutoMapper;
@@ -51,38 +52,7 @@ public class PageContentRepository : EFBaseRepository<App.Domain.PageContent, Ap
             return null;
         }
 
-        if (entity.ImageResources != null)
-        {
-            if (existingObject.ImageResources != null)
-            {
-                DbContext.ImageResources.RemoveRange(existingObject.ImageResources);
-
-                foreach (var imageResource in entity.ImageResources)
-                {
-                    var item = new ImageResource()
-                    {
-                        PageContentId = existingObject.Id,
-                        Link = imageResource.Link
-                    };
-
-                    DbContext.Entry(item).State = EntityState.Added;
-                }
-            }
-            else
-            {
-                existingObject.ImageResources = new List<ImageResource>();
-                foreach (var imageResource in entity.ImageResources)
-                {
-                    var item = new ImageResource()
-                    {
-                        PageContentId = existingObject.Id,
-                        Link = imageResource.Link
-                    };
-                    DbContext.Entry(item).State = EntityState.Added;
-                }
-            }
-        }
-        
+        ImageResourcesHelper.HandleImageResourcesStates(entity, existingObject, DbContext);
         UpdateContentHelper.UpdateContent(existingObject, entity);
         var updatedObject = Update(existingObject);
         return updatedObject;

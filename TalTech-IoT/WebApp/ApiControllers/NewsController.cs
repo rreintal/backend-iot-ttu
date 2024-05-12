@@ -42,7 +42,7 @@ public class NewsController : ControllerBase
     [ProducesResponseType(typeof(News), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(RestApiResponse), StatusCodes.Status409Conflict)]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<News>> Add([FromBody] PostNewsDto payload)
     {
         var types = await _bll.NewsService.GetContentTypes();

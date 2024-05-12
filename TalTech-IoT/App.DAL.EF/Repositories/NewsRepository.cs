@@ -1,13 +1,12 @@
 using App.DAL.Contracts;
 using App.DAL.EF.DbExtensions;
+using App.DAL.EF.Helpers;
 using App.Domain;
 using App.Domain.Helpers;
 using AutoMapper;
 using Base.DAL.EF;
-using DAL.DTO.V1;
 using Microsoft.EntityFrameworkCore;
 using Public.DTO;
-using Public.DTO.Content;
 using ImageResource = App.Domain.ImageResource;
 using News = DAL.DTO.V1.News;
 
@@ -18,10 +17,6 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
     private const int DEFAULT_PAGE_SIZE = 5;
 
     public NewsRepository(AppDbContext dataContext, IMapper mapper) : base(dataContext, mapper) {}
-    
-    // TODO - TEE DAL OBJECT; et HasTopicArea -> TopicArea?
-    // TODO - mapi juba query ajal ära!!!
-    // TODO - kas on üldse DAL objecte vaja!? ei ole, kogu mappimine käib BLL -> Public!
     public override App.Domain.News Add(Domain.News entity)
     {
         
@@ -182,64 +177,9 @@ public class NewsRepository : EFBaseRepository<App.Domain.News, AppDbContext>, I
         }
         
         
-        // TODO: refactor!
-        if (newDomainObject.ImageResources != null)
-        {
-            if (existingDomainObject.ImageResources != null)
-            {
-                // Mark as deleted, because just clearing removes the NewsId but its still in the DB!
-                DbContext.ImageResources.RemoveRange(existingDomainObject.ImageResources);
-                
-                
-                foreach (var imageResource in newDomainObject.ImageResources)
-                {
-                    var item = new ImageResource()
-                    {
-                        NewsId = existingDomainObject.Id,
-                        Link = imageResource.Link,
-                    };
-                    DbContext.Entry(item).State = EntityState.Added;
-                    existingDomainObject.ImageResources.Add(item);
-                }
-            }
-            else
-            {
-                existingDomainObject.ImageResources = new List<ImageResource>();
-                foreach (var imageResource in newDomainObject.ImageResources)
-                {
-                    var item = new ImageResource()
-                    {
-                        NewsId = existingDomainObject.Id,
-                        Link = imageResource.Link,
-                    };
-                    DbContext.Entry(item).State = EntityState.Added;
-                }
-            }
-        }
-        
-
+        ImageResourcesHelper.HandleImageResourcesStates(newDomainObject, existingDomainObject, DbContext);
         return existingDomainObject;
     }
-    
-    
-    /*
-    public async Task<App.Domain.News?> Update(News dalEntity)
-    {
-        var existingDomainObject = await FindByIdWithAllTranslationsAsyncTracking(dalEntity.Id);
-        if (existingDomainObject == null)
-        {
-            return null;
-        }
-
-        var newEntity = _mapper.Map<Domain.News>(dalEntity);
-        UpdateContentHelper.UpdateContent(existingDomainObject, newEntity);
-
-        // Assume _mapper.Map has been configured to appropriately handle all necessary properties, including collections.
-        //_mapper.Map(dalEntity, existingDomainObject);
-        
-        return existingDomainObject;
-    }
-    */
     
     public async Task<App.Domain.News?> FindByIdWithAllTranslationsAsyncTracking(Guid Id)
     {

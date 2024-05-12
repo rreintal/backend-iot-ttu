@@ -40,10 +40,8 @@ public class TopicAreaRepository : EFBaseRepository<App.Domain.TopicArea, AppDbC
     }
     
     
-    // TODO - eraldi klass/objekt, mis seda kontrollib!
     private bool TopicAreaWithThisNameExists(TopicArea entity)
     {
-        // TODO : REFACTORI KERGEMAKS!! EI OLE VAJA LISTI SAADA!
         var entityTranslationValues = entity.LanguageString!.LanguageStringTranslations
             .Select(elt => elt.TranslationValue)
             .ToList();
@@ -58,7 +56,6 @@ public class TopicAreaRepository : EFBaseRepository<App.Domain.TopicArea, AppDbC
     
     public override TopicArea Add(TopicArea entity)
     {
-        // TODO - tee mingi index, value pealt äkki ja kasuta seda?
         if (TopicAreaWithThisNameExists(entity))
         {
             throw new DbValidationExceptions()

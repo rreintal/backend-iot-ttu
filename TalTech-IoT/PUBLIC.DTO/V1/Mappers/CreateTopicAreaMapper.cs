@@ -1,17 +1,11 @@
 using App.Domain;
-using AutoMapper;
-using Base.DAL;
 using BLL.DTO.V1;
 using LanguageStringTranslation = BLL.DTO.V1.LanguageStringTranslation;
 
 namespace Public.DTO.V1.Mappers;
 
-public class CreateTopicAreaMapper : BaseMapper<Public.DTO.V1.PostTopicAreaDto, BLL.DTO.V1.TopicArea>
+public static class CreateTopicAreaMapper
 {
-    public CreateTopicAreaMapper(IMapper mapper) : base(mapper)
-    {
-    }
-
     public static BLL.DTO.V1.TopicArea Map(PostTopicAreaDto data)
     {
         var et = data.Name.First(x => x.Culture == LanguageCulture.EST);
@@ -52,12 +46,7 @@ public class CreateTopicAreaMapper : BaseMapper<Public.DTO.V1.PostTopicAreaDto, 
             LanguageString = languageString,
             LanguageStringId = languageStringId
         };
-
-        // If it has also Parent Topic
-        if (data.ParentTopicId != null)
-        {
-            result.ParentTopicAreaId = data.ParentTopicId;
-        }
+        
 
         return result;
     }

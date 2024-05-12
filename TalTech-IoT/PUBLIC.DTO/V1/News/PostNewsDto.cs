@@ -6,12 +6,10 @@ namespace Public.DTO.V1;
 
 public class PostNewsDto
 {
-    //[IncludesAllCultures]
-    //[ValidCultures]
+    [IncludesAllCultures]
     public List<ContentDto> Title { get; set; } = default!;
     
-    //[IncludesAllCultures]
-    //[ValidCultures]
+    [IncludesAllCultures]
     public List<ContentDto> Body { get; set; } = default!;
 
     [Required]

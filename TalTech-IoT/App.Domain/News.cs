@@ -3,7 +3,7 @@ using Base.Domain;
 
 namespace App.Domain;
 
-public class News : DomainEntityIdMetaData, IHasTopicAreaEntity, IContentEntity
+public class News : DomainEntityIdMetaData, IHasTopicAreaEntity, IContentEntity, IContainsImageResource
 {
     public ICollection<Content> Content { get; set; } = default!;
     public ICollection<HasTopicArea> HasTopicAreas { get; set; } = new List<HasTopicArea>();

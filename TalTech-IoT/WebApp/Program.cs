@@ -37,14 +37,14 @@ builder.Services.AddScoped<IImageStorageService, ImageStorageService>();
 
 builder.Services.AddCors(options =>
 {
-    /*
+    
     options.AddPolicy("develop", policyBuilder =>
     {
         policyBuilder.AllowAnyMethod();
         policyBuilder.AllowAnyOrigin();
         policyBuilder.AllowAnyHeader();
     } );
-    */
+    
 });
 
 
@@ -172,7 +172,7 @@ app.UseSwaggerUI(options =>
 
 app.UseHsts();
 app.UseHttpsRedirection();
-//app.UseCors("develop");
+app.UseCors("develop");
 app.UseRouting();
 app.UseAuthorization(); 
 app.UseStaticFiles();

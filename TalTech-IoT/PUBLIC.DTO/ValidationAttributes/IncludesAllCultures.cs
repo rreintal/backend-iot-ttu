@@ -7,7 +7,7 @@ namespace Public.DTO.ValidationAttributes;
 
 public class IncludesAllCulturesAttribute : ValidationAttribute
 {
-    protected override ValidationResult? IsValid(object value, ValidationContext validationContext)
+    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         var validCultures = LanguageCulture.ALL_LANGUAGES.Count;
         if (value is IList list)

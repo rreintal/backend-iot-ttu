@@ -3,7 +3,7 @@ using Base.Domain;
 
 namespace App.Domain;
 
-public class PageContent : DomainEntityId, IContentEntity
+public class PageContent : DomainEntityId, IContentEntity, IContainsImageResource
 {
     public string PageIdentifier { get; set; } = default!;
     

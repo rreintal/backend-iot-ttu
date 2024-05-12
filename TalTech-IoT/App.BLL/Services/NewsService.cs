@@ -51,8 +51,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         {
             return null;
         }
-
-        entity.ThumbnailImage = existingEntity.ThumbnailImage;
+        
         if (entity.Image != null)
         {
             {
@@ -75,29 +74,7 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         
         
         var updateResult = _imageStorageService.ProccessUpdate(entity);
-        if (updateResult != null)
-        {
-            entity.ImageResources = entity.ImageResources
-                .Where(image => updateResult.DeletedLinks == null || !updateResult.DeletedLinks.Contains(image.Link))
-                .ToList();
-
-            // Add the SavedLinks
-            if (updateResult.SavedLinks != null)
-            {
-                foreach (var link in updateResult.SavedLinks)
-                {
-                    entity.ImageResources.Add(new global::BLL.DTO.V1.ImageResource() { Link = link, NewsId = entity.Id});
-                }
-            }
-
-            if (updateResult.DeletedLinks != null)
-            {
-                DeleteContent data = new DeleteContent();
-                data.Links = updateResult.DeletedLinks;
-                _imageStorageService.ProcessDelete(data);
-            }
-        }
-        
+        _imageStorageService.HandleEntityImageResources(entity, updateResult);
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var updatedDalEntity =  await Uow.NewsRepository.Update(dalEntity);
         var bllEntity = _mapper.Map<News?>(updatedDalEntity);
@@ -120,18 +97,10 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
         }
         catch (Exception e)
         {
-            // TODO: what to do here? this actually should not get to this point
             entity.ThumbnailImage = "IMAGE COMPRESSING THREW AND EXCEPTION!";
         }
         var serviceResult = _imageStorageService.ProccessSave(entity);
-        if (serviceResult != null)
-        {
-            entity.ImageResources = serviceResult.SavedLinks.Select(e => new ImageResource()
-            {
-                NewsId = entity.Id,
-                Link = e
-            }).ToList();
-        }
+        entity.ImageResources = serviceResult?.SavedLinks.Select(e => new ImageResource() { NewsId = entity.Id, Link = e }).ToList();
         var dalEntity = _mapper.Map<global::DAL.DTO.V1.News>(entity);
         var dalResult = await Uow.NewsRepository.AddAsync(dalEntity);
         var result = _mapper.Map<News>(dalResult);

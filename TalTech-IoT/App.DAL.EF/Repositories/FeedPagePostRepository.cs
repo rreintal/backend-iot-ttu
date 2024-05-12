@@ -1,10 +1,10 @@
 using App.DAL.Contracts;
+using App.DAL.EF.Helpers;
 using App.Domain;
 using App.Domain.Helpers;
 using AutoMapper;
 using Base.DAL.EF;
 using Microsoft.EntityFrameworkCore;
-using ContentType = DAL.DTO.V1.ContentType;
 
 namespace App.DAL.EF.Repositories;
 
@@ -60,43 +60,11 @@ public class FeedPagePostRepository : EFBaseRepository<FeedPagePost, AppDbContex
         
         if (existingObject != null)
         {
-            if (entity.ImageResources != null)
-            {
-                if (existingObject.ImageResources != null)
-                {
-                    // Mark as deleted, because just clearing removes the NewsId but its still in the DB!
-                    DbContext.ImageResources.RemoveRange(existingObject.ImageResources);
-                
-                
-                    foreach (var imageResource in entity.ImageResources)
-                    {
-                        var item = new ImageResource()
-                        {
-                            FeedPagePostId = existingObject.Id,
-                            Link = imageResource.Link,
-                        };
-                        DbContext.Entry(item).State = EntityState.Added;
-                        existingObject.ImageResources.Add(item);
-                    }
-                }
-                else
-                {
-                    existingObject.ImageResources = new List<ImageResource>();
-                    foreach (var imageResource in entity.ImageResources)
-                    {
-                        var item = new ImageResource()
-                        {
-                            FeedPagePostId = existingObject.Id,
-                            Link = imageResource.Link,
-                        };
-                        DbContext.Entry(item).State = EntityState.Added;
-                    }
-                }
-            }    
+            ImageResourcesHelper.HandleImageResourcesStates(entity, existingObject, DbContext);
         }
-        var categoryExists = await DbContext.FeedPageCategories.FindAsync(entity.FeedPageCategoryId) != null;
         
         // TODO: Check if category exists!! Do this in BLL, and throw an error if not!
+        var categoryExists = await DbContext.FeedPageCategories.FindAsync(entity.FeedPageCategoryId) != null;
         if (categoryExists)
         {
             existingObject!.FeedPageCategoryId = entity.FeedPageCategoryId;
