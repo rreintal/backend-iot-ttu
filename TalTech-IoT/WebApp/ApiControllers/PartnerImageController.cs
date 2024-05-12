@@ -1,6 +1,5 @@
 using System.Net;
 using App.BLL.Contracts;
-using App.BLL.Mappers;
 using App.Domain.Constants;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -47,30 +46,6 @@ public class PartnerImageController : ControllerBase
         await _bll.SaveChangesAsync();
         return result;
     }
-
-
-    /// <summary>
-    /// Get PartnerImage by id
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    /*
-    [HttpGet("{id}")]
-    public async Task<ActionResult<PartnerImage>> Get(Guid id)
-    {
-        var entity = await _bll.PartnerImageService.FindAsync(id);
-        if (entity == null)
-        {
-            return NotFound(new RestApiResponse()
-            {
-                Message = RestApiErrorMessages.GeneralNotFound,
-                Status = HttpStatusCode.NotFound
-            });
-        }
-
-        return PartnerImageMapper.Map(entity);
-    }
-    */
 
     /// <summary>
     /// ProcessDelete PartnerImage by id

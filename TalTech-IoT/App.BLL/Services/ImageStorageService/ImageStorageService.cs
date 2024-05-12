@@ -21,8 +21,7 @@ public class ImageStorageService : IImageStorageService
     private ImageExtractor _imageExtractor { get; }
     private ImageStorageExecutor _imageStorageExecutor { get; }
 
-    private string IMAGE_PUBLIC_LOCATION { get; set; } =
-        "http://185.170.213.135:5052/images/"; // TODO: use env variable!
+    private string IMAGE_PUBLIC_LOCATION { get; set; }
 
     public ImageStorageService()
     {
@@ -32,13 +31,13 @@ public class ImageStorageService : IImageStorageService
             throw new Exception("ImageStorageService: Environemnt variable: IMAGES_LOCATION - is not set or is empty!");
         }
 
-        IMAGE_PUBLIC_LOCATION = imagesLocation;
+        IMAGE_PUBLIC_LOCATION = imagesLocation!;
 
         _imageExtractor = new ImageExtractor();
         _imageStorageExecutor = new ImageStorageExecutor();
     }
 
-    public void HandleEntityImageResources<T>(T entity, UpdateImageResources updateDataResult)
+    public void HandleEntityImageResources<T>(T entity, UpdateImageResources? updateDataResult)
         where T : IContainsImageResource, IDomainEntityId
     {
         if (updateDataResult != null)
@@ -274,7 +273,7 @@ public class ImageStorageService : IImageStorageService
             {
                 var imageEntity = entity as IContainsImage;
                 var image = result.Items.FirstOrDefault(e => e.Sequence == 3)?.Content;
-                if (!image.IsNullOrEmpty()) // TODO: add && imageEntity != null
+                if (!image.IsNullOrEmpty() && image != null) // TODO: add && imageEntity != null
                 {
                     imageEntity!.Image = image;
                 }
@@ -302,7 +301,7 @@ public class ImageStorageService : IImageStorageService
 
     }
 
-    public SaveResult? Save(SaveContent data)
+    private SaveResult Save(SaveContent data)
     {
         var CDNPayload = new CDNSaveImages()
         {
@@ -370,7 +369,7 @@ public class ImageStorageService : IImageStorageService
         if (IsSaveResultEmpty(saveResponseData)) return result; // Return empty SaveResult object when nothing to save
             
             
-        foreach (var SaveResult in saveResponseData!)
+        foreach (var SaveResult in saveResponseData)
         {
             var oldContent = data.Items.FirstOrDefault(oldContent => oldContent.Sequence == SaveResult.Sequence);
             if (oldContent == null)

@@ -10,7 +10,6 @@ using Public.DTO;
 using Public.DTO.ApiExceptions;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
-using Public.DTO.V1;
 
 namespace WebApp.ApiControllers;
 
@@ -54,7 +53,7 @@ public class NewsController : ControllerBase
             await _bll.SaveChangesAsync();
             return Ok(result);
         }
-        catch (TopicAreasNotUnique ex)
+        catch (TopicAreasNotUnique)
         {
             return Conflict(new RestApiResponse()
             {
@@ -69,13 +68,17 @@ public class NewsController : ControllerBase
     /// Get all News
     /// </summary>
     /// <param name="languageCulture"></param>
+    /// <param name="Size"></param>
+    /// <param name="page"></param>
+    /// <param name="TopicAreaId"></param>
+    /// <param name="IncludeBody"></param>
     /// <returns></returns>
     [HttpGet("{languageCulture}/")]
     [Produces(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IEnumerable<News>> Get(string languageCulture, int? Size, int? page, Guid? TopicAreaId, bool? IncludeBody)
+    public async Task<IEnumerable<News?>> Get(string languageCulture, int? Size, int? page, Guid? TopicAreaId, bool? IncludeBody)
     {
         var filterSet = new NewsFilterSet()
         {
@@ -87,7 +90,8 @@ public class NewsController : ControllerBase
         
         // TODO - filter news by author/topic
         var news = (await _bll.NewsService.AllAsyncFiltered(filterSet, languageCulture)).ToList();
-        return news.Select(x => ReturnNewsMapper.Map(x, true));
+        var result = news.Select(x => ReturnNewsMapper.Map(x, true));
+        return result;
     }
 
     /// <summary>
@@ -131,13 +135,13 @@ public class NewsController : ControllerBase
     }
 
     /// <summary>
-    /// Update News. Updateing with Topic Areas is not working YET!
+    /// Update News.
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
     [HttpPut]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<News>> Update([FromBody] Public.DTO.V1.UpdateNews data)
+    public async Task<ActionResult<News>> Update([FromBody] UpdateNews data)
     {
         try
         {
@@ -156,7 +160,7 @@ public class NewsController : ControllerBase
             await _bll.SaveChangesAsync();
             return Ok();   
         }
-        catch (TopicAreasNotUnique ex)
+        catch (TopicAreasNotUnique)
         {
             return Conflict(new RestApiResponse()
             {
@@ -216,7 +220,7 @@ public class NewsController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("Preview/{id}")]
-    public async Task<ActionResult<Public.DTO.V1.NewsAllLangs>> GetNewsAllLanguages(Guid id)
+    public async Task<ActionResult<NewsAllLangs>> GetNewsAllLanguages(Guid id)
     {
         var entity = await _bll.NewsService.FindByIdAllTranslationsAsync(id);
         if (entity == null)

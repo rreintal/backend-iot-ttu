@@ -19,7 +19,7 @@ namespace WebApp.ApiControllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class PageContentController : ControllerBase
 {
-    private IAppBLL _bll;
+    private readonly IAppBLL _bll;
 
     /// <inheritdoc />
     public PageContentController(IAppBLL bll)
@@ -61,7 +61,7 @@ public class PageContentController : ControllerBase
     /// <param name="pageIdentifier"></param>
     /// <returns></returns>
     [HttpGet("{pageIdentifier}")]
-    public async Task<ActionResult<Public.DTO.V1.PageContent?>> Get(string pageIdentifier)
+    public async Task<ActionResult<PageContent?>> Get(string pageIdentifier)
     {
         var bllObject = await _bll.PageContentService.FindAsyncByIdentifierString(pageIdentifier);
         if (bllObject == null)
@@ -83,7 +83,7 @@ public class PageContentController : ControllerBase
     /// <param name="languageCulture"></param>
     /// <param name="pageIdentifier"></param>
     [HttpGet("{languageCulture}/{pageIdentifier}")]
-    public async Task<ActionResult<Public.DTO.V1.GetPageContent?>> Get(string languageCulture, string pageIdentifier)
+    public async Task<ActionResult<GetPageContent?>> Get(string languageCulture, string pageIdentifier)
     {
         var bllObject = await _bll.PageContentService.FindAsyncByIdentifierString(pageIdentifier, languageCulture);
         if (bllObject == null)
@@ -98,12 +98,12 @@ public class PageContentController : ControllerBase
         return Ok(result);
         
     }
-    
+
     /// <summary>
-    /// WORKING WITH HACK!
+    /// 
     /// </summary>
-    /// <param name="languageCulture"></param>
     /// <param name="pageIdentifier"></param>
+    /// <param name="content"></param>
     /// <exception cref="NotImplementedException"></exception>
     [HttpPut("{pageIdentifier}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

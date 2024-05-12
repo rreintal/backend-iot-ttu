@@ -1,4 +1,3 @@
-using System.Drawing;
 using App.BLL.Contracts;
 using App.BLL.Services.ImageStorageService.Models.Delete;
 using App.DAL.Contracts;
@@ -13,14 +12,11 @@ namespace App.BLL.Services;
 public class ProjectService : BaseEntityService<Project, Domain.Project, IProjectsRepository>, IProjectService
 {
     private IAppUOW Uow { get; }
-    private IThumbnailService ThumbnailService { get; }
-    
     private IImageStorageService _imageStorageService { get; }
     private IMapper _mapper { get;}
-    public ProjectService(IAppUOW uow, IMapper<Project, Domain.Project> mapper,  IMapper autoMapper, IThumbnailService thumbnailService) : base(uow.ProjectsRepository, mapper)
+    public ProjectService(IAppUOW uow, IMapper<Project, Domain.Project> mapper,  IMapper autoMapper) : base(uow.ProjectsRepository, mapper)
     {
         Uow = uow;
-        ThumbnailService = thumbnailService;
         _mapper = autoMapper;
         _imageStorageService = new ImageStorageService.ImageStorageService();
     }

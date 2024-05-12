@@ -3,7 +3,6 @@ using App.DAL.Contracts;
 using AutoMapper;
 using Base.BLL;
 using Base.Contracts;
-using BLL.DTO.V1;
 using FeedPageCategory = App.Domain.FeedPageCategory;
 
 namespace App.BLL.Services;

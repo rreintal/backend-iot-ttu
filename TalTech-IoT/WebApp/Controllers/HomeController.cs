@@ -1,17 +1,16 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.Controllers;
 
+/// <inheritdoc />
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    /// <inheritdoc />
+    public HomeController() {}
 
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
-
+    /// <inheritdoc>
+    ///     <cref></cref>
+    /// </inheritdoc>
     public IActionResult Index()
     {
         return View();

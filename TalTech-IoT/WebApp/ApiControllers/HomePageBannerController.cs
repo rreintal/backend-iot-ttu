@@ -1,13 +1,10 @@
 using System.Net;
 using App.BLL.Contracts;
-using App.DAL.EF;
-using App.Domain;
 using App.Domain.Constants;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Public.DTO;
 using Public.DTO.V1;
 using Public.DTO.V1.Mappers;
@@ -82,7 +79,7 @@ public class HomePageBannerController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> UpdateBannerSequenceNumberBulk([FromBody] List<HomePageBannerSequence> data)
     {
-        var bllData = data.Select(e => HomePageBannerMapper.Map(e)).ToList();
+        var bllData = data.Select(HomePageBannerMapper.Map).ToList();
         await _bll.HomePageBannerService.UpdateSequenceBulkAsync(bllData);
         await _bll.SaveChangesAsync();
         return Ok();
@@ -121,7 +118,7 @@ public class HomePageBannerController : ControllerBase
     [HttpGet("{languageCulture}")]
     public async Task<IEnumerable<GetHomePageBanner>> GetAllByLanguageCulture(string languageCulture)
     {
-        return (await _bll.HomePageBannerService.AllAsync(languageCulture)).Select(e => GetHomePageBannerMapper.Map(e));
+        return (await _bll.HomePageBannerService.AllAsync(languageCulture)).Select(GetHomePageBannerMapper.Map);
     }
     
     /// <summary>

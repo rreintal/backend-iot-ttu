@@ -58,9 +58,9 @@ if (databaseUrl == null)
 builder.Services
     .AddDbContext<AppDbContext>(options =>
     {
-        options.UseNpgsql(databaseUrl, options =>
+        options.UseNpgsql(databaseUrl, opt =>
         {
-            options.CommandTimeout(60);
+            opt.CommandTimeout(60);
         }).EnableSensitiveDataLogging();
     });
 
@@ -78,7 +78,7 @@ var JWT_KEY = Environment.GetEnvironmentVariable(EnvironmentVariableConstants.JW
 
 if (JWT_AUDIENCE == null || JWT_ISSUER == null || JWT_KEY == null)
 {
-    throw new InvalidOperationException("JWT Environemnt variables are missing");
+    throw new InvalidOperationException("JWT Environment variables are missing");
 }
 
 // Authentication
@@ -186,4 +186,7 @@ app.MapControllerRoute(
 
 app.Run();
 
+/// <inheritdoc>
+///     <cref></cref>
+/// </inheritdoc>
 public partial class Program { }

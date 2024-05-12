@@ -1,6 +1,5 @@
 using App.BLL.Contracts;
 using App.DAL.Contracts;
-using App.DAL.EF.DbExceptions;
 using Base.BLL;
 using Base.Contracts;
 using BLL.DTO.V1;

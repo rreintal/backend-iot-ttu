@@ -76,7 +76,6 @@ public class EmailRecipentsController : ControllerBase
     /// <summary>
     /// Remove from recipents list
     /// </summary>
-    /// <param name="data"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -120,7 +119,6 @@ public class EmailRecipentsController : ControllerBase
     /// <summary>
     /// Get all email recipents
     /// </summary>
-    /// <param name="data"></param>
     /// <returns></returns>
     [HttpGet("all")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

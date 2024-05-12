@@ -1,5 +1,4 @@
 using App.BLL.Contracts;
-using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
 namespace App.BLL.Services;
@@ -27,7 +26,7 @@ public class ThumbnailService : IThumbnailService
             int targetHeight = (int)(targetWidth * aspectRatio);
 
             // Create a new SKBitmap for the thumbnail while maintaining the aspect ratio
-            using (var thumbnailBitmap = originalBitmap.Resize(new SKImageInfo(targetWidth, targetHeight), SKBitmapResizeMethod.Lanczos3))
+            using (var thumbnailBitmap = originalBitmap.Resize(new SKImageInfo(targetWidth, targetHeight), SKFilterQuality.High))
             {
                 // Convert the thumbnail to a byte array
                 using (var thumbnailImage = SKImage.FromBitmap(thumbnailBitmap))

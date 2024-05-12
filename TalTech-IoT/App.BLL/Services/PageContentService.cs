@@ -1,5 +1,4 @@
 using App.BLL.Contracts;
-using App.BLL.Services.ImageStorageService.Models.Delete;
 using App.DAL.Contracts;
 using App.Domain;
 using Base.BLL;

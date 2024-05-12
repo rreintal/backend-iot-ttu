@@ -47,12 +47,9 @@ public class TopicAreasController : ControllerBase
         {
             var entity = _bll.TopicAreaService.Add(bllEntity);
             await _bll.SaveChangesAsync();
-            return Ok(new
-            {
-                Id = entity.Id
-            });
+            return Ok(entity);
         }
-        catch (DbValidationExceptions myException)
+        catch (DbValidationExceptions)
         {
             return BadRequest(new RestApiResponse()
             {
@@ -68,7 +65,7 @@ public class TopicAreasController : ControllerBase
     /// <param name="languageCulture"></param>
     /// <returns></returns>
     [HttpGet("{languageCulture}")]
-    public async Task<IEnumerable<Public.DTO.V1.TopicArea>> Get(string languageCulture)
+    public async Task<IEnumerable<TopicArea>> Get(string languageCulture)
     {
         var items = (await _bll.TopicAreaService.AllAsync(languageCulture)).ToList();
         var result = TopicAreaMapper.Map(items);
@@ -113,7 +110,7 @@ public class TopicAreasController : ControllerBase
 
             return Ok();
         }
-        catch (TopicAreaDeleteConstraintViolationException exception)
+        catch (TopicAreaDeleteConstraintViolationException)
         {
             return BadRequest(new RestApiResponse()
             {

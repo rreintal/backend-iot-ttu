@@ -34,7 +34,7 @@ public class ContactPersonController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<Public.DTO.V1.ContactPerson>> Add([FromBody] Public.DTO.V1.ContactPerson data)
+    public async Task<ActionResult<ContactPerson>> Add([FromBody] ContactPerson data)
     {
         var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = ContactPersonMapper.Map(data, types);
@@ -97,7 +97,7 @@ public class ContactPersonController : ControllerBase
     /// <param name="languageCulture"></param>
     /// <returns></returns>
     [HttpGet("{languageCulture}/{id}")]
-    public async Task<ActionResult<Public.DTO.V1.GetContactPerson>> Get(Guid id, string languageCulture)
+    public async Task<ActionResult<GetContactPerson>> Get(Guid id, string languageCulture)
     {
         var bllEntity = await _bll.ContactPersonService.FindAsync(id, languageCulture);
         if (bllEntity == null)
@@ -114,15 +114,15 @@ public class ContactPersonController : ControllerBase
     }
     
     /// <summary>
-    /// Get all Concact Persons with translation
+    /// Get all Contact Persons with translation
     /// </summary>
     /// <param name="languageCulture"></param>
     /// <returns></returns>
     [HttpGet("{languageCulture}")]
-    public async Task<ActionResult<IEnumerable<Public.DTO.V1.GetContactPerson>>> GetAll(string languageCulture)
+    public async Task<ActionResult<IEnumerable<GetContactPerson>>> GetAll(string languageCulture)
     {
         var bllResult = await _bll.ContactPersonService.AllAsync(languageCulture);
-        var result = bllResult.Select(e => GetContactPersonMapper.Map(e));
+        var result = bllResult.Select(GetContactPersonMapper.Map);
         return Ok(result);
     }
 

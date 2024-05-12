@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices.JavaScript;
 using App.BLL.Contracts;
 using App.BLL.Services.ImageStorageService.Models.Delete;
 using App.DAL.Contracts;
@@ -58,7 +57,10 @@ public class FeedPagePostService : BaseEntityService<global::BLL.DTO.V1.FeedPage
         }
 
         var linksToDelete = entity.ImageResources?.Select(e => e.Link).ToList();
-        _imageStorageService.ProcessDelete(new DeleteContent() { Links = linksToDelete });
+        if (linksToDelete != null)
+        {
+            _imageStorageService.ProcessDelete(new DeleteContent() { Links = linksToDelete });   
+        }
         return await base.RemoveAsync(id);
     }
 
@@ -71,7 +73,7 @@ public class FeedPagePostService : BaseEntityService<global::BLL.DTO.V1.FeedPage
     {
         var existingEntity = await _uow.FeedPagePostRepository.FindAsync(entity.Id);
 
-        if (existingEntity != null)
+        if (existingEntity != null && existingEntity.ImageResources != null)
         {
             entity.ImageResources = existingEntity.ImageResources.Select(e => new ImageResource()
             {

@@ -21,7 +21,7 @@ namespace WebApp.ApiControllers;
 [ApiController]
 public class ProjectController : ControllerBase
 {
-    private IAppBLL _bll;
+    private readonly IAppBLL _bll;
 
     /// <inheritdoc />
     public ProjectController(IAppBLL bll)
@@ -36,9 +36,9 @@ public class ProjectController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<Public.DTO.V1.PostProjectSuccessDto>> Create([FromBody] Public.DTO.V1.PostProjectDto data)
+    public async Task<ActionResult<PostProjectSuccessDto>> Create([FromBody] PostProjectDto data)
     {
-        var types = await _bll.NewsService.GetContentTypes(); // TODO - tee eraldi service ehk?
+        var types = await _bll.NewsService.GetContentTypes();
         var bllEntity = ProjectMapper.Map(data, types);
          var addedEntity = _bll.ProjectService.Add(bllEntity);
          await _bll.SaveChangesAsync();
@@ -56,7 +56,7 @@ public class ProjectController : ControllerBase
     [HttpGet("{languageCulture}")]
     public async Task<IEnumerable<GetProject>> Get(string languageCulture)
     {
-        return (await _bll.ProjectService.AllAsync(languageCulture)).Select(x => GetProjectMapper.Map(x));
+        return (await _bll.ProjectService.AllAsync(languageCulture)).Select(GetProjectMapper.Map);
     }
 
     /// <summary>
@@ -132,8 +132,6 @@ public class ProjectController : ControllerBase
     /// <summary>
     /// Update project
     /// </summary>
-    /// <param name="languageCulture"></param>
-    /// <param name="id"></param>
     /// <returns></returns>
     [HttpPut]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -162,7 +160,7 @@ public class ProjectController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("Preview/{id}")]
-    public async Task<ActionResult<Public.DTO.V1.ProjectAllLangs>> GetProjectAllLanguages(Guid id)
+    public async Task<ActionResult<ProjectAllLangs>> GetProjectAllLanguages(Guid id)
     {
         var entity = await _bll.ProjectService.FindByIdAsyncAllLanguages(id);
         if (entity == null)
@@ -176,6 +174,12 @@ public class ProjectController : ControllerBase
         return ProjectAllLangsMapper.Map(entity);
     }
 
+    /// <summary>
+    /// Toggle project status
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="isOngoing"></param>
+    /// <returns></returns>
     [HttpPost("Ongoing")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult> ToggleProjectStatus(Guid id, bool isOngoing)

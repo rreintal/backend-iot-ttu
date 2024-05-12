@@ -125,7 +125,7 @@ public class UsersController : ControllerBase
                 Status = HttpStatusCode.BadRequest
             });
         }
-        await _userManager.AddToRoleAsync(appUser, role.Name);
+        await _userManager.AddToRoleAsync(appUser, role.Name!);
         
         result = await _userManager.AddClaimsAsync(appUser, new List<Claim>()
             {
@@ -329,8 +329,6 @@ public class UsersController : ControllerBase
             });
         }
     
-        // Kui refreshToken ei kehti enam!!
-        // TODO - tagasta mingi x error, et teaksid telos visata login screenile!!
         if (refreshTokenFromDatabase.ExpirtationDT < DateTime.UtcNow)
         {
             return BadRequest(new RestApiResponse()
@@ -406,7 +404,6 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Log out
     /// </summary>
-    /// <param name="payload"></param>
     /// <param name="logoutModel"></param>
     /// <returns></returns>
     [HttpPost("Logout")]
@@ -418,15 +415,6 @@ public class UsersController : ControllerBase
     public async Task<ActionResult> LogOut([FromBody] Logout logoutModel)
     {
         var userId = User.GetUserId();
-
-        if (userId == null)
-        {
-            return BadRequest(new RestApiResponse()
-            {
-                Status = HttpStatusCode.BadRequest,
-                Message = RestApiErrorMessages.UserGeneralError
-            });
-        }
         
         var userRefreshTokens = await _context.AppRefreshTokens
             .Where(x => x.AppUserId == userId && x.RefreshToken == logoutModel.RefreshToken)
@@ -767,6 +755,15 @@ public class UsersController : ControllerBase
             {
                 Message = RestApiErrorMessages.GeneralNotFound,
                 Status = HttpStatusCode.NotFound
+            });
+        }
+
+        if (user.Email == null)
+        {
+            return BadRequest(new RestApiResponse()
+            {
+                Status = HttpStatusCode.BadRequest,
+                Message = RestApiErrorMessages.UserGeneralError
             });
         }
         

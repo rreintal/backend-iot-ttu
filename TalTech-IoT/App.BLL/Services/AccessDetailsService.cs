@@ -2,7 +2,6 @@ using App.BLL.Contracts;
 using App.DAL.Contracts;
 using Base.BLL;
 using Base.Contracts;
-using DAL.DTO.V1;
 
 namespace App.BLL.Services;
 

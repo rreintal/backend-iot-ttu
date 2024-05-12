@@ -1,18 +1,12 @@
 using App.BLL.Contracts.ImageStorageModels.Save;
 using App.BLL.Contracts.ImageStorageModels.Save.Result;
 using App.BLL.Services.ImageStorageService.Models.Delete;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace App.BLL.Services.ImageStorageService;
 
 public interface IIMageStorageExecutor
 {
-    public List<CDNSaveResult> Upload(CDNSaveImages payload);
 }
-
-// TODO: make it atomic, that first conver everything from base64 to byteArray, and after everything successful, then write.
-
 public class ImageStorageExecutor : IIMageStorageExecutor
 {
     private string IMAGES_DIRECTORY { get; set; }
@@ -28,7 +22,7 @@ public class ImageStorageExecutor : IIMageStorageExecutor
     }
     public List<CDNSaveResult> Upload(CDNSaveImages payload)
     {
-        var result = new List<CDNSaveResult>() { };
+        var result = new List<CDNSaveResult>();
         foreach (var unit in payload.Items)
         {
             var saveItem = new CDNSaveResult()
@@ -80,9 +74,9 @@ public class ImageStorageExecutor : IIMageStorageExecutor
 
             try
             {
-                if (System.IO.File.Exists(filePath))
+                if (File.Exists(filePath))
                 {
-                    System.IO.File.Delete(filePath);
+                    File.Delete(filePath);
                     deletedImagesCount++;
                     Console.WriteLine($"Deleted image: {imageName}");
                 }

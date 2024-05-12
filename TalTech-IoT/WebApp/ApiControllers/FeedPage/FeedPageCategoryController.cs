@@ -29,7 +29,7 @@ public class FeedPageCategoryController : ControllerBase
 
 
     /// <summary>
-    /// Get Feed Page Category with all of its Posts (all langs)
+    /// Get Feed Page Category with all of its Posts (all languages)
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -103,7 +103,7 @@ public class FeedPageCategoryController : ControllerBase
             });
         }
         var bllEntity = PostFeedPageCategoryWithPageIdenitiferMapper.Map(entity, contentTypes, feedPage.Id);
-        var result = _bll.FeedPageCategoryService.Add(bllEntity);
+        _bll.FeedPageCategoryService.Add(bllEntity);
         await _bll.SaveChangesAsync();
         return Ok();
     }
@@ -111,7 +111,8 @@ public class FeedPageCategoryController : ControllerBase
     /// <summary>
     /// Get Categories without Posts
     /// </summary>
-    /// <param name="entity"></param>
+    /// <param name="languageCulture"></param>
+    /// <param name="identifier"></param>
     /// <returns></returns>
     [HttpGet("{languageCulture}/{identifier}")]
     public async Task<ActionResult<GetFeedPageCategoryWithoutPosts>> GetWithoutPosts(string languageCulture, string identifier)
@@ -127,8 +128,8 @@ public class FeedPageCategoryController : ControllerBase
         }
         var result = await _bll.FeedPageCategoryService.GetCategoryWithoutPosts(feedPage.Id, languageCulture);
         
-        var retrunResult = result.Select(e => GetFeedPageCategoryWithoutPostsMapper.Map(e, languageCulture)).ToList();
-        return Ok(retrunResult);
+        var returnResult = result.Select(e => GetFeedPageCategoryWithoutPostsMapper.Map(e, languageCulture)).ToList();
+        return Ok(returnResult);
     }
 
     /// <summary>

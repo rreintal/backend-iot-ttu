@@ -6,16 +6,21 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
+/// <inheritdoc />
 public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 {
     private readonly IApiVersionDescriptionProvider _descriptionProvider;
 
+    /// <inheritdoc>
+    ///     <cref></cref>
+    /// </inheritdoc>
     public ConfigureSwaggerOptions(IApiVersionDescriptionProvider descriptionProvider)
     {
         _descriptionProvider = descriptionProvider;
     }
 
 
+    /// <inheritdoc />
     public void Configure(SwaggerGenOptions options)
     {
         foreach (var description in _descriptionProvider.ApiVersionDescriptions)

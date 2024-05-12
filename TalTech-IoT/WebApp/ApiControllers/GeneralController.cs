@@ -1,4 +1,3 @@
-using App.BLL.Contracts;
 using App.Domain;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +12,9 @@ namespace WebApp.ApiControllers;
 [ApiVersion("1")]
 public class GeneralController : ControllerBase
 {
-    private IAppBLL _bll { get; set; }
-
     /// <inheritdoc />
-    public GeneralController(IAppBLL bll)
+    public GeneralController()
     {
-        _bll = bll;
     }
     
     /// <summary>

@@ -2,7 +2,6 @@ using App.BLL.Contracts;
 using App.BLL.Services.ImageStorageService.Models.Delete;
 using App.DAL.Contracts;
 using App.Domain;
-using App.Domain.Helpers;
 using AutoMapper;
 using Base.BLL;
 using Base.Contracts;

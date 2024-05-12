@@ -9,7 +9,7 @@ public class EmailValidationService : IEmailValidationService
     {
         try
         {
-            MailAddress m = new MailAddress(emailaddress);
+            MailAddress unused = new MailAddress(emailaddress);
 
             return true;
         }
