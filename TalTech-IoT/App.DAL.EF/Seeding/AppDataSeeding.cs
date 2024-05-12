@@ -1,12 +1,11 @@
 using App.Domain;
 using App.Domain.Constants;
 using App.Domain.Identity;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WebApp;
 
 namespace App.DAL.EF.Seeding;
 
@@ -22,18 +21,18 @@ public static class AppDataSeeding
         using var scope = serviceProvider.CreateScope();
         var scopedServices = scope.ServiceProvider;
         var context = scopedServices.GetRequiredService<AppDbContext>();
-        if (configuration.GetValue<bool>("DataInit:DropDatabase"))
+        if (Environment.GetEnvironmentVariable(EnvironmentVariableConstants.DROP_DB) == "true")
         {
             await context!.Database.EnsureDeletedAsync();
         }
-        if (configuration.GetValue<bool>("DataInit:Migrate"))
+        if (Environment.GetEnvironmentVariable(EnvironmentVariableConstants.MIGRATE_DB) == "true")
         {
             if (context.Database.IsRelational()) // This is because, when running tests, in memory db can't migrate :(
             {
                 context.Database.Migrate();
             }
         }
-        if (configuration.GetValue<bool>("DataInit:Seed"))
+        if (Environment.GetEnvironmentVariable(EnvironmentVariableConstants.SEED_DB) == "true")
         {
             var count = context!.ContentTypes.ToList().Count;
             if (count == 0)
@@ -114,30 +113,18 @@ public static class AppDataSeeding
             var usersCount = (await userManager.Users.ToListAsync()).Count;
             if (usersCount == 0)
             {
+                
                 var adminUser = new AppUser()
                 {
-                    Firstname = "AdminFN",
-                    Lastname = "AdminLN",
-                    Email = "admin@email.ee",
-                    UserName = "admin",
+                    Firstname = "AdminFn",
+                    Lastname = "AdminLn",
+                    Email = Environment.GetEnvironmentVariable(EnvironmentVariableConstants.ADMIN_EMAIL),
+                    UserName = "AppAdmin"
                 };
-                
-
-                await userManager.CreateAsync(adminUser, "admin");
+                await userManager.CreateAsync(adminUser, Environment.GetEnvironmentVariable(EnvironmentVariableConstants.ADMIN_PASSWORD)!);
                 await userManager.AddToRoleAsync(adminUser, IdentityRolesConstants.ROLE_ADMIN);
 
-                var userUser = new AppUser()
-                {
-                    Firstname = "UserFN",
-                    Lastname = "UserLN",
-                    Email = "user@email.ee",
-                    UserName = "user"
-                };
-                
-                await userManager.CreateAsync(userUser, "user");
-                await userManager.AddToRoleAsync(userUser, IdentityRolesConstants.ROLE_MODERATOR);
-
-
+    
                 var recipent = new EmailRecipents()
                 {
                     Email = "reintalrichard@gmail.com"

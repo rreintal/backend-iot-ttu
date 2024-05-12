@@ -80,6 +80,6 @@ public class PartnerImageController : ControllerBase
     public async Task<IEnumerable<PartnerImage>> GetAll()
     {
         var result = await _bll.PartnerImageService.AllAsync();
-        return result.Select(e => PartnerImageMapper.Map(e));
+        return result.Select(PartnerImageMapper.Map);
     }
 }

@@ -229,17 +229,12 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid?>("NewsId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ProjectId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TopicAreaId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NewsId");
-
-                    b.HasIndex("ProjectId");
 
                     b.HasIndex("TopicAreaId");
 
@@ -820,11 +815,6 @@ namespace App.DAL.EF.Migrations
                         .HasForeignKey("NewsId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("App.Domain.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("App.Domain.TopicArea", "TopicArea")
                         .WithMany("HasTopicAreas")
                         .HasForeignKey("TopicAreaId")
@@ -832,8 +822,6 @@ namespace App.DAL.EF.Migrations
                         .IsRequired();
 
                     b.Navigation("News");
-
-                    b.Navigation("Project");
 
                     b.Navigation("TopicArea");
                 });

@@ -14,7 +14,7 @@ using Public.DTO.V1;
 namespace WebApp.ApiControllers;
 
 /// <summary>
-/// Controller for adding persons Contact Us recipents mail
+/// Controller for adding persons Contact Us recipients mail
 /// </summary>
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
@@ -74,7 +74,7 @@ public class EmailRecipentsController : ControllerBase
     }
 
     /// <summary>
-    /// Remove from recipents list
+    /// Remove from recipients list
     /// </summary>
     /// <returns></returns>
     [HttpDelete("{id}")]
@@ -93,7 +93,7 @@ public class EmailRecipentsController : ControllerBase
     }
 
     /// <summary>
-    /// Update Email recipent
+    /// Update Email recipient
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
@@ -117,7 +117,7 @@ public class EmailRecipentsController : ControllerBase
     }
     
     /// <summary>
-    /// Get all email recipents
+    /// Get all email recipients
     /// </summary>
     /// <returns></returns>
     [HttpGet("all")]

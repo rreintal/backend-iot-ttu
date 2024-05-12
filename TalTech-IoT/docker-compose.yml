@@ -18,6 +18,11 @@ services:
       - IOT_JWT_AUDIENCE=${IOT_JWT_AUDIENCE}
       - JWT_KEY=${JWT_KEY}
       - APP_EMAIL=${APP_EMAIL}
+      - APP_ADMIN_EMAIL=${APP_ADMIN_EMAIL} 
+      - APP_ADMIN_PASSWORD=${APP_ADMIN_PASSWORD} 
+      - DROP_DATABASE=${DROP_DATABASE}          # "true" / "false"
+      - MIGRATE_DATABASE=${MIGRATE_DATABASE}    # "true" / "false"
+      - SEED_DATABASE=${SEED_DATABASE}          # "true" / "false"
     volumes:
       - type: bind
         source: ${IMAGES_DIRECTORY} # Host machine

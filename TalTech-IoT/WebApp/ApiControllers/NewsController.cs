@@ -35,6 +35,7 @@ public class NewsController : ControllerBase
     /// Create new News
     /// </summary>
     /// <param name="payload"></param>
+    /// <param name="test"></param>
     /// <returns></returns>
     [HttpPost]
     [Produces(MediaTypeNames.Application.Json)]
@@ -139,11 +140,11 @@ public class NewsController : ControllerBase
     /// Update News.
     /// </summary>
     /// <param name="data"></param>
+    /// <param name="test"></param>
     /// <returns></returns>
     [HttpPut]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-
-    public async Task<ActionResult> Update([FromBody] Public.DTO.V1.UpdateNews data, [FromQuery] bool? test)
+    public async Task<ActionResult> Update([FromBody] UpdateNews data, [FromQuery] bool? test)
     {
         try
         {
@@ -177,6 +178,7 @@ public class NewsController : ControllerBase
     /// ProcessDelete news by id
     /// </summary>
     /// <param name="id"></param>
+    /// <param name="test"></param>
     /// <returns></returns>
     [HttpDelete("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
