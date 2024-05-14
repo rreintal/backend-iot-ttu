@@ -148,7 +148,11 @@ builder.Services.Configure<IdentityOptions>(options =>
 var app = builder.Build();
 
 // Setup start data
-await AppDataSeeding.SetupAppData(app.Services, app.Configuration);
+
+if (app.Environment.EnvironmentName != "testing")
+{
+    await AppDataSeeding.SetupAppData(app.Services, app.Configuration);   
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

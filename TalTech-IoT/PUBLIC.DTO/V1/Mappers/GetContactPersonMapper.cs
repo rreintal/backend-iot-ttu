@@ -1,4 +1,5 @@
 using App.Domain;
+using Public.DTO.Content;
 
 namespace Public.DTO.V1.Mappers;
 
@@ -10,7 +11,7 @@ public class GetContactPersonMapper
         {
             Id = contactPerson.Id,
             Name = contactPerson.Name,
-            Body = contactPerson.GetContentValue(ContentTypes.BODY)
+            Body = ContentHelper.GetContentValue(contactPerson, ContentTypes.BODY)
         };
     }
 }

@@ -52,7 +52,7 @@ public class ContactPersonMapper
             {
                 return new ContentDto()
                 {
-                    Value = data.GetContentValue(ContentTypes.BODY, lang),
+                    Value = ContentHelper.GetContentValue(data, ContentTypes.BODY, lang),
                     Culture = lang
                 };
             }).ToList(),

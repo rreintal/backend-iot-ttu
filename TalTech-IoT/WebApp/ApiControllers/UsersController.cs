@@ -176,13 +176,17 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<JWTResponse>> Login([FromBody] Login login)
     {
         var appUser = await _userManager.FindByEmailAsync(login.Email);
+        var allusers = await _userManager.Users.ToListAsync();
+        var userName = allusers[0].Email;
+        
         
         if (appUser == null)
         {
-            return NotFound(new RestApiResponse()
+            return Conflict(new RestApiResponse()
             {
                 Status = HttpStatusCode.NotFound,
-                Message = RestApiErrorMessages.UserGeneralError
+                //Message = RestApiErrorMessages.UserGeneralError
+                Message = userName + "LoginModelEmail: " + login.Email 
             });
         }
         

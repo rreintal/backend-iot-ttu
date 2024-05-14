@@ -15,7 +15,7 @@ where TStartup : class
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        
+        builder.UseEnvironment("testing");
         builder.ConfigureServices(services =>
         {
             // Find the existing DbContext registration
@@ -47,27 +47,21 @@ where TStartup : class
                 var configuration = scopedServices.GetRequiredService<IConfiguration>();
                 var logger = scopedServices.GetRequiredService<ILogger<CustomWebAppFactory<TStartup>>>();
 
-                // Ensure the database is created
-                //db.Database.EnsureCreatedAsync().Wait();
+                db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
-
-                // Seed the database with test data
+                
                 try
                 {
+                    logger.LogInformation("Starting to seed test data...");
                     AppDataSeeding.SeedTestUsers(scopedServices).Wait();
-                    
-                    //AppDataSeeding.SetupAppData(scopedServices, configuration).Wait();
-                    // TODO: seed test users!
-                    
-                    
-                    
-                    
+                    logger.LogInformation("Seeding test data completed successfully.");
                 }
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "An error occurred seeding the DB with test data. Error: {Message}", ex.Message);
                 }
             };
+            
         });
     }
 

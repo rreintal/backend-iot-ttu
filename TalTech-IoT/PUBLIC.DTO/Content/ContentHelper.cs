@@ -116,4 +116,11 @@ public abstract class ContentHelper
         }
         return result;
     }
+    
+    public static string GetContentValue(IContentEntity entity, string contentType)
+    {
+        var result = entity.Content.First(c => c.ContentType!.Name == contentType)
+            .LanguageString.LanguageStringTranslations!.First();
+        return result.TranslationValue;
+    }
 }

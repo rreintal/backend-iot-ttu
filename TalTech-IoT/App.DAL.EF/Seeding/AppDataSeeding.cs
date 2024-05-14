@@ -18,6 +18,7 @@ public static class AppDataSeeding
     
     public static async Task SetupAppData(IServiceProvider serviceProvider, IConfiguration configuration)
     {
+        Console.WriteLine("SEEDING PRODUCTION DATA!");
         using var scope = serviceProvider.CreateScope();
         var scopedServices = scope.ServiceProvider;
         var context = scopedServices.GetRequiredService<AppDbContext>();
@@ -147,6 +148,7 @@ public static class AppDataSeeding
         var scopedServices = scope.ServiceProvider;
         var context = scopedServices.GetRequiredService<AppDbContext>();
         
+        
         // Content Types
         var t1 = new ContentType()
         {
@@ -160,8 +162,8 @@ public static class AppDataSeeding
         };
         context.ContentTypes.Add(t1);
         context.ContentTypes.Add(t2);
-        
-        
+
+
         // Topic Areas
         var ta1 = DomainFactory
             .TopicArea()
@@ -179,9 +181,9 @@ public static class AppDataSeeding
             .TopicArea()
             .SetValues("5G", "5G");
         await context.TopicAreas.AddRangeAsync(new List<TopicArea>() { ta1, ta2, t3, t3child2, t3Child });
-        
+
         // Feed pages
-        
+
         var hardware = new FeedPage()
         {
             FeedPageName = "HARDWARE"
@@ -192,21 +194,15 @@ public static class AppDataSeeding
         };
 
         context.AddRange(new List<FeedPage>() { hardware, research });
-        
+
         // Identity
-        
+
         using var roleManager = scopedServices.GetService<RoleManager<AppRole>>();
-            
+
         var roles = new List<AppRole>()
         {
-            new AppRole()
-            {
-                Name = IdentityRolesConstants.ROLE_ADMIN
-            },
-            new AppRole()
-            {
-                Name = IdentityRolesConstants.ROLE_MODERATOR
-            }
+            new(name: IdentityRolesConstants.ROLE_ADMIN),
+            new(name: IdentityRolesConstants.ROLE_MODERATOR)
         };
 
         foreach (var role in roles)
@@ -215,35 +211,35 @@ public static class AppDataSeeding
         }
 
         await context.SaveChangesAsync();
-        
+
         var userManager = scopedServices.GetService<UserManager<AppUser>>()!;
         var usersCount = (await userManager.Users.ToListAsync()).Count;
         if (usersCount == 0)
-        {  
+        {
             var testAdminUser = new AppUser()
             {
+                Id = Guid.NewGuid(), // Some really weird InMemoryDb stuff, that the ID needs to be present
                 Firstname = "TestAdminFirstName",
                 Lastname = "TestAdminLastName",
                 Email = TestConstants.TestAdminEmail,
                 UserName = "testAdmin",
             };
-        
+
             await userManager.CreateAsync(testAdminUser, TestConstants.TestAdminPassword);
             await userManager.AddToRoleAsync(testAdminUser, IdentityRolesConstants.ROLE_ADMIN);
-        
+
             var testModeratorUser = new AppUser()
             {
+                Id = Guid.NewGuid(), // Some really weird InMemoryDb stuff, that the ID needs to be present
                 Firstname = "TestModeratorFirstName",
                 Lastname = "TestModeratorLastName",
                 Email = TestConstants.TestModeratorEmail,
                 UserName = "testUser"
             };
-        
             await userManager.CreateAsync(testModeratorUser, TestConstants.TestModeratorPassword);
             await userManager.AddToRoleAsync(testModeratorUser, IdentityRolesConstants.ROLE_MODERATOR);
         }
         
-
         await context.SaveChangesAsync();
     }
     

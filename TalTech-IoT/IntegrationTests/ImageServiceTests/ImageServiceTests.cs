@@ -267,6 +267,7 @@ public class ImageServiceTests
         var bodyContainsBase64 = CheckIfBodyImageTagsContainsBase64(allLanguagesData);
         Assert.False(bodyContainsBase64);
     }
+
     
     // *****
     // Helpers
@@ -278,7 +279,7 @@ public class ImageServiceTests
             string fileContents = File.ReadAllText(path);
             return fileContents;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             throw new FileNotFoundException($"File on path {path} not found!");
         }
