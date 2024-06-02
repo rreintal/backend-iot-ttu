@@ -49,6 +49,7 @@ public class ProjectsTests
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
     
+    
     [Test, Order(1)]
     public async Task AddProjects_MissingTopicArea_ReturnsOk()
     {
