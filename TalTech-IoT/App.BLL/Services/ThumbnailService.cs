@@ -45,7 +45,10 @@ public class ThumbnailService : IThumbnailService
     }
     catch (Exception e)
     {
+        // Log the exception details including inner exceptions
         Console.WriteLine("Failed to compress image! Exception: " + e.Message);
+        if (e.InnerException != null)
+            Console.WriteLine("Inner Exception: " + e.InnerException.Message);
     }
 
     return "image was invalid/empty. exception thrown while compressing.";
