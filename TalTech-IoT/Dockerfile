@@ -27,7 +27,6 @@ COPY Base.BLL.Contracts/*.csproj ./Base.BLL.Contracts/
 COPY Base.DAL.EF/*.csproj ./Base.DAL.EF/
 COPY Base.Domain.Contracts/*.csproj ./Base.Domain.Contracts/
 COPY IntegrationTests/*.csproj ./IntegrationTests/
-COPY Factory/*.csproj ./Factory/
 COPY Util/*.csproj ./Util/
 COPY Helpers/*.csproj ./Helpers/
 COPY IntegrationStartup/*.csproj ./IntegrationStartup/
@@ -54,7 +53,6 @@ COPY Base.BLL.Contracts/. ./Base.BLL.Contracts/
 COPY Base.DAL.EF/. ./Base.DAL.EF/
 COPY Base.Domain.Contracts/. ./Base.Domain.Contracts/
 COPY IntegrationTests/. ./IntegrationTests/
-COPY Factory/. ./Factory/
 COPY Util/. ./Util/
 COPY Helpers/. ./Helpers/
 COPY IntegrationStartup/. ./IntegrationStartup/
