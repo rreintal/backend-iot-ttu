@@ -177,6 +177,7 @@ public class ImageStorageService : IImageStorageService
         var isContentEntity = InstanceOf(entity, typeof(IContentEntity));
         var isImageEntity = InstanceOf(entity, typeof(IContainsImage));
         var isThumbnailEntity = InstanceOf(entity, typeof(IContainsThumbnail));
+        var isBannerEntity = InstanceOf(entity, typeof(IContainsOneImageResource));
         if (entity is IContainsImageResource imageResourceEntity)
         {
             data.ExistingImageLinks = imageResourceEntity.ImageResources.Select(e => e.Link).ToList();
@@ -245,7 +246,7 @@ public class ImageStorageService : IImageStorageService
             }
         }
 
-        var result = Update(data);
+        var result = Update(data, isBannerEntity);
         
         if (result != null && !result.IsEmpty())
         {
@@ -459,7 +460,7 @@ public class ImageStorageService : IImageStorageService
         return _imageExtractor.IsBase64String(content);
     }
 
-    private UpdateResult? Update(UpdateContent data)
+    private UpdateResult? Update(UpdateContent data, bool isBannerUpdate = false)
     {
         var existingLinksDuplicate = new List<string>();
         if (!data.ExistingImageLinks.IsNullOrEmpty())
@@ -490,8 +491,8 @@ public class ImageStorageService : IImageStorageService
                 existingLinksDuplicate.Remove(linkToRemove);
             }
             
-            // NEW SOLUTION UP
-            var IsNeedToDeleteImages = existingLinksDuplicate.Count != 0;
+            // isBannerUpdate is used when only banner text is updated not the image itself.
+            var IsNeedToDeleteImages = existingLinksDuplicate.Count != 0 && !isBannerUpdate;
             if (IsNeedToDeleteImages)
             {
                 var DeletePayload = new DeleteContent()
