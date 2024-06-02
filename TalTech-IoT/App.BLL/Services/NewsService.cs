@@ -54,11 +54,19 @@ public class NewsService : BaseEntityService<News, Domain.News, INewsRepository>
             {
                 try
                 {
-                    entity.ThumbnailImage = _thumbnailService.Compress(entity.Image);
+                    if (_imageStorageService.IsBase64String(entity.Image))
+                    {
+                        entity.ThumbnailImage = _thumbnailService.Compress(entity.Image);    
+                    }
+                    else
+                    {
+                        entity.ThumbnailImage = existingEntity.ThumbnailImage;
+                    }
+                    
                 }
                 catch (Exception e)
                 {
-                    entity.ThumbnailImage = "Thumbnailservice threw an exception";
+                    entity.ThumbnailImage = entity.ThumbnailImage; // What to do here?
                 }
             }
         }

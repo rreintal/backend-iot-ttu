@@ -38,6 +38,11 @@ public class ImageStorageService : IImageStorageService
         _imageStorageExecutor = new ImageStorageExecutor();
     }
 
+    public bool IsBase64String(string input)
+    {
+        return _imageExtractor.IsBase64String(input);
+    }
+
     public void HandleEntityImageResources<T>(T entity, UpdateImageResources? updateDataResult)
         where T : IContainsImageResource, IDomainEntityId
     {
@@ -220,6 +225,16 @@ public class ImageStorageService : IImageStorageService
                     Content = image,
                     Sequence = 3,
                     IsAlreadyBase64 = true
+                };
+                data.Items.Add(imagePayload);
+            }
+            else
+            {
+                var imagePayload = new UpdateItem()
+                {
+                    Content = image,
+                    Sequence = 3,
+                    IsAlreadyBase64 = false
                 };
                 data.Items.Add(imagePayload);
             }

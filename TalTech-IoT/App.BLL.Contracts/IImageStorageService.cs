@@ -7,6 +7,8 @@ namespace App.BLL.Contracts;
 
 public interface IImageStorageService
 {
+
+    public bool IsBase64String(string input);
     public void HandleEntityImageResources<T>(T entity, UpdateImageResources updateDataResult)
         where T : IContainsImageResource, IDomainEntityId;
     
