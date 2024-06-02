@@ -62,6 +62,15 @@ WORKDIR /src/WebApp
 # this is for thumbnail generating, if this is not done then thumbnail generation will not work
 RUN apt-get update && apt-get install -y libfontconfig1
 
+# Install necessary libraries for SkiaSharp (Ubuntu server)
+RUN apt-get update && apt-get install -y \
+    libfontconfig1 \
+    libfreetype6 \
+    libjpeg-dev \
+    libpng-dev \
+    libwebp-dev
+
+
 RUN dotnet publish -c Release -o out
 
 
