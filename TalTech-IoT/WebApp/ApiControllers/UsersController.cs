@@ -626,7 +626,9 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(RestApiResponse), 404)]
     public async Task<ActionResult> AdminRegister([FromBody] RegisterUnknown register, string languageCulture)
     {
-        var RandomUserPassword = Guid.NewGuid().ToString();
+        // Hack for GUID to match password validation (uppercase letter)
+        var randomGuid = Guid.NewGuid().ToString();
+        var RandomUserPassword = "A".ToUpper() + randomGuid;
         var user = await _context.Users.Where(x => x.UserName == register.Username || x.Email == register.Email)
             .FirstOrDefaultAsync();
 
