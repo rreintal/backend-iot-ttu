@@ -614,6 +614,12 @@ public class UsersController : ControllerBase
     }
 
 
+    public string GenerateRandomPassword()
+    {
+        var randomGuid = Guid.NewGuid().ToString();
+        var RandomUserPassword = "A".ToUpper() + randomGuid;
+        return RandomUserPassword;
+    }
     /// <summary>
     /// Register user for unknown person. User details will be sent on email. (mail server not functioning yet)
     /// </summary>
@@ -626,9 +632,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(RestApiResponse), 404)]
     public async Task<ActionResult> AdminRegister([FromBody] RegisterUnknown register, string languageCulture)
     {
-        // Hack for GUID to match password validation (uppercase letter)
-        var randomGuid = Guid.NewGuid().ToString();
-        var RandomUserPassword = "A".ToUpper() + randomGuid;
+        var RandomUserPassword = GenerateRandomPassword();
         var user = await _context.Users.Where(x => x.UserName == register.Username || x.Email == register.Email)
             .FirstOrDefaultAsync();
 
@@ -741,7 +745,7 @@ public class UsersController : ControllerBase
         return Ok();
     }
 
-    /// <summary>
+    /// <summary> 24.79
     /// Reset user password
     /// </summary>
     /// <param name="data"></param>
@@ -774,7 +778,7 @@ public class UsersController : ControllerBase
         await _userManager.UpdateSecurityStampAsync(user);
 
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var newPassword = Guid.NewGuid().ToString();
+        var newPassword = GenerateRandomPassword();
         await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
         _bll.MailService.SendForgotPassword(user.Email, newPassword);
         await _bll.SaveChangesAsync();
